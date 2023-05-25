@@ -4,7 +4,7 @@
     "description": "",
     "author": "Aksio",
     "license": "MIT",
-    "repository":"github:aksio-insurtech/applicationmodel",
+    "repository": "github:aksio-insurtech/applicationmodel",
     "publishConfig": {
         "access": "public"
     },
@@ -25,28 +25,28 @@
             "types": "./dist/esm/index.d.ts"
         },
         "./commands": {
-            "import": "./dist/esm/commands/index.js",
-            "require": "./dist/cjs/commands/index.js",
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js",
             "types": "./dist/esm/commands/index.d.ts"
         },
         "./queries": {
-            "import": "./dist/esm/queries/index.js",
-            "require": "./dist/cjs/queries/index.js",
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js",
             "types": "./dist/esm/queries/index.d.ts"
         },
         "./dialogs": {
-            "import": "./dist/esm/dialogs/index.js",
-            "require": "./dist/cjs/dialogs/index.js",
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js",
             "types": "./dist/esm/dialogs/index.js"
         },
         "./identity": {
-            "import": "./dist/esm/identity/index.js",
-            "require": "./dist/cjs/identity/index.js",
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js",
             "types": "./dist/esm/identity/index.d.ts"
         },
         "./validation": {
-            "import": "./dist/esm/validation/index.js",
-            "requireefault": "./dist/cjs/validation/index.js",
+            "import": "./dist/esm/index.js",
+            "requireefault": "./dist/cjs/index.js",
             "types": "./dist/esm/validation/index.d.ts"
         }
     },
