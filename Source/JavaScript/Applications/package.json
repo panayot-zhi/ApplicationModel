@@ -12,27 +12,34 @@
         "**/*.ts",
         "**/*.tsx"
     ],
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "typings": "dist/index.d.ts",
+    "type": "module",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "types": "dist/esm/index.d.ts",
     "exports": {
         ".": {
-            "default": "./dist/index.js"
+            "default": "./dist/esm/index.js",
+            "types": "./dist/esm/index.d.ts"
         },
         "./commands": {
-            "default": "./dist/commands/index.js"
+            "default": "./dist/esm/commands/index.js",
+            "types": "./dist/esm/commands/index.d.ts"
         },
         "./queries": {
-            "default": "./dist/queries/index.js"
+            "default": "./dist/esm/queries/index.js",
+            "types": "./dist/esm/queries/index.d.ts"
         },
         "./dialogs": {
-            "default": "./dist/dialogs/index.js"
+            "default": "./dist/esm/dialogs/index.js",
+            "types": "./dist/esm/dialogs/index.js"
         },
         "./identity": {
-            "default": "./dist/identity/index.js"
+            "default": "./dist/esm/identity/index.js",
+            "types": "./dist/esm/identity/index.d.ts"
         },
         "./validation": {
-            "default": "./dist/validation/index.js"
+            "default": "./dist/esm/validation/index.js",
+            "types": "./dist/esm/validation/index.d.ts"
         }
     },
     "scripts": {
@@ -46,6 +53,8 @@
         "up": "yarn g:up"
     },
     "dependencies": {
+        "@aksio/fundamentals": "1.0.7",
+        "@aksio/typescript": "1.0.7",
         "handlebars": "4.7.7"
     }
 }

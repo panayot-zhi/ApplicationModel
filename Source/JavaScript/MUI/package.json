@@ -12,11 +12,12 @@
         "**/*.ts",
         "**/*.tsx"
     ],
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "typings": "dist/index.d.ts",
+    "type": "module",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "typings": "dist/esm/index.d.ts",
     "scripts": {
-        "prepublish": "yarn g:build",
+        "prepare": "yarn g:build",
         "clean": "yarn g:clean",
         "build": "yarn g:build",
         "lint": "yarn g:lint",
