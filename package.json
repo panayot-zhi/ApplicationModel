@@ -5,11 +5,11 @@
     ],
     "scripts": {
         "g:clean": "cd $INIT_CWD && tsc -b --clean",
-        "g:build": "cd $INIT_CWD && tsc -b",
+        "g:build": "cd $INIT_CWD && rollup -c rollup.config.js",
         "g:lint": "cd $INIT_CWD && eslint --cache . --ext .ts,.tsx --quiet --fix",
         "g:lint:ci": "cd $INIT_CWD && eslint --cache . --ext .ts,.tsx --quiet",
-        "g:test": "cd $INIT_CWD && env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha --config ${PROJECT_CWD}/.mocharc.js",
-        "g:ci": "cd $INIT_CWD && yarn clean && yarn lint:ci && yarn test && yarn build",
+        "g:test": "cd $INIT_CWD && mocha --config ${PROJECT_CWD}/.mocharc.js",
+        "g:ci": "cd $INIT_CWD && yarn clean && yarn lint:ci && tsc -b && yarn test",
         "g:up": "cd $INIT_CWD && ncu -u \\!'@aksio/*'",
         "clean": "node ./run-task-on-workspaces.js clean",
         "build": "node ./run-task-on-workspaces.js build",
@@ -18,11 +18,6 @@
         "ci": "node ./run-task-on-workspaces.js ci",
         "publish-version": "node ./run-task-on-workspaces.js publish-version $*",
         "up": "node ./run-task-on-workspaces.js up"
-    },
-    "dependencies": {
-        "@aksio/fundamentals": "1.0.1",
-        "@aksio/typescript": "1.0.1",
-        "reflect-metadata": "0.1.13"
     },
     "devDependencies": {
         "@types/chai": "4.3.4",
@@ -48,6 +43,11 @@
         "module-alias": "2.2.2",
         "npm-check-updates": "16.0.5",
         "prettier": "2.4.1",
+        "rollup": "3.23.0",
+        "rollup-plugin-commonjs": "10.1.0",
+        "rollup-plugin-node-resolve": "5.2.0",
+        "rollup-plugin-peer-deps-external": "2.2.4",
+        "rollup-plugin-typescript2": "0.34.1",
         "sinon": "15.0.1",
         "sinon-chai": "3.7.0",
         "ts-node": "10.9.1",
