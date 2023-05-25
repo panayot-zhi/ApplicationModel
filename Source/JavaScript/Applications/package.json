@@ -43,7 +43,7 @@
         }
     },
     "scripts": {
-        "prepublish": "yarn g:build",
+        "prepare": "yarn g:build",
         "clean": "yarn g:clean",
         "build": "yarn g:build",
         "lint": "yarn g:lint",
