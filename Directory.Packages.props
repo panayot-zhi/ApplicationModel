@@ -5,7 +5,7 @@
 	<ItemGroup>
 		<PackageVersion Include="Aksio.Defaults" Version="1.6.10" />
 		<PackageVersion Include="Aksio.Defaults.Specs" Version="1.6.10" />
-		<PackageVersion Include="Aksio.Fundamentals" Version="1.0.1" />
+		<PackageVersion Include="Aksio.Fundamentals" Version="1.0.7" />
         <PackageVersion Include="Autofac" Version="6.4.0" />
         <PackageVersion Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageVersion Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
