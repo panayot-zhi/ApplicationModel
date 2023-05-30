@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <AssemblyName>Aksio.Applications.Serilog</AssemblyName>
+        <RootNamespace>Aksio.Applications.Serilog</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+		<PackageReference Include="Aksio.Fundamentals" />
+		<PackageReference Include="Serilog" />
+    </ItemGroup>
+</Project>

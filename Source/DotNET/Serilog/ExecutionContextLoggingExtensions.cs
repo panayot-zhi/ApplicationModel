@@ -4,7 +4,7 @@
 using Serilog;
 using Serilog.Configuration;
 
-namespace Aksio.Applications.Logging;
+namespace Aksio.Applications.Serilog;
 
 /// <summary>
 /// Extension methods for <see cref="LoggerEnrichmentConfiguration"/>.

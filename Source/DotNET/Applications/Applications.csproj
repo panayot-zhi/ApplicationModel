@@ -8,6 +8,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="../Autofac/Autofac.csproj" />
+		<ProjectReference Include="../Serilgo/Serilog.csproj" />
 		<ProjectReference Include="../CQRS/CQRS.csproj" />
 		<ProjectReference Include="../CQRS.MongoDB/CQRS.MongoDB.csproj" />
 	</ItemGroup>
@@ -17,7 +18,6 @@
 		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" />
 		<PackageReference Include="Microsoft.Extensions.Logging" />
-		<PackageReference Include="Serilog" />
 		<PackageReference Include="Serilog.Exceptions" />
 		<PackageReference Include="Serilog.Extensions.Logging" />
         <PackageReference Include="Serilog.Settings.Configuration" />

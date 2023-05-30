@@ -5,7 +5,7 @@ using Serilog.Events;
 using Serilog.Formatting;
 using Serilog.Formatting.Json;
 
-namespace Aksio.Applications.Logging;
+namespace Aksio.Applications.Serilog;
 
 /// <summary>
 /// An <see cref="ITextFormatter"/> that writes events in a compact JSON format, for consumption in environments

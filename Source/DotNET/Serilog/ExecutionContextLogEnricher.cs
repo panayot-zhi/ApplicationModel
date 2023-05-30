@@ -5,7 +5,7 @@ using Aksio.Execution;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace Aksio.Applications.Logging;
+namespace Aksio.Applications.Serilog;
 
 /// <summary>
 /// Represents an implementation of <see cref="ILogEventEnricher"/> for enriching log events with values from the execution context.
