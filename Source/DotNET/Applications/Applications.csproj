@@ -8,7 +8,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="../Autofac/Autofac.csproj" />
-		<ProjectReference Include="../Serilgo/Serilog.csproj" />
+		<ProjectReference Include="../Serilog/Serilog.csproj" />
 		<ProjectReference Include="../CQRS/CQRS.csproj" />
 		<ProjectReference Include="../CQRS.MongoDB/CQRS.MongoDB.csproj" />
 	</ItemGroup>
