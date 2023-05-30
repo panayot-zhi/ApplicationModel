@@ -50,7 +50,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton(Globals.JsonSerializerOptions!);
 
-        foreach (var controllerAssembly in types.ProjectReferencedAssemblies.Where(_ => _.DefinedTypes.Any(type => type.Implements(typeof(Controller)))))
+        foreach (var controllerAssembly in ProjectReferencedAssemblies.Instance.Assemblies.Where(_ => _.DefinedTypes.Any(type => type.Implements(typeof(Controller)))))
         {
             controllerBuilder.PartManager.ApplicationParts.Add(new AssemblyPart(controllerAssembly));
         }
