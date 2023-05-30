@@ -1,3 +1,13 @@
+# [v1.0.5] - 2023-5-30 [PR: #31](https://github.com/aksio-insurtech/ApplicationModel/pull/31)
+
+### Added
+
+- Serilog project - separating out specific Serilog artifacts.
+
+### Fixed
+
+- How we use the Types system from Fundamentals after its API change.
+
 # [v1.0.4] - 2023-5-25 [PR: #0]()
 
 No release notes
