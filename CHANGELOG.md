@@ -1,3 +1,7 @@
+# [v1.0.7] - 2023-6-10 [PR: #0]()
+
+No release notes
+
 # [v1.0.6] - 2023-6-9 [PR: #0]()
 
 No release notes
