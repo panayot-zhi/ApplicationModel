@@ -43,7 +43,7 @@ public static class HostBuilderExtensions
 
         builder.ConfigureAppConfiguration((context, config) => config.AddJsonFile(Path.Combine("./config", "appsettings.json"), optional: true, reloadOnChange: true));
 
-        PackageReferencedAssemblies.AddAssemblyPrefixesToExclude(
+        PackageReferencedAssemblies.Instance.AddAssemblyPrefixesToExclude(
             "AutoMapper",
             "Autofac",
             "Azure",
