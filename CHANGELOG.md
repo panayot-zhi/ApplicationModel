@@ -1,3 +1,7 @@
+# [v1.0.6] - 2023-6-9 [PR: #0]()
+
+No release notes
+
 # [v1.0.5] - 2023-5-30 [PR: #31](https://github.com/aksio-insurtech/ApplicationModel/pull/31)
 
 ### Added
