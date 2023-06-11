@@ -20,6 +20,8 @@ public static class ApplicationBuilderExtensions
     {
         Internals.ServiceProvider = app.ApplicationServices;
 
+        app.UseExecutionContext();
+
         app.UseResponseCompression();
         app.UseWebSockets();
         app.UseDefaultFiles();
