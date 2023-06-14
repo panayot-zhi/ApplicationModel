@@ -36,7 +36,7 @@ public static class HostBuilderExtensions
         MicroserviceName? microserviceName = default,
         Action<MvcOptions>? mvcOptionsDelegate = default)
     {
-        #pragma warning disable CA2000 // Dispose objects before losing scope => Disposed by the host
+#pragma warning disable CA2000 // Dispose objects before losing scope => Disposed by the host
         var loggerFactory = builder.UseDefaultLogging();
         var logger = loggerFactory.CreateLogger("Aksio setup");
         logger.SettingUpDefaults();
@@ -57,10 +57,10 @@ public static class HostBuilderExtensions
             "Serilog",
             "Swashbuckle");
 
-        Internals.Types = new Types();
+        Internals.Types = Types.Instance;
         Internals.Types.RegisterTypeConvertersForConcepts();
         TypeConverters.Register();
-        var derivedTypes = new DerivedTypes(Internals.Types);
+        var derivedTypes = DerivedTypes.Instance;
 
         microserviceId ??= MicroserviceId.Unspecified;
         microserviceName ??= MicroserviceName.Unspecified;
