@@ -43,20 +43,6 @@ public static class HostBuilderExtensions
 
         builder.ConfigureAppConfiguration((context, config) => config.AddJsonFile(Path.Combine("./config", "appsettings.json"), optional: true, reloadOnChange: true));
 
-        PackageReferencedAssemblies.Instance.AddAssemblyPrefixesToExclude(
-            "AutoMapper",
-            "Autofac",
-            "Azure",
-            "Elasticsearch",
-            "FluentValidation",
-            "Grpc",
-            "Handlebars",
-            "NJsonSchema",
-            "MongoDB",
-            "Orleans",
-            "Serilog",
-            "Swashbuckle");
-
         Internals.Types = Types.Instance;
         Internals.Types.RegisterTypeConvertersForConcepts();
         TypeConverters.Register();
