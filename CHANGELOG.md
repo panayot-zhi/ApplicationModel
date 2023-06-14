@@ -1,3 +1,10 @@
+# [v1.0.10] - 2023-6-14 [PR: #36](https://github.com/aksio-insurtech/ApplicationModel/pull/36)
+
+### Fixed
+
+- Upgrading to latest **Fundamentals** and leveraging its global instance of `Types` and `DerivedTypes`.
+
+
 # [v1.0.9] - 2023-6-11 [PR: #0]()
 
 No release notes
