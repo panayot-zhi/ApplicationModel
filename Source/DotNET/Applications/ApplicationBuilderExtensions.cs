@@ -34,8 +34,6 @@ public static class ApplicationBuilderExtensions
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger"));
         }
 
-        app.PerformBootProcedures();
-
         app.UseDefaultLogging();
         app.UseEndpoints(endpoints =>
         {
