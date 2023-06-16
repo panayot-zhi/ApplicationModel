@@ -1,3 +1,10 @@
+# [v1.0.11] - 2023-6-14 [PR: #37](https://github.com/aksio-insurtech/ApplicationModel/pull/37)
+
+### Fixed
+
+- Adding a `ModuleInitializer` to perform all the exclusion of assemblies for the type discovery system.
+
+
 # [v1.0.10] - 2023-6-14 [PR: #36](https://github.com/aksio-insurtech/ApplicationModel/pull/36)
 
 ### Fixed
