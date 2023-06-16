@@ -2,7 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using Aksio.Objects;
+using System.Text.Json;
+using Aksio.Json;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Aksio.Applications.ModelBinding;
@@ -40,9 +41,9 @@ public class FromRequestModelBinder : IModelBinder
 
         if (bindingContext.Result.IsModelSet)
         {
-            var model = bindingContext.Result.Model!.Clone();
+            var model = CloneObject(bindingContext.Result.Model!);
             await _complexModelBinder.BindModelAsync(bindingContext);
-            var complexModel = bindingContext.Result.Model!.Clone();
+            var complexModel = CloneObject(bindingContext.Result.Model!);
 
             foreach (var property in model.GetType().GetProperties())
             {
@@ -62,6 +63,12 @@ public class FromRequestModelBinder : IModelBinder
         {
             await _complexModelBinder.BindModelAsync(bindingContext);
         }
+    }
+
+    object CloneObject(object source)
+    {
+        var sourceAsString = JsonSerializer.Serialize(source, Globals.JsonSerializerOptions);
+        return JsonSerializer.Deserialize(sourceAsString, source.GetType(), Globals.JsonSerializerOptions)!;
     }
 
     bool IsDefaultValue(Type type, object value)
