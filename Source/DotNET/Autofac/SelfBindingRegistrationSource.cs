@@ -18,6 +18,7 @@ namespace Aksio.Applications.Autofac;
 /// </remarks>
 public class SelfBindingRegistrationSource : IRegistrationSource
 {
+    static readonly List<string> _namespaceStartsWithToExclude = new();
     readonly Func<Type, bool> _predicate;
 
     /// <summary>
@@ -54,6 +55,12 @@ public class SelfBindingRegistrationSource : IRegistrationSource
     }
 
     /// <summary>
+    /// Adds a namespace to exclude from self binding.
+    /// </summary>
+    /// <param name="namespace">Namespace to exclude.</param>
+    public static void AddNamespaceStartsWithToExclude(string @namespace) => _namespaceStartsWithToExclude.Add(@namespace);
+
+    /// <summary>
     /// Retrieve registrations for an unregistered service, to be used
     /// by the container.
     /// </summary>
@@ -65,7 +72,7 @@ public class SelfBindingRegistrationSource : IRegistrationSource
         Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
     {
         var ts = service as TypedService;
-        if (ts == null || ts.ServiceType == typeof(string))
+        if (ts == null || !ShouldInclude(ts))
         {
             return Enumerable.Empty<IComponentRegistration>();
         }
@@ -75,7 +82,6 @@ public class SelfBindingRegistrationSource : IRegistrationSource
             typeInfo.IsSubclassOf(typeof(Delegate)) ||
             typeInfo.IsAbstract ||
             typeInfo.IsGenericTypeDefinition ||
-
             !_predicate(ts.ServiceType) ||
             registrationAccessor(service).Any())
         {
@@ -113,4 +119,9 @@ public class SelfBindingRegistrationSource : IRegistrationSource
     {
         return "SelfBindingRegistrationSource";
     }
+
+    bool ShouldInclude(TypedService service) =>
+        service.ServiceType != typeof(string) &&
+        service.ServiceType.Namespace != null &&
+        !_namespaceStartsWithToExclude.Any(ns => service.ServiceType.Namespace.StartsWith(ns, StringComparison.Ordinal));
 }
