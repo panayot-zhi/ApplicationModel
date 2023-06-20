@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using Aksio.Collections;
 using Aksio.Execution;
 using Aksio.Reflection;
 using Autofac.Builder;
@@ -57,8 +58,8 @@ public class SelfBindingRegistrationSource : IRegistrationSource
     /// <summary>
     /// Adds a namespace to exclude from self binding.
     /// </summary>
-    /// <param name="namespace">Namespace to exclude.</param>
-    public static void AddNamespaceStartsWithToExclude(string @namespace) => _namespaceStartsWithToExclude.Add(@namespace);
+    /// <param name="namespaces">One or more namespace to exclude.</param>
+    public static void AddNamespaceStartsWithToExclude(params string[] @namespaces) => @namespaces.ForEach(_namespaceStartsWithToExclude.Add);
 
     /// <summary>
     /// Retrieve registrations for an unregistered service, to be used
