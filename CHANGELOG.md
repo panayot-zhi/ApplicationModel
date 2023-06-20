@@ -1,3 +1,11 @@
+# [v1.1.0] - 2023-6-20 [PR: #38](https://github.com/aksio-insurtech/ApplicationModel/pull/38)
+
+### Added
+
+- Adding the possibility to exclude types by their namespace in the Autofac `SelfBindingRegistrationSource`.
+
+
+
 # [v1.0.12] - 2023-6-16 [PR: #0]()
 
 No release notes
