@@ -43,7 +43,8 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
     public async Task HandleConnection(ActionExecutingContext context, JsonOptions jsonOptions)
     {
         using var webSocket = await context.HttpContext.WebSockets.AcceptWebSocketAsync();
-        var subscription = _subject.Subscribe(async _ =>
+        IDisposable? subscription = default;
+        subscription = _subject.Subscribe(async _ =>
         {
             var queryResult = new QueryResult
             {
@@ -51,6 +52,16 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
             };
             var json = JsonSerializer.Serialize(queryResult, jsonOptions.JsonSerializerOptions);
             var message = Encoding.UTF8.GetBytes(json);
+
+            try
+            {
+                await webSocket.SendAsync(new ArraySegment<byte>(message, 0, message.Length), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch
+            {
+                subscription?.Dispose();
+                ClientDisconnected?.Invoke();
+            }
 
             await webSocket.SendAsync(new ArraySegment<byte>(message, 0, message.Length), WebSocketMessageType.Text, true, CancellationToken.None);
         });
@@ -73,7 +84,7 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
         }
         finally
         {
-            subscription.Dispose();
+            subscription?.Dispose();
             ClientDisconnected?.Invoke();
         }
     }
