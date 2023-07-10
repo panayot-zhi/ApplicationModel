@@ -1,3 +1,10 @@
+# [v1.1.4] - 2023-7-10 [PR: #41](https://github.com/aksio-insurtech/ApplicationModel/pull/41)
+
+### Fixed
+
+- Fixed null reference exception for duplicate `SendAsync` call caused by an error during merging.
+
+
 # [v1.1.3] - 2023-7-10 [PR: #40](https://github.com/aksio-insurtech/ApplicationModel/pull/40)
 
 ### Fixed
