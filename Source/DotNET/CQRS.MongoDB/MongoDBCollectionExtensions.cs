@@ -82,7 +82,7 @@ public static class MongoDBCollectionExtensions
             findCall,
             (documents, observable) =>
         {
-                var result = documents.FirstOrDefault();
+            var result = documents.FirstOrDefault();
             if (result is not null)
             {
                 observable.OnNext(result);
@@ -114,7 +114,7 @@ public static class MongoDBCollectionExtensions
 
         var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<TDocument>>().Match(filter);
 
-        var cursor = collection.Watch(pipeline, options);
+        var cursor = await collection.WatchAsync(pipeline, options);
         var idProperty = typeof(TDocument).GetProperty("Id", BindingFlags.Instance | BindingFlags.Public)!;
 
         _ = Task.Run(async () =>
