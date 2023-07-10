@@ -1,3 +1,13 @@
+# [v1.1.3] - 2023-7-10 [PR: #40](https://github.com/aksio-insurtech/ApplicationModel/pull/40)
+
+### Fixed
+
+- Improved performance related to MongoDB watching.
+- Made watching more reliable, if it crashes it shouldn't take down the process with it.
+- Removed quite a few memory leaks related to MongoDB watching.
+
+
+
 # [v1.1.2] - 2023-6-20 [PR: #0]()
 
 No release notes
