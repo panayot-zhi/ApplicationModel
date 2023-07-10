@@ -3,7 +3,6 @@
 
 using System.Net.WebSockets;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Text.Json;
 using Aksio.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +17,9 @@ namespace Aksio.Applications.Queries;
 public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
 {
     readonly ReplaySubject<T> _subject = new();
+
+    /// <inheritdoc/>
+    public bool IsDisposed => _subject.IsDisposed;
 
     /// <summary>
     /// Gets or sets the callback that gets called when the client disconnects.
@@ -43,14 +45,24 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
     public async Task HandleConnection(ActionExecutingContext context, JsonOptions jsonOptions)
     {
         using var webSocket = await context.HttpContext.WebSockets.AcceptWebSocketAsync();
-        var subscription = _subject.Subscribe(async _ =>
+        IDisposable? subscription = default;
+        var queryResult = new QueryResult();
+
+        subscription = _subject.Subscribe(async _ =>
         {
-            var queryResult = new QueryResult
+            queryResult.Data = _!;
+            var message = JsonSerializer.SerializeToUtf8Bytes(queryResult, jsonOptions.JsonSerializerOptions);
+
+            try
             {
-                Data = _!
-            };
-            var json = JsonSerializer.Serialize(queryResult, jsonOptions.JsonSerializerOptions);
-            var message = Encoding.UTF8.GetBytes(json);
+                await webSocket.SendAsync(message, WebSocketMessageType.Text, true, CancellationToken.None);
+                message = null!;
+            }
+            catch
+            {
+                subscription?.Dispose();
+                ClientDisconnected?.Invoke();
+            }
 
             await webSocket.SendAsync(new ArraySegment<byte>(message, 0, message.Length), WebSocketMessageType.Text, true, CancellationToken.None);
         });
@@ -73,7 +85,7 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
         }
         finally
         {
-            subscription.Dispose();
+            subscription?.Dispose();
             ClientDisconnected?.Invoke();
         }
     }

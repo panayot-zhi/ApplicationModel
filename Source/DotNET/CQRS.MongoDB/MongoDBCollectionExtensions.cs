@@ -2,6 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Reflection;
+using Aksio.Concepts;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Aksio.Applications.Queries.MongoDB;
@@ -36,26 +39,10 @@ public static class MongoDBCollectionExtensions
         FindOptions<TDocument, TDocument>? options = null)
     {
         filter ??= _ => true;
-        return await collection.Observe<TDocument, IEnumerable<TDocument>>(() => collection.FindAsync(filter, options), (cursor, observable) =>
-            observable.OnNext(cursor.ToList()));
-    }
-
-    /// <summary>
-    /// Create an observable query that will observe the collection for changes matching the filter criteria.
-    /// </summary>
-    /// <param name="collection"><see cref="IMongoCollection{T}"/> to extend.</param>
-    /// <param name="filter">Optional filter.</param>
-    /// <param name="options">Optional options.</param>
-    /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
-    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ClientObservable<IEnumerable<TDocument>>> Observe<TDocument>(
-        this IMongoCollection<TDocument> collection,
-        FilterDefinition<TDocument>? filter = null,
-        FindOptions<TDocument, TDocument>? options = null)
-    {
-        filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.Observe<TDocument, IEnumerable<TDocument>>(() => collection.FindAsync(filter, options), (cursor, observable) =>
-            observable.OnNext(cursor.ToList()));
+        return await collection.Observe<TDocument, IEnumerable<TDocument>>(
+            () => collection.FindAsync(filter, options),
+            filter,
+            (cursor, observable) => observable.OnNext(cursor.ToList()));
     }
 
     /// <summary>
@@ -72,7 +59,27 @@ public static class MongoDBCollectionExtensions
         FindOptions<TDocument, TDocument>? options = null)
     {
         filter ??= _ => true;
-        return await collection.ObserveSingle(() => collection.FindAsync(filter, options));
+        return await collection.ObserveSingle(() => collection.FindAsync(filter, options), filter);
+    }
+
+    /// <summary>
+    /// Create an observable query that will observe the collection for changes matching the filter criteria.
+    /// </summary>
+    /// <param name="collection"><see cref="IMongoCollection{T}"/> to extend.</param>
+    /// <param name="filter">Optional filter.</param>
+    /// <param name="options">Optional options.</param>
+    /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
+    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
+    public static async Task<ClientObservable<IEnumerable<TDocument>>> Observe<TDocument>(
+        this IMongoCollection<TDocument> collection,
+        FilterDefinition<TDocument>? filter = null,
+        FindOptions<TDocument, TDocument>? options = null)
+    {
+        filter ??= FilterDefinition<TDocument>.Empty;
+        return await collection.Observe<TDocument, IEnumerable<TDocument>>(
+            () => collection.FindAsync(filter, options),
+            filter,
+            (documents, observable) => observable.OnNext(documents));
     }
 
     /// <summary>
@@ -89,7 +96,7 @@ public static class MongoDBCollectionExtensions
         FindOptions<TDocument, TDocument>? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.ObserveSingle(() => collection.FindAsync(filter, options));
+        return await collection.ObserveSingle(() => collection.FindAsync(filter, options), filter);
     }
 
     /// <summary>
@@ -103,16 +110,20 @@ public static class MongoDBCollectionExtensions
     public static async Task<ClientObservable<TDocument>> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
     {
         var filter = Builders<TDocument>.Filter.Eq(new StringFieldDefinition<TDocument, TId>("_id"), id);
-        return await collection.ObserveSingle(() => collection.FindAsync(filter));
+        return await collection.ObserveSingle(() => collection.FindAsync(filter), filter);
     }
 
     static async Task<ClientObservable<TDocument>> ObserveSingle<TDocument>(
          this IMongoCollection<TDocument> collection,
-         Func<Task<IAsyncCursor<TDocument>>> findCall)
+         Func<Task<IAsyncCursor<TDocument>>> findCall,
+         FilterDefinition<TDocument> filter)
     {
-        return await collection.Observe<TDocument, TDocument>(findCall, (cursor, observable) =>
+        return await collection.Observe<TDocument, TDocument>(
+            findCall,
+            filter,
+            (documents, observable) =>
         {
-            var result = cursor.FirstOrDefault();
+            var result = documents.FirstOrDefault();
             if (result is not null)
             {
                 observable.OnNext(result);
@@ -121,15 +132,36 @@ public static class MongoDBCollectionExtensions
     }
 
     static async Task<ClientObservable<TResult>> Observe<TDocument, TResult>(
-         this IMongoCollection<TDocument> collection,
-         Func<Task<IAsyncCursor<TDocument>>> findCall,
-         Action<IAsyncCursor<TDocument>, ClientObservable<TResult>> onNext)
+        this IMongoCollection<TDocument> collection,
+        Func<Task<IAsyncCursor<TDocument>>> findCall,
+        FilterDefinition<TDocument> filter,
+        Action<IEnumerable<TDocument>, ClientObservable<TResult>> onNext)
     {
         var observable = new ClientObservable<TResult>();
         var response = await findCall();
-        onNext(response, observable);
+        var documents = response.ToList();
+        onNext(documents, observable);
+        response.Dispose();
+        response = null!;
 
-        var cursor = collection.Watch();
+        var options = new ChangeStreamOptions
+        {
+            FullDocument = ChangeStreamFullDocumentOption.UpdateLookup
+        };
+
+        var filterRendered = filter.Render(collection.DocumentSerializer, collection.Settings.SerializerRegistry);
+        PrefixKeys(filterRendered);
+
+        var fullFilter = Builders<ChangeStreamDocument<TDocument>>.Filter.And(
+            filterRendered,
+            Builders<ChangeStreamDocument<TDocument>>.Filter.In(
+                new StringFieldDefinition<ChangeStreamDocument<TDocument>, string>("operationType"),
+                new[] { "insert", "replace", "update" }));
+
+        var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<TDocument>>().Match(fullFilter);
+
+        var cursor = await collection.WatchAsync(pipeline, options);
+        var idProperty = typeof(TDocument).GetProperty("Id", BindingFlags.Instance | BindingFlags.Public)!;
 
         _ = Task.Run(async () =>
         {
@@ -137,9 +169,37 @@ public static class MongoDBCollectionExtensions
             {
                 while (await cursor.MoveNextAsync())
                 {
+                    if (observable.IsDisposed)
+                    {
+                        cursor.Dispose();
+                        return;
+                    }
+
                     if (!cursor.Current.Any()) continue;
-                    var response = await findCall();
-                    onNext(response, observable);
+
+                    foreach (var changeDocument in cursor.Current)
+                    {
+                        if (changeDocument.DocumentKey.TryGetValue("_id", out var idValue))
+                        {
+                            var id = BsonTypeMapper.MapToDotNetValue(idValue);
+                            if (idProperty.PropertyType.IsConcept())
+                            {
+                                id = ConceptFactory.CreateConceptInstance(idProperty.PropertyType, id);
+                            }
+                            var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
+                            if (document is not null)
+                            {
+                                var index = documents.IndexOf(document);
+                                documents[index] = changeDocument.FullDocument;
+                            }
+                            else
+                            {
+                                documents.Add(changeDocument.FullDocument);
+                            }
+                        }
+                    }
+
+                    onNext(documents, observable);
                 }
             }
             catch (ObjectDisposedException)
@@ -151,5 +211,34 @@ public static class MongoDBCollectionExtensions
         observable.ClientDisconnected = () => cursor.Dispose();
 
         return observable;
+    }
+
+    static void PrefixKeys(BsonDocument document)
+    {
+        foreach (var name in document.Names.ToArray())
+        {
+            var value = document[name];
+            if (!name.StartsWith('$'))
+            {
+                var index = document.IndexOfName(name);
+                document.InsertAt(index, new BsonElement($"fullDocument.{name}", value));
+                document.Remove(name);
+            }
+
+            if (value is BsonArray array)
+            {
+                foreach (var item in array)
+                {
+                    if (item is BsonDocument itemAsDocument)
+                    {
+                        PrefixKeys(itemAsDocument);
+                    }
+                }
+            }
+            else if (value is BsonDocument childAsDocument)
+            {
+                PrefixKeys(childAsDocument);
+            }
+        }
     }
 }

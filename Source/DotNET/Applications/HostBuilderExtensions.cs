@@ -38,6 +38,7 @@ public static class HostBuilderExtensions
     {
 #pragma warning disable CA2000 // Dispose objects before losing scope => Disposed by the host
         var loggerFactory = builder.UseDefaultLogging();
+#pragma warning restore CA2000
         var logger = loggerFactory.CreateLogger("Aksio setup");
         logger.SettingUpDefaults();
 
