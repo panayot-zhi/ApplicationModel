@@ -1,6 +1,7 @@
 // Copyright (c) Aksio Insurtech. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Linq.Expressions;
 using System.Reflection;
 using Aksio.Concepts;
 using MongoDB.Bson;
@@ -23,6 +24,41 @@ public static class MongoDBCollectionExtensions
     /// <returns>The document if found, default if not.</returns>
     public static T? FindById<T, TId>(this IMongoCollection<T> collection, TId id) =>
         collection.Find(Builders<T>.Filter.Eq(new StringFieldDefinition<T, TId>("_id"), id)).SingleOrDefault();
+
+    /// <summary>
+    /// Create an observable query that will observe the collection for changes matching the filter criteria.
+    /// </summary>
+    /// <param name="collection"><see cref="IMongoCollection{T}"/> to extend.</param>
+    /// <param name="filter">Optional filter.</param>
+    /// <param name="options">Optional options.</param>
+    /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
+    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
+    public static async Task<ClientObservable<IEnumerable<TDocument>>> Observe<TDocument>(
+        this IMongoCollection<TDocument> collection,
+        Expression<Func<TDocument, bool>>? filter,
+        FindOptions<TDocument, TDocument>? options = null)
+    {
+        filter ??= _ => true;
+        return await collection.Observe<TDocument, IEnumerable<TDocument>>(() => collection.FindAsync(filter, options), (cursor, observable) =>
+            observable.OnNext(cursor.ToList()));
+    }
+
+    /// <summary>
+    /// Create an observable query that will observe the collection for changes matching the filter criteria.
+    /// </summary>
+    /// <param name="collection"><see cref="IMongoCollection{T}"/> to extend.</param>
+    /// <param name="filter">Optional filter.</param>
+    /// <param name="options">Optional options.</param>
+    /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
+    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
+    public static async Task<ClientObservable<TDocument>> ObserveSingle<TDocument>(
+        this IMongoCollection<TDocument> collection,
+        Expression<Func<TDocument, bool>>? filter,
+        FindOptions<TDocument, TDocument>? options = null)
+    {
+        filter ??= _ => true;
+        return await collection.ObserveSingle(() => collection.FindAsync(filter, options));
+    }
 
     /// <summary>
     /// Create an observable query that will observe the collection for changes matching the filter criteria.
