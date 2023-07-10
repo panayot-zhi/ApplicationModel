@@ -63,8 +63,6 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
                 subscription?.Dispose();
                 ClientDisconnected?.Invoke();
             }
-
-            await webSocket.SendAsync(new ArraySegment<byte>(message, 0, message.Length), WebSocketMessageType.Text, true, CancellationToken.None);
         });
 
         var buffer = new byte[1024 * 4];
