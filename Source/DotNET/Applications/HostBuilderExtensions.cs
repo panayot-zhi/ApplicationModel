@@ -22,24 +22,6 @@ namespace Microsoft.Extensions.Hosting;
 /// </summary>
 public static class HostBuilderExtensions
 {
-    static HostBuilderExtensions()
-    {
-        // Add all the assembly prefixes that should be excluded by the auto discovery of types
-        PackageReferencedAssemblies.Instance.AddAssemblyPrefixesToExclude(
-            "AutoMapper",
-            "Autofac",
-            "Azure",
-            "Elasticsearch",
-            "FluentValidation",
-            "Grpc",
-            "Handlebars",
-            "NJsonSchema",
-            "MongoDB",
-            "Orleans",
-            "Serilog",
-            "Swashbuckle");
-    }
-
     /// <summary>
     /// Use Aksio defaults with the <see cref="IHostBuilder"/>.
     /// </summary>
