@@ -1,3 +1,10 @@
+# [v1.1.5] - 2023-7-11 [PR: #42](https://github.com/aksio-insurtech/ApplicationModel/pull/42)
+
+### Fixed
+
+- Taking out the use of `ModuleInitializer`, turns out the compiler warning about using it in a package was there for a good reason, it doesn't really work, at least not in production environment.
+
+
 # [v1.1.4] - 2023-7-10 [PR: #41](https://github.com/aksio-insurtech/ApplicationModel/pull/41)
 
 ### Fixed
