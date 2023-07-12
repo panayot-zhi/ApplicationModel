@@ -5,7 +5,6 @@ using System.IO.Compression;
 using Aksio.Applications;
 using Aksio.Conversion;
 using Aksio.DependencyInversion;
-using Aksio.Execution;
 using Aksio.Json;
 using Aksio.Serialization;
 using Aksio.Types;
@@ -26,14 +25,10 @@ public static class HostBuilderExtensions
     /// Use Aksio defaults with the <see cref="IHostBuilder"/>.
     /// </summary>
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
-    /// <param name="microserviceId">Optional <see cref="MicroserviceId"/> for the running process. Defaults to <see cref="MicroserviceId.Unspecified"/>.</param>
-    /// <param name="microserviceName">Optional <see cref="MicroserviceName"/> for the running process. Defaults to <see cref="MicroserviceName.Unspecified"/>.</param>
     /// <param name="mvcOptionsDelegate">Optional delegate if one wants to configure MVC specifics, since this configured MVC automatically.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
     public static IHostBuilder UseAksio(
         this IHostBuilder builder,
-        MicroserviceId? microserviceId = default,
-        MicroserviceName? microserviceName = default,
         Action<MvcOptions>? mvcOptionsDelegate = default)
     {
 #pragma warning disable CA2000 // Dispose objects before losing scope => Disposed by the host
@@ -48,9 +43,6 @@ public static class HostBuilderExtensions
         Internals.Types.RegisterTypeConvertersForConcepts();
         TypeConverters.Register();
         var derivedTypes = DerivedTypes.Instance;
-
-        microserviceId ??= MicroserviceId.Unspecified;
-        microserviceName ??= MicroserviceName.Unspecified;
 
         Globals.Configure(derivedTypes);
 
