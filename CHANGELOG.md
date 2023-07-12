@@ -1,3 +1,10 @@
+# [v1.1.7] - 2023-7-12 [PR: #44](https://github.com/aksio-insurtech/ApplicationModel/pull/44)
+
+### Fixed
+
+- Removing the `MicroserviceId` and `MicroserviceName` from the `.UseAksio()` setup call. These were optional and not used for anything.
+
+
 # [v1.1.6] - 2023-7-11 [PR: #43](https://github.com/aksio-insurtech/ApplicationModel/pull/43)
 
 ### Fixed
