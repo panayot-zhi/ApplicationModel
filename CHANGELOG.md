@@ -1,3 +1,10 @@
+# [v1.1.9] - 2023-7-18 [PR: #46](https://github.com/aksio-insurtech/ApplicationModel/pull/46)
+
+### Fixed
+
+- Upgrade Fundamentals
+
+
 # [v1.1.8] - 2023-7-14 [PR: #45](https://github.com/aksio-insurtech/ApplicationModel/pull/45)
 
 ### Fixed
