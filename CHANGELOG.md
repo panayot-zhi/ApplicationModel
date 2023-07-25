@@ -1,3 +1,10 @@
+# [v1.1.14] - 2023-7-25 [PR: #56](https://github.com/aksio-insurtech/ApplicationModel/pull/56)
+
+### Fixed
+
+- Adding trace logging for seeing WebSocket HTTP headers for debugging purposes.
+
+
 # [v1.1.13] - 2023-7-25 [PR: #55](https://github.com/aksio-insurtech/ApplicationModel/pull/55)
 
 ### Fixed
