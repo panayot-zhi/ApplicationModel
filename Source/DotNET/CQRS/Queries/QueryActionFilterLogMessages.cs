@@ -21,4 +21,7 @@ internal static partial class QueryActionFilterLogMessages
 
     [LoggerMessage(3, LogLevel.Trace, "Controller {Controller} with action {Action} returns a regular object")]
     internal static partial void NonClientObservableReturnValue(this ILogger<QueryActionFilter> logger, string controller, string action);
+
+    [LoggerMessage(4, LogLevel.Trace, "WebSocket headers are as follows: Protocol='{Protocol}' Extensions='{Extensions}' Version='{Version}' Key='{Key}'")]
+    internal static partial void DumpWebSocketHeaders(this ILogger<QueryActionFilter> logger, string protocol, string extensions, string version, string key);
 }
