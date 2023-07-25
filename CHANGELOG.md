@@ -1,3 +1,10 @@
+# [v1.1.13] - 2023-7-25 [PR: #55](https://github.com/aksio-insurtech/ApplicationModel/pull/55)
+
+### Fixed
+
+- Removing `.UseWebSockets()` call from the `.UseAksio()` extension method, as this needs to be explicitly called from the applications themselves in the right order.
+
+
 # [v1.1.12] - 2023-7-18 [PR: #49](https://github.com/aksio-insurtech/ApplicationModel/pull/49)
 
 ### Fixed
