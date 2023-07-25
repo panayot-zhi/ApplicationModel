@@ -23,7 +23,6 @@ public static class ApplicationBuilderExtensions
         app.UseExecutionContext();
 
         app.UseResponseCompression();
-        app.UseWebSockets();
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
