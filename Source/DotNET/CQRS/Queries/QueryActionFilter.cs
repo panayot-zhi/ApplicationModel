@@ -164,6 +164,11 @@ public class QueryActionFilter : IAsyncActionFilter
     /// </remarks>
     void HandleWebSocketHeadersForMultipleProxies(HttpContext httpContext)
     {
+        _logger.DumpWebSocketHeaders(
+            httpContext.Request.Headers.SecWebSocketProtocol.ToString(),
+            httpContext.Request.Headers.SecWebSocketExtensions.ToString(),
+            httpContext.Request.Headers.SecWebSocketVersion.ToString(),
+            httpContext.Request.Headers.SecWebSocketKey.ToString());
         var keys = httpContext.Request.Headers.SecWebSocketKey.ToString().Split(',').Select(_ => _.Trim()).ToArray();
         if (keys.Length > 1)
         {
