@@ -1,3 +1,11 @@
+# [v1.1.15] - 2023-8-19 [PR: #57](https://github.com/aksio-insurtech/ApplicationModel/pull/57)
+
+### Fixed
+
+- Fixing proxy generator to sanitize paths for commands and queries to avoid multiple forward slashes. This improves import statements by removing unnecessary additional navigation.
+- Fixing a bug in the proxy generator when types had reference to itself, it mistaked this as a potential type conflict.
+
+
 # [v1.1.14] - 2023-7-25 [PR: #56](https://github.com/aksio-insurtech/ApplicationModel/pull/56)
 
 ### Fixed
