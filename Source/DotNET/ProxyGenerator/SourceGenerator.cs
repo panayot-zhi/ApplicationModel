@@ -21,6 +21,7 @@ public class SourceGenerator : ISourceGenerator
     };
 
     static readonly Regex _routeRegex = new(@"(\{[\w]*\})", RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
+    static readonly Regex _slashRegex = new("/+", RegexOptions.Compiled | RegexOptions.ExplicitCapture, TimeSpan.FromSeconds(1));
     static readonly Dictionary<string, int> _fileHashes = new();
     static readonly List<ITypeSymbol> _derivedTypes = new();
 
@@ -350,9 +351,12 @@ public class SourceGenerator : ISourceGenerator
         string baseApiRoute)
     {
         if (type.IsKnownType()) return Enumerable.Empty<RequestArgumentDescriptor>();
-
         var targetFolder = GetTargetFolder(type, rootNamespace, outputFolder, useRouteAsPath, baseApiRoute);
         var targetFile = Path.Combine(targetFolder, $"{type.Name}.ts");
+
+        // If the type is self referencing, we don't need to output it again
+        if (parentFile == targetFile) return Enumerable.Empty<RequestArgumentDescriptor>();
+
         var relativeImport = new Uri(parentFile).MakeRelativeUri(new Uri(targetFile));
         var relativeImportAsString = relativeImport.ToString();
 
@@ -572,7 +576,7 @@ public class SourceGenerator : ISourceGenerator
         if (useRouteAsPath)
         {
             baseApiRoute = _routeRegex.Replace(baseApiRoute, string.Empty);
-            baseApiRoute = baseApiRoute.Replace("//", "/");
+            baseApiRoute = _slashRegex.Replace(baseApiRoute, "/");
             const string apiPrefix = "/api";
             if (baseApiRoute.StartsWith(apiPrefix))
             {
