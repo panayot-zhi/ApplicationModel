@@ -27,16 +27,6 @@ public class ExecutionContextLogEnricher : ILogEventEnricher
     /// </summary>
     public const string CorrelationIdProperty = "CorrelationId";
 
-    /// <summary>
-    /// The name of the property for the causation identifier.
-    /// </summary>
-    public const string CausationIdProperty = "CausationId";
-
-    /// <summary>
-    /// The name of the property for the caused by identifier.
-    /// </summary>
-    public const string CausedByIdProperty = "CausedById";
-
     /// <inheritdoc/>
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
@@ -45,8 +35,6 @@ public class ExecutionContextLogEnricher : ILogEventEnricher
             logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(MicroserviceIdProperty, ExecutionContextManager.GetCurrent().MicroserviceId.Value));
             logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(TenantIdProperty, ExecutionContextManager.GetCurrent().TenantId.Value));
             logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(CorrelationIdProperty, ExecutionContextManager.GetCurrent().CorrelationId.Value));
-            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(CausationIdProperty, ExecutionContextManager.GetCurrent().CausationId.Value));
-            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(CausedByIdProperty, ExecutionContextManager.GetCurrent().CausedBy.Value));
         }
     }
 }
