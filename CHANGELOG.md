@@ -1,3 +1,10 @@
+# [v1.1.16] - 2023-8-21 [PR: #58](https://github.com/aksio-insurtech/ApplicationModel/pull/58)
+
+### Fixed
+
+- Await the result of the query when doing a refresh. The operation is async.
+
+
 # [v1.1.15] - 2023-8-19 [PR: #57](https://github.com/aksio-insurtech/ApplicationModel/pull/57)
 
 ### Fixed
