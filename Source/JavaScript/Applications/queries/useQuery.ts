@@ -34,6 +34,6 @@ export function useQuery<TDataType, TQuery extends IQueryFor<TDataType>, TArgume
 
     return [result, async (args?: TArguments) => {
         setResult(QueryResultWithState.fromQueryResult(result, true));
-        queryExecutor(args);
+        await queryExecutor(args);
     }];
 }
