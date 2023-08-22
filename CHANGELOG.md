@@ -1,3 +1,11 @@
+# [v1.1.17] - 2023-8-22 [PR: #59](https://github.com/aksio-insurtech/ApplicationModel/pull/59)
+
+### Fixed
+
+- Fixing so that dictionary types are outputted as object literals with type definition for key & value (supports only string keys) in proxy generator.
+- Fixing so that types can properties of type referencing themselves - recursiveness.
+
+
 # [v1.1.16] - 2023-8-21 [PR: #58](https://github.com/aksio-insurtech/ApplicationModel/pull/58)
 
 ### Fixed
