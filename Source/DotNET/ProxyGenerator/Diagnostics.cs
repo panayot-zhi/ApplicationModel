@@ -50,6 +50,19 @@ public static class Diagnostics
         default);
 
     /// <summary>
+    /// The <see cref="Diagnostic"/> to report when key in dictionary is not string.
+    /// </summary>
+    public static readonly Func<string, Diagnostic> KeyOfDictionaryMustBeString = (string typeName) => Diagnostic.Create(
+        new DiagnosticDescriptor(
+            "AKSIO0005",
+            "The type of the key in the dictionary must be string",
+            $"The type '{typeName}' must have string as key for the dictionary. Only strings are supported as this maps directly to an object literal.",
+            "Generation",
+            DiagnosticSeverity.Error,
+            true),
+        default);
+
+    /// <summary>
     /// The <see cref="Diagnostic"/> to report when the output path is missing.
     /// </summary>
     /// <param name="exception">The exception that occurred.</param>

@@ -4,7 +4,7 @@
 namespace Aksio.Applications.ProxyGenerator.Templates;
 
 /// <summary>
-/// Describes a query argument for templating purposes.
+/// Describes a query argument for template purposes.
 /// </summary>
 /// <param name="Name">Name of argument.</param>
 /// <param name="Type">Type of argument.</param>
