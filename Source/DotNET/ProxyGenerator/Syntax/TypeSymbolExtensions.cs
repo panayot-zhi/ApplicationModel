@@ -23,6 +23,9 @@ public static class TypeSymbolExtensions
 
     static readonly Dictionary<string, TargetType> _primitiveTypeMap = new()
     {
+        { typeof(object).FullName!, AnyTypeFinal },
+        { typeof(byte).FullName!, new("number", "Number") },
+        { typeof(sbyte).FullName!, new("number", "Number") },
         { typeof(bool).FullName!, new("boolean", "Boolean") },
         { typeof(string).FullName!, new("string", "String") },
         { typeof(short).FullName!, new("number", "Number") },
@@ -97,7 +100,7 @@ public static class TypeSymbolExtensions
 
         symbol = symbol.GetValueType();
 
-        var typeName = GetTypeName(symbol);
+        var typeName = symbol.GetTypeName();
         if (_primitiveTypeMap.ContainsKey(typeName))
         {
             var targetType = _primitiveTypeMap[typeName];
@@ -147,7 +150,7 @@ public static class TypeSymbolExtensions
     public static bool IsKnownType(this ITypeSymbol symbol)
     {
         symbol = symbol.GetValueType();
-        var typeName = GetTypeName(symbol);
+        var typeName = symbol.GetTypeName();
         return _primitiveTypeMap.ContainsKey(typeName);
     }
 
@@ -161,6 +164,19 @@ public static class TypeSymbolExtensions
         if (symbol is IArrayTypeSymbol) return true;
         if (symbol.IsKnownType()) return false;
         return symbol.AllInterfaces.Any(_ => _.ToDisplayString() == "System.Collections.IEnumerable");
+    }
+
+    /// <summary>
+    /// Check whether or not a <see cref="ITypeSymbol"/> is an enumerable.
+    /// </summary>
+    /// <param name="symbol"><see cref="ITypeSymbol"/> to check.</param>
+    /// <returns>True if it is enumerable, false if not.</returns>
+    public static bool IsDictionary(this ITypeSymbol symbol)
+    {
+        if (symbol.IsKnownType()) return false;
+        bool isDictionary(ITypeSymbol symbol) => symbol.ToDisplayString().StartsWith("System.Collections.Generic.IDictionary");
+        if (isDictionary(symbol)) return true;
+        return symbol.AllInterfaces.Any(isDictionary);
     }
 
     /// <summary>
@@ -187,7 +203,12 @@ public static class TypeSymbolExtensions
         return new EnumDescriptor(type.Name, enumValues);
     }
 
-    static string GetTypeName(ITypeSymbol symbol)
+    /// <summary>
+    /// Get a fully qualified type name for a <see cref="ITypeSymbol"/>.
+    /// </summary>
+    /// <param name="symbol"><see cref="ITypeSymbol"/> to get for.</param>
+    /// <returns>String representation of full name.</returns>
+    public static string GetTypeName(this ITypeSymbol symbol)
     {
         if (symbol is IArrayTypeSymbol arrayTypeSymbol)
         {
