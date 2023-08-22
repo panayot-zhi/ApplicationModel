@@ -174,7 +174,7 @@ public static class TypeSymbolExtensions
     public static bool IsDictionary(this ITypeSymbol symbol)
     {
         if (symbol.IsKnownType()) return false;
-        bool isDictionary(ITypeSymbol symbol) => symbol.ToDisplayString().StartsWith("System.Collections.Generic.IDictionary");
+        static bool isDictionary(ITypeSymbol symbol) => symbol.ToDisplayString().StartsWith("System.Collections.Generic.IDictionary");
         if (isDictionary(symbol)) return true;
         return symbol.AllInterfaces.Any(isDictionary);
     }

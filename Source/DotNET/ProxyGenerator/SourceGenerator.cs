@@ -88,6 +88,8 @@ public class SourceGenerator : ISourceGenerator
     static void OutputCommands(GeneratorExecutionContext context, ITypeSymbol type, IEnumerable<IMethodSymbol> methods, string baseApiRoute, string rootNamespace, string outputFolder, bool useRouteAsPath)
     {
         var targetFolder = GetTargetFolder(type, rootNamespace, outputFolder, useRouteAsPath, baseApiRoute);
+        var generatedTypes = new List<ITypeSymbol>();
+
         foreach (var commandMethod in methods.Where(_ => _.GetAttributes().Any(_ => _.IsHttpPostAttribute())))
         {
             var route = GetRoute(baseApiRoute, commandMethod);
@@ -120,6 +122,7 @@ public class SourceGenerator : ISourceGenerator
                     var publicProperties = parameter.Type.GetPublicPropertiesFrom();
                     properties.AddRange(GetPropertyDescriptorsAndOutputComplexTypes(
                         context,
+                        generatedTypes,
                         ref route,
                         rootNamespace,
                         outputFolder,
@@ -136,6 +139,7 @@ public class SourceGenerator : ISourceGenerator
             requestArguments.AddRange(GetRequestArgumentsFrom(commandMethod, ref route, importStatements));
             var modelDescriptor = GetModelDescriptorFor(
                 context,
+                generatedTypes,
                 commandMethod,
                 type,
                 commandMethod.ReturnType,
@@ -168,6 +172,8 @@ public class SourceGenerator : ISourceGenerator
     static void OutputQueries(GeneratorExecutionContext context, ITypeSymbol type, IEnumerable<IMethodSymbol> methods, string baseApiRoute, string rootNamespace, string outputFolder, bool useRouteAsPath)
     {
         var targetFolder = GetTargetFolder(type, rootNamespace, outputFolder, useRouteAsPath, baseApiRoute);
+        var generatedTypes = new List<ITypeSymbol>();
+
         foreach (var queryMethod in methods.Where(_ => _.GetAttributes().Any(_ => _.IsHttpGetAttribute())))
         {
             var modelType = queryMethod.ReturnType;
@@ -177,6 +183,7 @@ public class SourceGenerator : ISourceGenerator
             var route = GetRoute(baseApiRoute, queryMethod);
             var modelDescriptor = GetModelDescriptorFor(
                 context,
+                generatedTypes,
                 queryMethod,
                 type,
                 modelType,
@@ -215,6 +222,7 @@ public class SourceGenerator : ISourceGenerator
 
     static ModelDescriptor GetModelDescriptorFor(
         GeneratorExecutionContext context,
+        List<ITypeSymbol> generatedTypes,
         IMethodSymbol method,
         ITypeSymbol parentType,
         ITypeSymbol modelType,
@@ -260,6 +268,7 @@ public class SourceGenerator : ISourceGenerator
             OutputType(
                 context,
                 actualType,
+                generatedTypes,
                 ref route,
                 rootNamespace,
                 outputFolder,
@@ -342,6 +351,7 @@ public class SourceGenerator : ISourceGenerator
     static IEnumerable<RequestArgumentDescriptor> OutputType(
         GeneratorExecutionContext context,
         ITypeSymbol type,
+        List<ITypeSymbol> generatedTypes,
         ref string route,
         string rootNamespace,
         string outputFolder,
@@ -351,6 +361,7 @@ public class SourceGenerator : ISourceGenerator
         string baseApiRoute)
     {
         if (type.IsKnownType()) return Enumerable.Empty<RequestArgumentDescriptor>();
+
         var targetFolder = GetTargetFolder(type, rootNamespace, outputFolder, useRouteAsPath, baseApiRoute);
         var targetFile = Path.Combine(targetFolder, $"{type.Name}.ts");
 
@@ -385,11 +396,16 @@ public class SourceGenerator : ISourceGenerator
 
         parentImportStatements.Add(new ImportStatement(type.Name, importPath));
 
+        if (generatedTypes.Contains(type)) return Enumerable.Empty<RequestArgumentDescriptor>();
+
+        generatedTypes.Add(type);
+
         var properties = type.GetPublicPropertiesFrom();
 
         var typeImportStatements = new HashSet<ImportStatement>();
         var propertyDescriptors = GetPropertyDescriptorsAndOutputComplexTypes(
             context,
+            generatedTypes,
             ref route,
             rootNamespace,
             outputFolder,
@@ -445,6 +461,7 @@ public class SourceGenerator : ISourceGenerator
 
     static IEnumerable<PropertyDescriptor> GetPropertyDescriptorsAndOutputComplexTypes(
         GeneratorExecutionContext context,
+        List<ITypeSymbol> generatedTypes,
         ref string route,
         string rootNamespace,
         string outputFolder,
@@ -484,18 +501,49 @@ public class SourceGenerator : ISourceGenerator
             var targetType = propertyType.GetTypeScriptType(out var additionalImportStatements);
             additionalImportStatements.ForEach(_ => typeImportStatements.Add(_));
             var isEnumerable = propertyType.IsEnumerable();
+            var isDictionary = propertyType.IsDictionary();
+
+            var actualType = propertyType;
+            var actualTypeName = propertyType.Name;
+            var constructorType = actualType.Name;
+            var hasDerivatives = false;
+            var derivatives = new List<string>();
 
             if (targetType == TypeSymbolExtensions.AnyType)
             {
-                var hasDerivatives = false;
-                var derivatives = new List<string>();
-                var actualType = propertyType;
-                var actualTypeName = propertyType.Name;
-                var constructorType = actualType.Name;
-
                 if (propertyType.TypeKind == TypeKind.Enum)
                 {
                     constructorType = "Number";
+                }
+                else if (isDictionary)
+                {
+                    var namedType = (INamedTypeSymbol)propertyType;
+                    if (namedType.TypeArguments.Length == 0 && namedType.BaseType?.TypeArguments.Length == 2)
+                    {
+                        namedType = namedType.BaseType;
+                    }
+
+                    if (namedType.TypeArguments.Length == 2)
+                    {
+                        var keyType = namedType.TypeArguments[0].GetTypeName();
+                        if (keyType != typeof(string).FullName)
+                        {
+                            context.ReportDiagnostic(Diagnostics.KeyOfDictionaryMustBeString(propertyType.ToDisplayString()));
+                            return Enumerable.Empty<PropertyDescriptor>();
+                        }
+
+                        var valueType = namedType.TypeArguments[1];
+                        var valueTypeTargetType = valueType.Name;
+                        if (valueType.IsKnownType())
+                        {
+                            valueTypeTargetType = valueType.GetTypeScriptType(out additionalImportStatements).Type;
+                        }
+
+                        constructorType = "Object";
+                        actualTypeName = $"[key: string, value: {valueTypeTargetType}]";
+                        actualType = valueType;
+                        isEnumerable = false;
+                    }
                 }
                 else if (isEnumerable)
                 {
@@ -515,30 +563,10 @@ public class SourceGenerator : ISourceGenerator
                     }
                 }
 
-                if (actualType.TypeKind == TypeKind.Interface)
-                {
-                    constructorType = "Object";
-                    hasDerivatives = true;
-
-                    foreach (var derivedType in _derivedTypes.ToArray().Where(_ => _.Interfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, actualType))))
-                    {
-                        requestArguments.AddRange(OutputType(
-                            context,
-                            derivedType,
-                            ref route,
-                            rootNamespace,
-                            outputFolder,
-                            targetFile,
-                            typeImportStatements,
-                            useRouteAsPath,
-                            baseApiRoute));
-                        derivatives.Add(derivedType.Name);
-                    }
-                }
-
                 requestArguments.AddRange(OutputType(
                     context,
                     actualType,
+                    generatedTypes,
                     ref route,
                     rootNamespace,
                     outputFolder,
@@ -546,12 +574,43 @@ public class SourceGenerator : ISourceGenerator
                     typeImportStatements,
                     useRouteAsPath,
                     baseApiRoute));
-                propertyDescriptors.Add(new PropertyDescriptor(property.Name, actualTypeName, constructorType, isEnumerable, isNullable, hasDerivatives, derivatives));
             }
             else
             {
-                propertyDescriptors.Add(new PropertyDescriptor(property.Name, targetType.Type, targetType.Constructor, isEnumerable, isNullable, false));
+                actualTypeName = targetType.Type;
+                constructorType = targetType.Constructor;
             }
+
+            if (actualType.TypeKind == TypeKind.Interface)
+            {
+                constructorType = "Object";
+                hasDerivatives = true;
+
+                foreach (var derivedType in _derivedTypes.ToArray().Where(_ => _.Interfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, actualType))))
+                {
+                    requestArguments.AddRange(OutputType(
+                        context,
+                        derivedType,
+                        generatedTypes,
+                        ref route,
+                        rootNamespace,
+                        outputFolder,
+                        targetFile,
+                        typeImportStatements,
+                        useRouteAsPath,
+                        baseApiRoute));
+                    derivatives.Add(derivedType.Name);
+                }
+            }
+
+            propertyDescriptors.Add(new PropertyDescriptor(
+                property.Name,
+                actualTypeName,
+                constructorType,
+                isEnumerable,
+                isNullable,
+                hasDerivatives,
+                hasDerivatives ? derivatives : null));
         }
 
         return propertyDescriptors;
