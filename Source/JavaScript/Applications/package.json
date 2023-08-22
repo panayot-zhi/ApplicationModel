@@ -61,8 +61,8 @@
         "up": "yarn g:up"
     },
     "dependencies": {
-        "@aksio/fundamentals": "1.0.10",
-        "@aksio/typescript": "1.0.10",
+        "@aksio/fundamentals": "1.5.0",
+        "@aksio/typescript": "1.5.0",
         "handlebars": "4.7.7"
     }
 }
