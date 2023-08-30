@@ -1,3 +1,10 @@
+# [v1.1.18] - 2023-8-30 [PR: #60](https://github.com/aksio-insurtech/ApplicationModel/pull/60)
+
+### Fixed
+
+- Proxy generator is now more forgiving on dictionaries where key is not a string. It will now give a warning rather than error and include the route of the API it was coming from and also then set the type to be `any` as it doesn't know what to do. Ultimately this should be a `Map<,>`, but that entails adding support for that type in the JSON JavaScript serializer in Fundamentals.
+
+
 # [v1.1.17] - 2023-8-22 [PR: #59](https://github.com/aksio-insurtech/ApplicationModel/pull/59)
 
 ### Fixed
