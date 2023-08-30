@@ -4,6 +4,8 @@
         "Autofac",
         "Brotli",
         "Bson",
+        "Cratis",
         "Swashbuckle"
-    ]
+    ],
+    "dotnet.defaultSolution": "ApplicationModel.sln"
 }
