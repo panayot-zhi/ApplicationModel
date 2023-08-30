@@ -52,13 +52,13 @@ public static class Diagnostics
     /// <summary>
     /// The <see cref="Diagnostic"/> to report when key in dictionary is not string.
     /// </summary>
-    public static readonly Func<string, Diagnostic> KeyOfDictionaryMustBeString = (string typeName) => Diagnostic.Create(
+    public static readonly Func<string, string, Diagnostic> KeyOfDictionaryMustBeString = (string typeName, string route) => Diagnostic.Create(
         new DiagnosticDescriptor(
             "AKSIO0005",
             "The type of the key in the dictionary must be string",
-            $"The type '{typeName}' must have string as key for the dictionary. Only strings are supported as this maps directly to an object literal.",
+            $"The type '{typeName}' must have string as key for the dictionary when generating type used in route `{route}`. Only strings are supported as this maps directly to an object literal. ",
             "Generation",
-            DiagnosticSeverity.Error,
+            DiagnosticSeverity.Warning,
             true),
         default);
 

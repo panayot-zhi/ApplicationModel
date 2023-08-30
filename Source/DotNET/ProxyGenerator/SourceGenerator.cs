@@ -526,21 +526,24 @@ public class SourceGenerator : ISourceGenerator
                     if (namedType.TypeArguments.Length == 2)
                     {
                         var keyType = namedType.TypeArguments[0].GetTypeName();
+                        var valueType = namedType.TypeArguments[1];
                         if (keyType != typeof(string).FullName)
                         {
-                            context.ReportDiagnostic(Diagnostics.KeyOfDictionaryMustBeString(propertyType.ToDisplayString()));
-                            return Enumerable.Empty<PropertyDescriptor>();
+                            context.ReportDiagnostic(Diagnostics.KeyOfDictionaryMustBeString(propertyType.ToDisplayString(), baseApiRoute));
+                            actualTypeName = TypeSymbolExtensions.AnyType.Type;
                         }
-
-                        var valueType = namedType.TypeArguments[1];
-                        var valueTypeTargetType = valueType.Name;
-                        if (valueType.IsKnownType())
+                        else
                         {
-                            valueTypeTargetType = valueType.GetTypeScriptType(out additionalImportStatements).Type;
+                            var valueTypeTargetType = valueType.Name;
+                            if (valueType.IsKnownType())
+                            {
+                                valueTypeTargetType = valueType.GetTypeScriptType(out additionalImportStatements).Type;
+                            }
+
+                            actualTypeName = $"[key: string, value: {valueTypeTargetType}]";
                         }
 
                         constructorType = "Object";
-                        actualTypeName = $"[key: string, value: {valueTypeTargetType}]";
                         actualType = valueType;
                         isEnumerable = false;
                     }
