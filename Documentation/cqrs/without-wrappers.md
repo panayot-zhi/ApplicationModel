@@ -55,3 +55,8 @@ public class Accounts : Controller
     }
 }
 ```
+
+## Proxy generator
+
+The proxy generator will exclude commands or queries that are marked with the `[AspNetResult]`
+attribute and as a consequence not generate any artifacts for the affect command or query.

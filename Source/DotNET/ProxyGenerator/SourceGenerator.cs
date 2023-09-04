@@ -68,6 +68,8 @@ public class SourceGenerator : ISourceGenerator
                     rootNamespace = type.ContainingAssembly.Name!;
                 }
 
+                if (type.GetAttributes().Any(_ => _.IsAspNetResultAttribute())) continue;
+
                 var routeAttribute = type.GetRouteAttribute();
                 if (routeAttribute == default) return;
 
@@ -90,7 +92,7 @@ public class SourceGenerator : ISourceGenerator
         var targetFolder = GetTargetFolder(type, rootNamespace, outputFolder, useRouteAsPath, baseApiRoute);
         var generatedTypes = new List<ITypeSymbol>();
 
-        foreach (var commandMethod in methods.Where(_ => _.GetAttributes().Any(_ => _.IsHttpPostAttribute())))
+        foreach (var commandMethod in methods.Where(_ => _.IsCommandMethod()))
         {
             var route = GetRoute(baseApiRoute, commandMethod);
             var properties = new List<PropertyDescriptor>();
@@ -174,7 +176,7 @@ public class SourceGenerator : ISourceGenerator
         var targetFolder = GetTargetFolder(type, rootNamespace, outputFolder, useRouteAsPath, baseApiRoute);
         var generatedTypes = new List<ITypeSymbol>();
 
-        foreach (var queryMethod in methods.Where(_ => _.GetAttributes().Any(_ => _.IsHttpGetAttribute())))
+        foreach (var queryMethod in methods.Where(_ => _.IsQueryMethod()))
         {
             var modelType = queryMethod.ReturnType;
 
