@@ -16,6 +16,7 @@ public static class WellKnownAttributeExtensions
     const string FromQueryAttribute = "Microsoft.AspNetCore.Mvc.FromQueryAttribute";
     const string RouteAttribute = "Microsoft.AspNetCore.Mvc.RouteAttribute";
     const string DerivedTypeAttribute = "Aksio.Serialization.DerivedTypeAttribute";
+    const string AspNetResultAttribute = "Aksio.Applications.AspNetResultAttribute";
 
     /// <summary>
     /// Get the route attribute - if any.
@@ -102,4 +103,11 @@ public static class WellKnownAttributeExtensions
     /// <param name="symbol">Symbol to check.</param>
     /// <returns>True if it is, false if not.</returns>
     public static bool IsDerivedTypeAttribute(this AttributeData symbol) => symbol.AttributeClass?.ToString() == DerivedTypeAttribute;
+
+    /// <summary>
+    /// Check whether or not a symbol is an AspNetResultAttribute.
+    /// </summary>
+    /// <param name="symbol">Symbol to check.</param>
+    /// <returns>True if it is, false if not.</returns>
+    public static bool IsAspNetResultAttribute(this AttributeData symbol) => symbol.AttributeClass?.ToString() == AspNetResultAttribute;
 }
