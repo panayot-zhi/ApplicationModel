@@ -1,3 +1,10 @@
+# [v1.1.19] - 2023-9-4 [PR: #61](https://github.com/aksio-insurtech/ApplicationModel/pull/61)
+
+### Fixed
+
+- Proxy generator will now ignore any ASP.NET controller actions marked with `[AspNetResult]` attribute, as intended.
+
+
 # [v1.1.18] - 2023-8-30 [PR: #60](https://github.com/aksio-insurtech/ApplicationModel/pull/60)
 
 ### Fixed
