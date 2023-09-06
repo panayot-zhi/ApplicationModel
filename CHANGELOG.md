@@ -1,3 +1,10 @@
+# [v1.2.0] - 2023-9-6 [PR: #62](https://github.com/aksio-insurtech/ApplicationModel/pull/62)
+
+### Added
+
+- Added a middleware that gets added early to take `x-ms-client-principal*` headers and populate a `ClaimsPrinipal` and `ClaimsIdentity` with all the claims and make it available on the `Request.User` property.
+
+
 # [v1.1.19] - 2023-9-4 [PR: #61](https://github.com/aksio-insurtech/ApplicationModel/pull/61)
 
 ### Fixed
