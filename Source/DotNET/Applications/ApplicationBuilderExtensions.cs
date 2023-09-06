@@ -20,6 +20,7 @@ public static class ApplicationBuilderExtensions
     {
         Internals.ServiceProvider = app.ApplicationServices;
 
+        app.UseMicrosoftIdentityPlatformIdentityResolver();
         app.UseExecutionContext();
 
         app.UseResponseCompression();
