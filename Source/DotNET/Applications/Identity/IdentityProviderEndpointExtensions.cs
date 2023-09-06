@@ -18,10 +18,6 @@ namespace Microsoft.AspNetCore.Builder;
 /// </summary>
 public static class IdentityProviderEndpointExtensions
 {
-    const string PrincipalHeader = "x-ms-client-principal";
-    const string IdentityIdHeader = "x-ms-client-principal-id";
-    const string IdentityNameHeader = "x-ms-client-principal-name";
-
     /// <summary>
     /// Map identity provider endpoints.
     /// </summary>
@@ -43,27 +39,18 @@ public static class IdentityProviderEndpointExtensions
         {
             endpoints.MapGet(".aksio/me", async (HttpRequest request, HttpResponse response) =>
             {
-                if (request.Headers.ContainsKey(IdentityIdHeader) &&
-                    request.Headers.ContainsKey(IdentityNameHeader) &&
-                    request.Headers.ContainsKey(PrincipalHeader))
+                if (request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader) &&
+                    request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityNameHeader) &&
+                    request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.PrincipalHeader))
                 {
-                    IdentityId identityId = request.Headers[IdentityIdHeader].ToString();
-                    IdentityName identityName = request.Headers[IdentityNameHeader].ToString();
-                    var token = Convert.FromBase64String(request.Headers[PrincipalHeader]);
-                    var decodedToken = Encoding.Default.GetString(token);
-
+                    IdentityId identityId = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString();
+                    IdentityName identityName = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityNameHeader].ToString();
+                    var token = Convert.FromBase64String(request.Headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader]);
                     var tokenAsJson = JsonNode.Parse(token) as JsonObject;
-                    var claims = new List<KeyValuePair<string, string>>();
+
                     if (tokenAsJson is not null && tokenAsJson.TryGetPropertyValue("claims", out var claimsArray) && claimsArray is JsonArray claimsAsArray)
                     {
-                        foreach (var claim in claimsAsArray.Cast<JsonObject>())
-                        {
-                            if (claim.TryGetPropertyValue("typ", out var type) &&
-                                claim.TryGetPropertyValue("val", out var value))
-                            {
-                                claims.Add(new KeyValuePair<string, string>(type!.ToString(), value!.ToString()));
-                            }
-                        }
+                        var claims = request.GetClaims().ToDictionary(claim => claim.Type, claim => claim.Value);
 
                         var provider = (app.ApplicationServices.GetService(providerTypes[0]) as IProvideIdentityDetails)!;
                         var context = new IdentityProviderContext(identityId, identityName, tokenAsJson, claims);
