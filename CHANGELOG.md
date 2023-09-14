@@ -1,3 +1,10 @@
+# [v1.2.1] - 2023-9-14 [PR: #63](https://github.com/aksio-insurtech/ApplicationModel/pull/63)
+
+### Fixed
+
+- Changed the automatic hookup of assembly parts that holds controllers to discover based on implementations of `ControllerBase` and not `Controller`, which is more accurate as pure API controllers should inherit from `ControllerBase`.
+
+
 # [v1.2.0] - 2023-9-6 [PR: #62](https://github.com/aksio-insurtech/ApplicationModel/pull/62)
 
 ### Added
