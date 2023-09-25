@@ -58,7 +58,11 @@ export class QueryResult<TDataType = {}> implements IQueryResult<TDataType> {
         if (result.data) {
             let data: any = result.data;
             if (enumerable) {
-                data = JsonSerializer.deserializeArrayFromInstance(instanceType, data);
+                if (Array.isArray(result.data)) {
+                    data = JsonSerializer.deserializeArrayFromInstance(instanceType, data);
+                } else {
+                    data = [];
+                }
             } else {
                 data = JsonSerializer.deserializeFromInstance(instanceType, data);
             }
