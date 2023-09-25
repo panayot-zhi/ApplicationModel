@@ -48,6 +48,8 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
                 if (this.enumerable) {
                     if (Array.isArray(result.data)) {
                         result.data = JsonSerializer.deserializeArrayFromInstance(this.modelType, result.data);
+                    } else {
+                        result.data = [];
                     }
                 } else {
                     result.data = JsonSerializer.deserializeFromInstance(this.modelType, result.data);
