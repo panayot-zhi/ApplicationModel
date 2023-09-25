@@ -1,3 +1,10 @@
+# [v1.2.2] - 2023-9-25 [PR: #64](https://github.com/aksio-insurtech/ApplicationModel/pull/64)
+
+### Fixed
+
+- Fixed `ObservableQueryFor` and `QueryFor` for frontend to make sure it returns an array for enumerable types, even if the server returns an object. It will set it to an empty array if that is the case. That way it is consistently the correct type at least.
+
+
 # [v1.2.1] - 2023-9-14 [PR: #63](https://github.com/aksio-insurtech/ApplicationModel/pull/63)
 
 ### Fixed
