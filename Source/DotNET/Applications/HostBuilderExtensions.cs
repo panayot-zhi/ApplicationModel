@@ -52,6 +52,7 @@ public static class HostBuilderExtensions
                 _
                 .AddSingleton(Internals.Types)
                 .AddSingleton<IDerivedTypes>(derivedTypes)
+                .AddIdentityProvider(Internals.Types)
                 .AddSingleton<ProviderFor<IServiceProvider>>(() => Internals.ServiceProvider!)
                 .AddConfigurationObjects(Internals.Types, searchSubPaths: new[] { "config" }, logger: logger)
                 .AddControllersFromProjectReferencedAssembles(Internals.Types, derivedTypes)
