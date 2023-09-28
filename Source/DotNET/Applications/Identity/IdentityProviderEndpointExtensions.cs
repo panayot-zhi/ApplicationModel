@@ -19,7 +19,8 @@ public static class IdentityProviderEndpointExtensions
     /// </summary>
     /// <param name="services"><see cref="IServiceCollection"/> to add to.</param>
     /// <param name="types"><see cref="ITypes"/> for discovering identity provider.</param>
-    /// <returns></returns>
+    /// <returns><see cref="IServiceCollection"/> for continuation.</returns>
+    /// <exception cref="MultipleIdentityDetailsProvidersFound">Thrown if multiple identity details providers are found.</exception>
     public static IServiceCollection AddIdentityProvider(this IServiceCollection services, ITypes types)
     {
         var providerTypes = types.FindMultiple<IProvideIdentityDetails>().ToArray();

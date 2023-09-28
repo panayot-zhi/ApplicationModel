@@ -8,7 +8,7 @@ namespace Aksio.Applications.Identity;
 /// </summary>
 public class ClientPrincipalClaim
 {
-#pragma warning disable CS8618
+#pragma warning disable CA1707, CS8618
     /// <summary>
     /// Gets or sets the type of claim.
     /// </summary>
@@ -18,5 +18,5 @@ public class ClientPrincipalClaim
     /// Gets or sets the value of the claim.
     /// </summary>
     public string val { get; set; } = string.Empty;
-#pragma warning restore CS8618
+#pragma warning restore CA1707, CS8618
 }

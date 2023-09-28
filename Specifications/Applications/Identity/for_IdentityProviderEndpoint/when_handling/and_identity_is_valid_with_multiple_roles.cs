@@ -10,8 +10,8 @@ public class and_identity_is_valid_with_multiple_roles : given.a_valid_identity_
         auth_type = "aad",
         claims = new[]
         {
-            new ClientPrincipalClaim { typ = "roles", val = "role1"},
-            new ClientPrincipalClaim { typ = "roles", val = "role2"}
+            new ClientPrincipalClaim { typ = "roles", val = "role1" },
+            new ClientPrincipalClaim { typ = "roles", val = "role2" }
         },
         name_typ = "name",
         role_typ = "roles"
