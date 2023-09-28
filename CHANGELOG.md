@@ -1,3 +1,10 @@
+# [v1.3.0] - 2023-9-28 [PR: #65](https://github.com/aksio-insurtech/ApplicationModel/pull/65)
+
+### Added
+
+- UseDefaultLogging() method for WebApplicationBuilder
+
+
 # [v1.2.2] - 2023-9-25 [PR: #64](https://github.com/aksio-insurtech/ApplicationModel/pull/64)
 
 ### Fixed
