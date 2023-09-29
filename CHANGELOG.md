@@ -1,3 +1,12 @@
+# [v1.3.1] - 2023-9-29 [PR: #66](https://github.com/aksio-insurtech/ApplicationModel/pull/66)
+
+### Fixed
+
+- Fixing the `IdentityProviderEndpoint` to handle multiple claims with same type.
+- Refactoring `IdentityProviderEndpoint` and setup to be more testable.
+- Added specs for `IdentityProviderEndpoint` and setup code.
+
+
 # [v1.3.0] - 2023-9-28 [PR: #65](https://github.com/aksio-insurtech/ApplicationModel/pull/65)
 
 ### Added
