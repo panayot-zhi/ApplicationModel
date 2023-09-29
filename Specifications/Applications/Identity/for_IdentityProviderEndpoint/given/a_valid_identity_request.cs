@@ -15,17 +15,12 @@ public abstract class a_valid_identity_request : an_identity_provider_endpoint
 
     void Establish()
     {
-        headers.Setup(_ => _.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader)).Returns(true);
-        headers.Setup(_ => _.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityNameHeader)).Returns(true);
-        headers.Setup(_ => _.ContainsKey(MicrosoftIdentityPlatformHeaders.PrincipalHeader)).Returns(true);
-
-        headers.SetupGet(_ => _[MicrosoftIdentityPlatformHeaders.IdentityIdHeader]).Returns("123");
-        headers.SetupGet(_ => _[MicrosoftIdentityPlatformHeaders.IdentityNameHeader]).Returns("Test User");
+        headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader] = "123";
+        headers[MicrosoftIdentityPlatformHeaders.IdentityNameHeader] = "Test User";
 
         client_principal = CreateClientPrincipal();
-        headers
-            .SetupGet(_ => _[MicrosoftIdentityPlatformHeaders.PrincipalHeader])
-            .Returns(() => Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(client_principal)));
+        headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader] =
+            Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(client_principal));
 
         identity_provider.Setup(_ => _.Provide(IsAny<IdentityProviderContext>())).Returns((IdentityProviderContext context) =>
         {
@@ -33,7 +28,7 @@ public abstract class a_valid_identity_request : an_identity_provider_endpoint
             return Task.FromResult(details_result);
         });
     }
-
+    
     protected virtual ClientPrincipal CreateClientPrincipal()
     {
         return new()

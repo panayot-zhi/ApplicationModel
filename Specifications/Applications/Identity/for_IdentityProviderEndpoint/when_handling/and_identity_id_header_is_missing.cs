@@ -5,7 +5,7 @@ namespace Aksio.Applications.Identity.for_IdentityProviderEndpoint.when_handling
 
 public class and_identity_id_header_is_missing : given.a_valid_identity_request
 {
-    void Establish() => headers.Setup(_ => _.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader)).Returns(false);
+    void Establish() => headers.Remove(MicrosoftIdentityPlatformHeaders.IdentityIdHeader);
 
     Task Because() => endpoint.Handler(request.Object, response.Object);
 

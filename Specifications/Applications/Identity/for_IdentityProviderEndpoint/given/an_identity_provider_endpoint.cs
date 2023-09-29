@@ -13,7 +13,7 @@ public class an_identity_provider_endpoint : Specification
     protected IdentityProviderEndpoint endpoint;
     protected Mock<HttpRequest> request;
     protected Mock<HttpResponse> response;
-    protected Mock<IHeaderDictionary> headers;
+    protected HeaderDictionary headers;
     protected MemoryStream body_stream;
     protected Mock<HttpContext> http_context;
 
@@ -27,7 +27,7 @@ public class an_identity_provider_endpoint : Specification
         request = new();
         request.SetupGet(_ => _.HttpContext).Returns(http_context.Object);
         headers = new();
-        request.SetupGet(_ => _.Headers).Returns(headers.Object);
+        request.SetupGet(_ => _.Headers).Returns(headers);
 
         response = new();
         response.SetupGet(_ => _.HttpContext).Returns(http_context.Object);
