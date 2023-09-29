@@ -1,9 +1,6 @@
 // Copyright (c) Aksio Insurtech. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using Aksio.Applications.Identity;
 using Aksio.Types;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +15,25 @@ namespace Microsoft.AspNetCore.Builder;
 public static class IdentityProviderEndpointExtensions
 {
     /// <summary>
+    /// Add a identity provider to the service collection.
+    /// </summary>
+    /// <param name="services"><see cref="IServiceCollection"/> to add to.</param>
+    /// <param name="types"><see cref="ITypes"/> for discovering identity provider.</param>
+    /// <returns><see cref="IServiceCollection"/> for continuation.</returns>
+    /// <exception cref="MultipleIdentityDetailsProvidersFound">Thrown if multiple identity details providers are found.</exception>
+    public static IServiceCollection AddIdentityProvider(this IServiceCollection services, ITypes types)
+    {
+        var providerTypes = types.FindMultiple<IProvideIdentityDetails>().ToArray();
+        if (providerTypes.Length > 1)
+        {
+            throw new MultipleIdentityDetailsProvidersFound(providerTypes);
+        }
+        services.AddSingleton(typeof(IProvideIdentityDetails), providerTypes[0]!);
+
+        return services;
+    }
+
+    /// <summary>
     /// Map identity provider endpoints.
     /// </summary>
     /// <param name="endpoints">Endpoints to extend.</param>
@@ -26,53 +42,11 @@ public static class IdentityProviderEndpointExtensions
     /// <exception cref="MultipleIdentityDetailsProvidersFound">Thrown if multiple identity details providers are found.</exception>
     public static IEndpointRouteBuilder MapIdentityProvider(this IEndpointRouteBuilder endpoints, IApplicationBuilder app)
     {
-        var serializerOptions = app.ApplicationServices.GetService<JsonSerializerOptions>()!;
-        var types = app.ApplicationServices.GetService<ITypes>()!;
-        var providerTypes = types.FindMultiple<IProvideIdentityDetails>().ToArray();
-        if (providerTypes.Length > 1)
-        {
-            throw new MultipleIdentityDetailsProvidersFound(providerTypes);
-        }
-
-        if (providerTypes.Length == 1)
+        var identityProvider = app.ApplicationServices.GetService<IProvideIdentityDetails>();
+        if (identityProvider is not null)
         {
             endpoints.MapGet(".aksio/me", async (HttpRequest request, HttpResponse response) =>
-            {
-                if (request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader) &&
-                    request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityNameHeader) &&
-                    request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.PrincipalHeader))
-                {
-                    IdentityId identityId = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString();
-                    IdentityName identityName = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityNameHeader].ToString();
-                    var token = Convert.FromBase64String(request.Headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader]);
-                    var tokenAsJson = JsonNode.Parse(token) as JsonObject;
-
-                    if (tokenAsJson is not null && tokenAsJson.TryGetPropertyValue("claims", out var claimsArray) && claimsArray is JsonArray claimsAsArray)
-                    {
-                        var claims = request.GetClaims().ToDictionary(claim => claim.Type, claim => claim.Value);
-
-                        var provider = (app.ApplicationServices.GetService(providerTypes[0]) as IProvideIdentityDetails)!;
-                        var context = new IdentityProviderContext(identityId, identityName, tokenAsJson, claims);
-                        var result = await provider.Provide(context);
-
-                        if (result.IsUserAuthorized)
-                        {
-                            response.StatusCode = 200;
-                        }
-                        else
-                        {
-                            response.StatusCode = 403;
-                        }
-
-                        response.ContentType = "application/json; charset=utf-8";
-                        var options = new JsonSerializerOptions(serializerOptions)
-                        {
-                            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                        };
-                        await response.WriteAsJsonAsync(result.Details, options);
-                    }
-                }
-            });
+                await app.ApplicationServices.GetService<IdentityProviderEndpoint>()!.Handler(request, response));
         }
 
         return endpoints;
