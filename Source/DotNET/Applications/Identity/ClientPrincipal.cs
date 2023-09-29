@@ -8,7 +8,7 @@ namespace Aksio.Applications.Identity;
 /// </summary>
 public class ClientPrincipal
 {
-#pragma warning disable CA1707, CS8618
+#pragma warning disable CA1707 // Identifiers should not contain underscores
     /// <summary>
     /// Gets or sets the auth type - also referred to as the IDP type.
     /// </summary>
@@ -28,5 +28,5 @@ public class ClientPrincipal
     /// Gets or sets which claim type holds the role(s) information.
     /// </summary>
     public string role_typ { get; set; } = string.Empty;
-#pragma warning restore CA1707, CS8618
+#pragma warning restore CA1707
 }
