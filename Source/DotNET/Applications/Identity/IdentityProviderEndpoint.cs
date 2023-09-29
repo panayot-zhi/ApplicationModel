@@ -23,7 +23,11 @@ public class IdentityProviderEndpoint
     /// <param name="identityProvider"><see cref="IProvideIdentityDetails"/> for providing the identity.</param>
     public IdentityProviderEndpoint(JsonSerializerOptions serializerOptions, IProvideIdentityDetails identityProvider)
     {
-        _serializerOptions = serializerOptions;
+        _serializerOptions = new JsonSerializerOptions(serializerOptions)
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
         _identityProvider = identityProvider;
     }
 
@@ -35,20 +39,18 @@ public class IdentityProviderEndpoint
     /// <returns>Awaitable task.</returns>
     public async Task Handler(HttpRequest request, HttpResponse response)
     {
-        if (request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader) &&
-            request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityNameHeader) &&
-            request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.PrincipalHeader))
+        if (HasValidIdentityHeaders(request))
         {
             IdentityId identityId = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString();
             IdentityName identityName = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityNameHeader].ToString();
             var token = Convert.FromBase64String(request.Headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader]);
             var tokenAsJson = JsonNode.Parse(token) as JsonObject;
 
-            if (tokenAsJson is not null && tokenAsJson.TryGetPropertyValue("claims", out var claimsArray) && claimsArray is JsonArray claimsAsArray)
+            if (TryGetClaims(tokenAsJson, out var claimsAsArray))
             {
                 var claims = request.GetClaims().Select(claim => new KeyValuePair<string, string>(claim.Type, claim.Value));
 
-                var context = new IdentityProviderContext(identityId, identityName, tokenAsJson, claims);
+                var context = new IdentityProviderContext(identityId, identityName, tokenAsJson!, claims);
                 var result = await _identityProvider.Provide(context);
 
                 if (result.IsUserAuthorized)
@@ -61,12 +63,27 @@ public class IdentityProviderEndpoint
                 }
 
                 response.ContentType = "application/json; charset=utf-8";
-                var options = new JsonSerializerOptions(_serializerOptions)
-                {
-                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                };
-                await response.WriteAsJsonAsync(result.Details, options);
+                await response.WriteAsJsonAsync(result.Details, _serializerOptions);
             }
         }
+    }
+
+    bool HasValidIdentityHeaders(HttpRequest request) =>
+        request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader) &&
+        request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityNameHeader) &&
+        request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.PrincipalHeader);
+
+    bool TryGetClaims(JsonObject? tokenAsJson, out JsonArray claims)
+    {
+        if (tokenAsJson is not null &&
+            tokenAsJson.TryGetPropertyValue("claims", out var claimsArray) &&
+            claimsArray is JsonArray claimsAsArray)
+        {
+            claims = claimsAsArray;
+            return true;
+        }
+
+        claims = new JsonArray();
+        return false;
     }
 }
