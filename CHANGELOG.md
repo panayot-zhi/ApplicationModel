@@ -1,3 +1,10 @@
+# [v1.4.0] - 2023-10-2 [PR: #67](https://github.com/aksio-insurtech/ApplicationModel/pull/67)
+
+### Fixed
+
+- 1.3.1 broke startup for projects that implemented IProvideIdentityDetails, by resolving the service during startup - before it was ready.
+- This fixes that by instead using IServiceProviderIsService.IsService() to only determine if a IProvideIdentityDetails has been registered.
+
 # [v1.3.1] - 2023-9-29 [PR: #66](https://github.com/aksio-insurtech/ApplicationModel/pull/66)
 
 ### Fixed
