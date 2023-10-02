@@ -1,3 +1,11 @@
+# [v1.4.1] - 2023-10-2 [PR: #68](https://github.com/aksio-insurtech/ApplicationModel/pull/68)
+
+### Fixed
+
+- The previous version crashed on startup if used in a solution without an identity provider.
+
+
+
 # [v1.4.0] - 2023-10-2 [PR: #67](https://github.com/aksio-insurtech/ApplicationModel/pull/67)
 
 ### Fixed
