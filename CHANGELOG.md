@@ -1,3 +1,10 @@
+# [v1.4.2] - 2023-10-17 [PR: #70](https://github.com/aksio-insurtech/ApplicationModel/pull/70)
+
+### Fixed
+
+- Adding support for `ControllerBase` as the base of a controller when generating proxies, which is more natural for APIs.
+
+
 # [v1.4.1] - 2023-10-2 [PR: #68](https://github.com/aksio-insurtech/ApplicationModel/pull/68)
 
 ### Fixed
