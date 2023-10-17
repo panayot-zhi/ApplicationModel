@@ -52,5 +52,5 @@ public static class ClassDeclarationSyntaxExtensions
     /// </summary>
     /// <param name="syntax"><see cref="ClassDeclarationSyntax"/> to check.</param>
     /// <returns>True if it is a controller, false if not.</returns>
-    public static bool IsController(this ClassDeclarationSyntax syntax) => syntax.BaseList?.Types.Any(_ => _.Type.GetName() == "Controller") ?? false;
+    public static bool IsController(this ClassDeclarationSyntax syntax) => syntax.BaseList?.Types.Any(_ => _.Type.GetName() == "Controller" || _.Type.GetName() == "ControllerBase") ?? false;
 }
