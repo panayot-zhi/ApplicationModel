@@ -1,3 +1,10 @@
+# [v1.5.0] - 2023-11-17 [PR: #71](https://github.com/aksio-insurtech/ApplicationModel/pull/71)
+
+## Changed
+
+- Asp.Net compression was on by default, this is now removed as it makes some static file serving very slow.
+Non-braeking NuGet packages was also updated.
+
 # [v1.4.2] - 2023-10-17 [PR: #70](https://github.com/aksio-insurtech/ApplicationModel/pull/70)
 
 ### Fixed
