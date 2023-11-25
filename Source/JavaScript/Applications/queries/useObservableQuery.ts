@@ -21,8 +21,7 @@ export function useObservableQuery<TDataType, TQuery extends IObservableQueryFor
     const argumentsDependency = queryInstance.requestArguments.map(_ => args?.[_]);
 
     useEffect(() => {
-        const subscription = queryInstance.subscribe(_ => {
-            const response = _ as unknown as QueryResult<TDataType>;
+        const subscription = queryInstance.subscribe(response => {
             setResult(QueryResultWithState.fromQueryResult(response, false));
         }, args as any);
 
