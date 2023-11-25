@@ -10,6 +10,7 @@ import { IObservableQueryConnection } from './IObservableQueryConnection';
 import { NullObservableQueryConnection } from './NullObservableQueryConnection';
 import { Constructor } from '@aksio/fundamentals';
 import { JsonSerializer } from '@aksio/fundamentals';
+import { QueryResult } from './QueryResult';
 
 /**
  * Represents an implementation of {@link IQueryFor}.
@@ -30,7 +31,7 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
     }
 
     /** @inheritdoc */
-    subscribe(callback: OnNextResult, args?: TArguments): ObservableQuerySubscription<TDataType> {
+    subscribe(callback: OnNextResult<QueryResult<TDataType>>, args?: TArguments): ObservableQuerySubscription<TDataType> {
         let actualRoute = this.route;
         let connection: IObservableQueryConnection<TDataType>;
 

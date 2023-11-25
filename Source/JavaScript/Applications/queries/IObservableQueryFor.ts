@@ -3,11 +3,12 @@
 
 import Handlebars from 'handlebars';
 import { ObservableQuerySubscription } from './ObservableQuerySubscription';
+import { QueryResult } from './QueryResult';
 
 /**
  * The delegate type representing the callback of result from the server.
  */
-export type OnNextResult = <TDataType>(data: TDataType) => void;
+export type OnNextResult<TDataType> = (data: TDataType) => void;
 
 /**
  * Defines the base of a query.
@@ -26,5 +27,5 @@ export interface IObservableQueryFor<TDataType, TArguments = {}> {
      * @param [args] Optional arguments for the query - depends on whether or not the query needs arguments.
      * @returns {ObservableQuerySubscription<TDataType>}.
      */
-    subscribe(callback: OnNextResult, args?: TArguments): ObservableQuerySubscription<TDataType>;
+    subscribe(callback: OnNextResult<QueryResult<TDataType>>, args?: TArguments): ObservableQuerySubscription<TDataType>;
 }
