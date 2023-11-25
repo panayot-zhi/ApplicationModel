@@ -1,3 +1,10 @@
+# [v1.5.1] - 2023-11-25 [PR: #72](https://github.com/aksio-insurtech/ApplicationModel/pull/72)
+
+### Fixed
+
+- Fixing the `OnNextResult` generic definition. It didn't include the generic parameter properly and forcing one to have to cast the result to `QueryResult<TDataType>`. Now it will be correct data type.
+
+
 # [v1.5.0] - 2023-11-17 [PR: #71](https://github.com/aksio-insurtech/ApplicationModel/pull/71)
 
 ## Changed
