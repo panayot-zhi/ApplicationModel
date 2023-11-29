@@ -186,8 +186,13 @@ public static class MongoDBCollectionExtensions
                             {
                                 id = ConceptFactory.CreateConceptInstance(idProperty.PropertyType, id);
                             }
+
                             var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
-                            if (document is not null)
+                            if (changeDocument.OperationType == ChangeStreamOperationType.Delete && document is not null)
+                            {
+                                documents.Remove(document);
+                            }
+                            else if (document is not null)
                             {
                                 var index = documents.IndexOf(document);
                                 documents[index] = changeDocument.FullDocument;
@@ -198,9 +203,9 @@ public static class MongoDBCollectionExtensions
                             }
                         }
                     }
-
-                    onNext(documents, observable);
                 }
+
+                onNext(documents, observable);
             }
             catch (ObjectDisposedException)
             {
