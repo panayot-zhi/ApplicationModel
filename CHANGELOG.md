@@ -1,3 +1,10 @@
+# [v1.5.3] - 2023-11-29 [PR: #74](https://github.com/aksio-insurtech/ApplicationModel/pull/74)
+
+### Fixed
+
+- Fixing the `.Observe()` method for a collection of items to remove items that have a MongoDB change stream update of delete.
+
+
 # [v1.5.2] - 2023-11-29 [PR: #73](https://github.com/aksio-insurtech/ApplicationModel/pull/73)
 
 ### Fixed
