@@ -156,7 +156,7 @@ public static class MongoDBCollectionExtensions
             filterRendered,
             Builders<ChangeStreamDocument<TDocument>>.Filter.In(
                 new StringFieldDefinition<ChangeStreamDocument<TDocument>, string>("operationType"),
-                new[] { "insert", "replace", "update" }));
+                new[] { "insert", "replace", "update", "delete" }));
 
         var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<TDocument>>().Match(fullFilter);
 
