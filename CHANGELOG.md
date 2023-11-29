@@ -1,3 +1,10 @@
+# [v1.5.2] - 2023-11-29 [PR: #73](https://github.com/aksio-insurtech/ApplicationModel/pull/73)
+
+### Fixed
+
+- Adding `delete` to the change stream filter for `.Observer()` on Mongo collections.
+
+
 # [v1.5.1] - 2023-11-25 [PR: #72](https://github.com/aksio-insurtech/ApplicationModel/pull/72)
 
 ### Fixed
