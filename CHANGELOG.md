@@ -1,3 +1,10 @@
+# [v1.5.4] - 2023-12-7 [PR: #75](https://github.com/aksio-insurtech/ApplicationModel/pull/75)
+
+### Fixed
+
+- Removing response compression since we've removed all compression from the application model. Without this removed, an application will crash if it doesn't have compression configured.
+
+
 # [v1.5.3] - 2023-11-29 [PR: #74](https://github.com/aksio-insurtech/ApplicationModel/pull/74)
 
 ### Fixed
