@@ -23,7 +23,6 @@ public static class ApplicationBuilderExtensions
         app.UseMicrosoftIdentityPlatformIdentityResolver();
         app.UseExecutionContext();
 
-        app.UseResponseCompression();
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
