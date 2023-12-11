@@ -1,3 +1,10 @@
+# [v1.5.5] - 2023-12-11 [PR: #76](https://github.com/aksio-insurtech/ApplicationModel/pull/76)
+
+### Fixed
+
+- Upgrading `Aksio.Fundamentals` to the latest version.
+
+
 # [v1.5.4] - 2023-12-7 [PR: #75](https://github.com/aksio-insurtech/ApplicationModel/pull/75)
 
 ### Fixed
