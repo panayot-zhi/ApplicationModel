@@ -1,3 +1,11 @@
+# [v1.5.6] - 2023-12-13 [PR: #77](https://github.com/aksio-insurtech/ApplicationModel/pull/77)
+
+### Fixed
+
+- Handling exceptions if serialization to UTF8 for the WebSocket connections.
+- Printing any exceptions that occur during serialization or sending data to client over WebSockets.
+
+
 # [v1.5.5] - 2023-12-11 [PR: #76](https://github.com/aksio-insurtech/ApplicationModel/pull/76)
 
 ### Fixed
