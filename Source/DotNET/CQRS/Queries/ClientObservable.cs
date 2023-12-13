@@ -51,15 +51,16 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
         subscription = _subject.Subscribe(async _ =>
         {
             queryResult.Data = _!;
-            var message = JsonSerializer.SerializeToUtf8Bytes(queryResult, jsonOptions.JsonSerializerOptions);
 
             try
             {
+                var message = JsonSerializer.SerializeToUtf8Bytes(queryResult, jsonOptions.JsonSerializerOptions);
                 await webSocket.SendAsync(message, WebSocketMessageType.Text, true, CancellationToken.None);
                 message = null!;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.Error.WriteLine($"Error sending message to client: {ex.Message}\n{ex.StackTrace}");
                 subscription?.Dispose();
                 ClientDisconnected?.Invoke();
             }
