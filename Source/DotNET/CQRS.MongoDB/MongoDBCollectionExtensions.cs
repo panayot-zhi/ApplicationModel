@@ -203,9 +203,9 @@ public static class MongoDBCollectionExtensions
                             }
                         }
                     }
-                }
 
-                onNext(documents, observable);
+                    onNext(documents, observable);
+                }
             }
             catch (ObjectDisposedException)
             {
