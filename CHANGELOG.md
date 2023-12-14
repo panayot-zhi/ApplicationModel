@@ -1,3 +1,10 @@
+# [v1.5.7] - 2023-12-14 [PR: #78](https://github.com/aksio-insurtech/ApplicationModel/pull/78)
+
+### Fixed
+
+- `OnNext()` was never called on the observable given to the `MongoDBCollectionExtensions` when observing changes for `ClientObservables`.
+
+
 # [v1.5.6] - 2023-12-13 [PR: #77](https://github.com/aksio-insurtech/ApplicationModel/pull/77)
 
 ### Fixed
