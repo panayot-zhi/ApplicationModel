@@ -1,3 +1,11 @@
+# [v1.5.8] - 2023-12-15 [PR: #79](https://github.com/aksio-insurtech/ApplicationModel/pull/79)
+
+## Summary
+
+Update fundamentals to 1.6.1 to get the new ToCamelCase method
+
+This is especially needed for the Proxy Generation.
+
 # [v1.5.7] - 2023-12-14 [PR: #78](https://github.com/aksio-insurtech/ApplicationModel/pull/78)
 
 ### Fixed
