@@ -47,7 +47,7 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
         using var webSocket = await context.HttpContext.WebSockets.AcceptWebSocketAsync();
         IDisposable? subscription = default;
         var queryResult = new QueryResult();
-        var cts = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
 
         subscription = _subject.Subscribe(async _ =>
         {
