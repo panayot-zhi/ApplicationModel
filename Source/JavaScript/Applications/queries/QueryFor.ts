@@ -16,6 +16,8 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
     abstract readonly routeTemplate: Handlebars.TemplateDelegate;
     abstract get requestArguments(): string[];
     abstract defaultValue: TDataType;
+    abortController?: AbortController;
+
 
     /**
      * Initializes a new instance of the {@link ObservableQueryFor<,>}} class.
@@ -36,13 +38,20 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
             });
         }
 
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+
+        this.abortController = new AbortController();
+
         actualRoute = this.routeTemplate(args);
         const response = await fetch(actualRoute, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            }
+            },
+            signal: this.abortController.signal
         });
 
         try {
