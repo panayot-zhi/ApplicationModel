@@ -47,6 +47,7 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
         using var webSocket = await context.HttpContext.WebSockets.AcceptWebSocketAsync();
         IDisposable? subscription = default;
         var queryResult = new QueryResult();
+        using var cts = new CancellationTokenSource();
 
         subscription = _subject.Subscribe(async _ =>
         {
@@ -55,7 +56,7 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
             try
             {
                 var message = JsonSerializer.SerializeToUtf8Bytes(queryResult, jsonOptions.JsonSerializerOptions);
-                await webSocket.SendAsync(message, WebSocketMessageType.Text, true, CancellationToken.None);
+                await webSocket.SendAsync(message, WebSocketMessageType.Text, true, cts.Token);
                 message = null!;
             }
             catch (Exception ex)
@@ -69,14 +70,14 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
         var buffer = new byte[1024 * 4];
         try
         {
-            var received = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            var received = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cts.Token);
 
             while (!received.CloseStatus.HasValue)
             {
-                received = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                received = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cts.Token);
             }
 
-            await webSocket.CloseAsync(received.CloseStatus.Value, received.CloseStatusDescription, CancellationToken.None);
+            await webSocket.CloseAsync(received.CloseStatus.Value, received.CloseStatusDescription, cts.Token);
         }
         catch
         {
@@ -84,6 +85,8 @@ public class ClientObservable<T> : IClientObservable, IAsyncEnumerable<T>
         }
         finally
         {
+            cts.Cancel();
+            _subject.OnCompleted();
             subscription?.Dispose();
             ClientDisconnected?.Invoke();
         }
