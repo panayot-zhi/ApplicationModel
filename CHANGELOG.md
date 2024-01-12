@@ -1,3 +1,11 @@
+# [v1.5.9] - 2024-1-12 [PR: #80](https://github.com/aksio-insurtech/ApplicationModel/pull/80)
+
+### Fixed
+
+- Fixing so that if a client fetches from the same query multiple times and the response could potentialle come out of order, we make sure to cancel any ongoing requests.
+- Adding a cancellation token for `ObservableClient` queries that we pass along to every WebSocket operation in case the client disconnects.
+
+
 # [v1.5.8] - 2023-12-15 [PR: #79](https://github.com/aksio-insurtech/ApplicationModel/pull/79)
 
 ## Summary
