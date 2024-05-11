@@ -1,4 +1,4 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Globalization;
@@ -10,11 +10,11 @@ CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseAksio();
+builder.Host.UseCratis();
 
 var app = builder.Build();
 app.UseRouting();
-app.UseAksio();
+app.UseCratis();
 
 
 app.MapGet("/", (request) =>

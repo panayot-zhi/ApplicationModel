@@ -1,6 +1,6 @@
 <Project>
     <ItemGroup>
-        <CompilerVisibleProperty Include="AksioProxyOutput"/>
-        <CompilerVisibleProperty Include="AksioUseRouteAsPath"/>
+        <CompilerVisibleProperty Include="CratisProxyOutput"/>
+        <CompilerVisibleProperty Include="CratisUseRouteAsPath"/>
     </ItemGroup>
 </Project>

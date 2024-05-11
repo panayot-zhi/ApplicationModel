@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <AssemblyName>Aksio.Applications.ProxyGenerator</AssemblyName>
-        <RootNamespace>Aksio.Applications.ProxyGenerator</RootNamespace>
+        <AssemblyName>Cratis.Applications.ProxyGenerator</AssemblyName>
+        <RootNamespace>Cratis.Applications.ProxyGenerator</RootNamespace>
         <IsRoslynComponent>true</IsRoslynComponent>
         <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -10,7 +10,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <Import Project="./build/Aksio.Applications.ProxyGenerator.props"/>
+    <Import Project="./build/Cratis.Applications.ProxyGenerator.props"/>
 
     <ItemGroup>
         <PackageReference Include="handlebars.net" GeneratePathProperty="true" PrivateAssets="all" />
@@ -37,7 +37,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="./build/Aksio.Applications.ProxyGenerator.props" PackagePath="build\" />
+        <Content Include="./build/Cratis.Applications.ProxyGenerator.props" PackagePath="build\" />
     </ItemGroup>
 
     <PropertyGroup>

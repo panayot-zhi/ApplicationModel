@@ -21,23 +21,23 @@ The following property specified in a .csproj:
 
 ```xml
 <PropertyGroup>
-    <AksioProxyOutput>../Web</AksioProxyOutput>
+    <CratisProxyOutput>../Web</CratisProxyOutput>
 </PropertyGroup>
 ```
 
 Will be accessible through the global options on the `GeneratorExecutionContext`:
 
 ```csharp
-context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.aksioproxyoutput", out var outputFolder);
+context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.cratisproxyoutput", out var outputFolder);
 ```
 
 In addition to this to work, the property needs to be visible to the compiler - this is achieved by adding
 
 ```xml
-<CompilerVisibleProperty Include="AksioProxyOutput"/>
+<CompilerVisibleProperty Include="CratisProxyOutput"/>
 ```
 
-Within an `<ItemGroup/>` in the [Aksio.Applications.ProxyGenerator.props](./build/Aksio.Applications.ProxyGenerator.props) file that will automatically
+Within an `<ItemGroup/>` in the [Cratis.Applications.ProxyGenerator.props](./build/Cratis.Applications.ProxyGenerator.props) file that will automatically
 be included during compiletime of any consumers of this package.
 
 ## Run in sample

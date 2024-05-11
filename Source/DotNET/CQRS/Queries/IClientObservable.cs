@@ -1,10 +1,10 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Aksio.Applications.Queries;
+namespace Cratis.Applications.Queries;
 
 /// <summary>
 /// Defines an observable that is observed by a connected client.
@@ -14,7 +14,7 @@ public interface IClientObservable
     /// <summary>
     /// Gets whether or not the observable is disposed.
     /// </summary>
-    bool IsDisposed { get; }
+    bool IsDisposed { get; }
 
     /// <summary>
     /// Handle the action context and result from the action.

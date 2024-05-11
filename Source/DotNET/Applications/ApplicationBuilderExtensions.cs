@@ -1,8 +1,8 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications;
-using Aksio.Execution;
+using Cratis.Applications;
+using Cratis.Execution;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -12,16 +12,15 @@ namespace Microsoft.AspNetCore.Builder;
 public static class ApplicationBuilderExtensions
 {
     /// <summary>
-    /// Use Aksio default setup.
+    /// Use Cratis default setup.
     /// </summary>
     /// <param name="app"><see cref="IApplicationBuilder"/> to extend.</param>
     /// <returns><see cref="IApplicationBuilder"/> for continuation.</returns>
-    public static IApplicationBuilder UseAksio(this IApplicationBuilder app)
+    public static IApplicationBuilder UseCratis(this IApplicationBuilder app)
     {
         Internals.ServiceProvider = app.ApplicationServices;
 
         app.UseMicrosoftIdentityPlatformIdentityResolver();
-        app.UseExecutionContext();
 
         app.UseDefaultFiles();
         app.UseStaticFiles();

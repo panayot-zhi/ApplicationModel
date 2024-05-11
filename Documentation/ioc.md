@@ -76,7 +76,7 @@ Within the fundamentals you'll find an attribute called `[Singleton]`.
 This will in combination with conventions make sure that the implementation is registered with singleton lifetime.
 
 ```csharp
-using Aksio.Execution;
+using Cratis.Execution;
 
 [Singleton]
 public class MySystem : IMySystem
@@ -90,7 +90,7 @@ Similar to `[Singleton]` there is another attribute called `[SingletonPerTenant]
 per [tenant](../concepts/tenancy.md).
 
 ```csharp
-using Aksio.Execution;
+using Cratis.Execution;
 
 [SingletonPerTenant]
 public class MySystem : IMySystem

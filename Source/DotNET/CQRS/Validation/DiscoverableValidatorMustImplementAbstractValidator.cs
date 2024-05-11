@@ -1,18 +1,16 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Aksio.Applications.Validation;
+namespace Cratis.Applications.Validation;
 
 /// <summary>
 /// Exception that gets thrown when a validator.
 /// </summary>
-public class DiscoverableValidatorMustImplementAbstractValidator : Exception
+/// <remarks>
+/// Initializes a new instance of the <see cref="DiscoverableValidatorMustImplementAbstractValidator"/> class.
+/// </remarks>
+/// <param name="type">Validator type that is invalid.</param>
+public class DiscoverableValidatorMustImplementAbstractValidator(Type type)
+    : Exception($"Discoverable validator of type '{type.FullName}' does not derive from AbstractValidator<>, suggest using either BaseValidator<>, DiscoverableValidator<>, CommandValidator<>, QueryValidator<>, ConceptValidator<> or the AbstractValidator<> as base type.")
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DiscoverableValidatorMustImplementAbstractValidator"/> class.
-    /// </summary>
-    /// <param name="type">Validator type that is invalid.</param>
-    public DiscoverableValidatorMustImplementAbstractValidator(Type type) : base($"Discoverable validator of type '{type.FullName}' does not derive from AbstractValidator<>, suggest using either BaseValidator<>, DiscoverableValidator<>, CommandValidator<>, QueryValidator<>, ConceptValidator<> or the AbstractValidator<> as base type.")
-    {
-    }
 }

@@ -1,7 +1,7 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Aksio.Applications.Identity;
+namespace Cratis.Applications.Identity;
 
 /// <summary>
 /// Represents the structure of a Microsoft Client Principal.
@@ -17,7 +17,7 @@ public class ClientPrincipal
     /// <summary>
     /// Get or sets the claims.
     /// </summary>
-    public IEnumerable<ClientPrincipalClaim> claims { get; set; } = Enumerable.Empty<ClientPrincipalClaim>();
+    public IEnumerable<ClientPrincipalClaim> claims { get; set; } = [];
 
     /// <summary>
     /// Gets or sets which claim type holds the name information.

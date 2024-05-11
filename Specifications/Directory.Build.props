@@ -18,9 +18,7 @@
 
         <PackageReference Include="moq" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="Aksio.Specifications" />
-
-        <PackageReference Include="Aksio.Defaults.Specs" PrivateAssets="All" Condition="'$(PublishReadyToRun)' != 'true'" />
+        <PackageReference Include="Cratis.Specifications" />
     </ItemGroup>
 
     <ItemGroup>

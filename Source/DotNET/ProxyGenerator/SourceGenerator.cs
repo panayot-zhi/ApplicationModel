@@ -1,12 +1,12 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Text.RegularExpressions;
-using Aksio.Applications.ProxyGenerator.Syntax;
-using Aksio.Applications.ProxyGenerator.Templates;
+using Cratis.Applications.ProxyGenerator.Syntax;
+using Cratis.Applications.ProxyGenerator.Templates;
 using Microsoft.CodeAnalysis;
 
-namespace Aksio.Applications.ProxyGenerator;
+namespace Cratis.Applications.ProxyGenerator;
 
 /// <summary>
 /// Represents a <see cref="ISourceGenerator"/> for generating proxies for frontend use.
@@ -37,12 +37,12 @@ public class SourceGenerator : ISourceGenerator
 
         var receiver = context.SyntaxReceiver as SyntaxReceiver;
         context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.rootnamespace", out var rootNamespace);
-        if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.aksioproxyoutput", out var outputFolder))
+        if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.cratisproxyoutput", out var outputFolder))
         {
             context.ReportDiagnostic(Diagnostics.MissingOutputPath);
             return;
         }
-        context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.aksiouserouteaspath", out var useRouteAsPathAsString);
+        context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.cratisuserouteaspath", out var useRouteAsPathAsString);
 
         var useRouteAsPath = !string.IsNullOrEmpty(useRouteAsPathAsString);
         foreach (var derivedType in receiver!.DerivedTypes)
@@ -433,7 +433,7 @@ public class SourceGenerator : ISourceGenerator
                     var derivedTypeIdentifier = string.Empty;
                     if (_derivedTypes.Any(_ => SymbolEqualityComparer.Default.Equals(_, type)))
                     {
-                        var attribute = type.GetAttributes().SingleOrDefault(_ => _.AttributeClass?.ToString() == "Aksio.Serialization.DerivedTypeAttribute");
+                        var attribute = type.GetAttributes().SingleOrDefault(_ => _.AttributeClass?.ToString() == "Cratis.Serialization.DerivedTypeAttribute");
                         if (attribute is not null)
                         {
                             derivedType = true;

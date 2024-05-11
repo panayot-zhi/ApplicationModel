@@ -1,11 +1,10 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Strings;
-using Aksio.Validation;
+using Cratis.Strings;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Aksio.Applications.Validation;
+namespace Cratis.Applications.Validation;
 
 /// <summary>
 /// Extension methods for <see cref="ModelError"/>.
@@ -21,6 +20,6 @@ public static class ModelErrorExtensions
     public static ValidationResult ToValidationResult(this ModelError error, string member)
     {
         member = string.Join('.', member.Split('.').Select(_ => _.ToCamelCase()));
-        return new ValidationResult(ValidationResultSeverity.Error, error.ErrorMessage, new string[] { member }, new object());
+        return new ValidationResult(ValidationResultSeverity.Error, error.ErrorMessage, [member], new object());
     }
 }

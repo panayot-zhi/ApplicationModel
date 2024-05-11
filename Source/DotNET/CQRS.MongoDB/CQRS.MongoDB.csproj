@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AssemblyName>Aksio.Applications.CQRS.MongoDB</AssemblyName>
-        <RootNamespace>Aksio.Applications</RootNamespace>
+        <AssemblyName>Cratis.Applications.CQRS.MongoDB</AssemblyName>
+        <RootNamespace>Cratis.Applications</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

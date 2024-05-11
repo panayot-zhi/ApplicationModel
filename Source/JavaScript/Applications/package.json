@@ -1,10 +1,10 @@
 {
-    "name": "@aksio/applications",
+    "name": "@cratis/applications",
     "version": "1.0.0",
     "description": "",
-    "author": "Aksio",
+    "author": "Cratis",
     "license": "MIT",
-    "repository": "github:aksio-insurtech/applicationmodel",
+    "repository": "github:cratis/applicationmodel",
     "publishConfig": {
         "access": "public"
     },
@@ -61,8 +61,8 @@
         "up": "yarn g:up"
     },
     "dependencies": {
-        "@aksio/fundamentals": "1.5.0",
-        "@aksio/typescript": "1.5.0",
+        "@cratis/fundamentals": "1.5.0",
+        "@cratis/typescript": "1.5.0",
         "handlebars": "4.7.7"
     }
 }

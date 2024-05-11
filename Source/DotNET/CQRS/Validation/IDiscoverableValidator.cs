@@ -1,7 +1,7 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Aksio.Applications.Validation;
+namespace Cratis.Applications.Validation;
 
 /// <summary>
 /// Defines a discoverable validator that can be discovered and automatically hooked up.
@@ -11,6 +11,4 @@ namespace Aksio.Applications.Validation;
 /// The type needs to in addition implement fluent validation AbstractValidator or something that
 /// implements it.
 /// </remarks>
-public interface IDiscoverableValidator<T>
-{
-}
+public interface IDiscoverableValidator<T>;

@@ -1,10 +1,10 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { ICommand, PropertyChanged } from './ICommand';
 import { CommandResult } from "./CommandResult";
 import { CommandValidator } from './CommandValidator';
-import { Constructor } from '@aksio/fundamentals';
+import { Constructor } from '@cratis/fundamentals';
 
 
 type Callback = {

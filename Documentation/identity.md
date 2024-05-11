@@ -4,7 +4,7 @@ Cratis' Application Model provides a way to easily work with providing an object
 the logged in user. The purpose of this is to provide details about the logged in user on the ingress level of an application and letting it
 provide the details on the request going in. Having it on the ingress level lets you expose the details to all microservices behind the ingress.
 
-> Note: Aksio has an ingress middleware that uses this technique and takes the details and puts it on a cookie. For more details go [here](https://github.com/aksio-insurtech/IngressMiddleware).
+> Note: Cratis has an ingress middleware that uses this technique and takes the details and puts it on a cookie. For more details go [here](https://github.com/cratis/IngressMiddleware).
 
 The values provided by the provider are values that are typically application specific and goes beyond what is already found in the token representing the user.
 This is optimized for working with Microsoft Azure well known HTTP headers passed on by the different app services, such as Azure ContainerApps or WebApps.
@@ -25,7 +25,7 @@ This is unwrapped by the application model and encapsulates it into what is call
 manner.
 
 To support the identity details, one of your microservices in your application can implement the `IProvideIdentityDetails` interface
-found in the `Aksio.ApplicationModel.Identity` namespace.
+found in the `Cratis.ApplicationModel.Identity` namespace.
 
 > Note: If your application has just one microservice, you let it implement the `IProvideIdentityDetails` interface.
 
@@ -62,4 +62,4 @@ If the `IsUserAuthorized` property is set to false the return from this will be 
 
 > Note: Dependency inversion works for this, so your provider can take any dependencies it wants on its constructor.
 
-Your provider will be exposed on a well known route: `/.aksio/me`.
+Your provider will be exposed on a well known route: `/.cratis/me`.

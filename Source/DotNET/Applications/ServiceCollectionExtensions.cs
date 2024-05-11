@@ -1,12 +1,12 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Text.Json;
-using Aksio.Applications.ModelBinding;
-using Aksio.Json;
-using Aksio.Reflection;
-using Aksio.Serialization;
-using Aksio.Types;
+using Cratis.Applications.ModelBinding;
+using Cratis.Json;
+using Cratis.Reflection;
+using Cratis.Serialization;
+using Cratis.Types;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;

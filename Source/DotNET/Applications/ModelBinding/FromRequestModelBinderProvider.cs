@@ -1,31 +1,25 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
-namespace Aksio.Applications.ModelBinding;
+namespace Cratis.Applications.ModelBinding;
 
 /// <summary>
 /// Represents a <see cref="IModelBinderProvider"/> supporting the <see cref="FromRequestBindingSource"/>.
 /// </summary>
-public class FromRequestModelBinderProvider : IModelBinderProvider
+/// <remarks>
+/// Initializes a new instance of the <see cref="FromRequestModelBinderProvider"/> class.
+/// </remarks>
+/// <param name="bodyModelBinderProvider">The <see cref="BodyModelBinderProvider"/>.</param>
+/// <param name="complexObjectModelBinderProvider">The <see cref="ComplexObjectModelBinderProvider"/>.</param>
+public class FromRequestModelBinderProvider(
+    BodyModelBinderProvider bodyModelBinderProvider,
+    ComplexObjectModelBinderProvider complexObjectModelBinderProvider) : IModelBinderProvider
 {
-    readonly BodyModelBinderProvider _bodyModelBinderProvider;
-    readonly ComplexObjectModelBinderProvider _complexObjectModelBinderProvider;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FromRequestModelBinderProvider"/> class.
-    /// </summary>
-    /// <param name="bodyModelBinderProvider">The <see cref="BodyModelBinderProvider"/>.</param>
-    /// <param name="complexObjectModelBinderProvider">The <see cref="ComplexObjectModelBinderProvider"/>.</param>
-    public FromRequestModelBinderProvider(
-        BodyModelBinderProvider bodyModelBinderProvider,
-        ComplexObjectModelBinderProvider complexObjectModelBinderProvider)
-    {
-        _bodyModelBinderProvider = bodyModelBinderProvider;
-        _complexObjectModelBinderProvider = complexObjectModelBinderProvider;
-    }
+    readonly BodyModelBinderProvider _bodyModelBinderProvider = bodyModelBinderProvider;
+    readonly ComplexObjectModelBinderProvider _complexObjectModelBinderProvider = complexObjectModelBinderProvider;
 
     /// <inheritdoc/>
     public IModelBinder? GetBinder(ModelBinderProviderContext context) =>

@@ -1,6 +1,6 @@
 # MUI Support
 
-Cratis offers a package with MUI utilities called [@aksio/cratis-mui](https://www.npmjs.com/package/@aksio/cratis-mui).
+Cratis offers a package with MUI utilities called [@cratis/cratis-mui](https://www.npmjs.com/package/@cratis/cratis-mui).
 
 It contains the following:
 

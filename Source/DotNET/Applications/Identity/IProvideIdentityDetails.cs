@@ -1,7 +1,7 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Aksio.Applications.Identity;
+namespace Cratis.Applications.Identity;
 
 /// <summary>
 /// Defines the system that provides identity details.

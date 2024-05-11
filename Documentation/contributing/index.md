@@ -1,6 +1,6 @@
 # Contributing
 
-Before you start contributing, you should read our guidelines [here](https://github.com/aksio-insurtech/.github/blob/main/contributing.md).
+Before you start contributing, you should read our guidelines [here](https://github.com/cratis/.github/blob/main/contributing.md).
 
 ## Prerequisites
 
@@ -53,11 +53,11 @@ file and do the build / test run from within the IDE.
 ## Database
 
 Cratis is built using MongoDB as a storage engine. It leverages some features that require MongoDB be in cluster mode.
-For convenience running locally for development there is an [image](https://hub.docker.com/r/aksioinsurtech/mongodb)
+For convenience running locally for development there is an [image](https://hub.docker.com/r/cratis/mongodb)
 specifically set up with the features needed.
 
 ```shell
-docker run -p 27017:27017 aksioinsurtech/mongodb
+docker run -p 27017:27017 cratis/mongodb
 ```
 
 ## Backend
@@ -87,5 +87,5 @@ then run `yarn start:dev`. You can then point your browser to [http://localhost:
 
 ## Static Code Analysis
 
-All projects are built using the same static code analysis rules found [here](https://github.com/aksio-insurtech/Defaults).
-You can find the rule-sets [here](https://github.com/aksio-insurtech/Defaults/tree/main/Source/Defaults).
+All projects are built using the same static code analysis rules found [here](https://github.com/cratis/Defaults).
+You can find the rule-sets [here](https://github.com/cratis/Defaults/tree/main/Source/Defaults).

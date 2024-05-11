@@ -1,9 +1,8 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications.Validation;
-using Aksio.Queries;
-using Aksio.Strings;
+using Cratis.Applications.Validation;
+using Cratis.Strings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -11,28 +10,21 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Aksio.Applications.Queries;
+namespace Cratis.Applications.Queries;
 
 /// <summary>
-/// Represents a <see cref="IAsyncActionFilter"/> for providing a proper <see cref="QueryResult"/> for post actions.
+/// Represents a <see cref="IAsyncActionFilter"/> for providing a proper <see cref="QueryResult{T}"/> for post actions.
 /// </summary>
-public class QueryActionFilter : IAsyncActionFilter
+/// <remarks>
+/// Initializes a new instance of the <see cref="QueryActionFilter"/> class.
+/// </remarks>
+/// <param name="options"><see cref="JsonOptions"/>.</param>
+/// <param name="logger"><see cref="ILogger"/> for logging.</param>
+public class QueryActionFilter(
+    IOptions<JsonOptions> options,
+    ILogger<QueryActionFilter> logger) : IAsyncActionFilter
 {
-    readonly JsonOptions _options;
-    readonly ILogger<QueryActionFilter> _logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="QueryActionFilter"/> class.
-    /// </summary>
-    /// <param name="options"><see cref="JsonOptions"/>.</param>
-    /// <param name="logger"><see cref="ILogger"/> for logging.</param>
-    public QueryActionFilter(
-        IOptions<JsonOptions> options,
-        ILogger<QueryActionFilter> logger)
-    {
-        _options = options.Value;
-        _logger = logger;
-    }
+    readonly JsonOptions _options = options.Value;
 
     /// <inheritdoc/>
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -74,26 +66,26 @@ public class QueryActionFilter : IAsyncActionFilter
 
             if (result?.Result is ObjectResult or && or.Value is IClientObservable clientObservable)
             {
-                _logger.ClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
+                logger.ClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
                 HandleWebSocketHeadersForMultipleProxies(context.HttpContext);
                 if (context.HttpContext.WebSockets.IsWebSocketRequest)
                 {
-                    _logger.RequestIsWebSocket();
+                    logger.RequestIsWebSocket();
                     await clientObservable.HandleConnection(context, _options);
                     result.Result = null;
                 }
                 else
                 {
-                    _logger.RequestIsHttp();
+                    logger.RequestIsHttp();
                 }
             }
             else
             {
-                _logger.NonClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
-                var queryResult = new QueryResult
+                logger.NonClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
+                var queryResult = new QueryResult<object>
                 {
                     ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase()))),
-                    ExceptionMessages = exceptionMessages.ToArray(),
+                    ExceptionMessages = [.. exceptionMessages],
                     ExceptionStackTrace = exceptionStackTrace ?? string.Empty,
                     Data = response!
                 };
@@ -164,7 +156,7 @@ public class QueryActionFilter : IAsyncActionFilter
     /// </remarks>
     void HandleWebSocketHeadersForMultipleProxies(HttpContext httpContext)
     {
-        _logger.DumpWebSocketHeaders(
+        logger.DumpWebSocketHeaders(
             httpContext.Request.Headers.SecWebSocketProtocol.ToString(),
             httpContext.Request.Headers.SecWebSocketExtensions.ToString(),
             httpContext.Request.Headers.SecWebSocketVersion.ToString(),

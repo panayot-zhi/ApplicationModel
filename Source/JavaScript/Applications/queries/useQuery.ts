@@ -1,8 +1,8 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { IQueryFor } from './IQueryFor';
-import { Constructor } from '@aksio/fundamentals';
+import { Constructor } from '@cratis/fundamentals';
 import { useState, useEffect } from 'react';
 import { QueryResultWithState } from './QueryResultWithState';
 import { QueryResult } from './QueryResult';

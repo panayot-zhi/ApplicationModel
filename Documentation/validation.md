@@ -59,7 +59,7 @@ public record OpenDebitAccount(
 A validator for this could then be as follows:
 
 ```csharp
-using Aksio.Applications.Commands;
+using Cratis.Applications.Commands;
 
 public class OpenDebitAccountValidator : CommandValidator<OpenDebitAccount>
 {
@@ -77,7 +77,7 @@ public class OpenDebitAccountValidator : CommandValidator<OpenDebitAccount>
 **Watch this space; MORE TO COME**
 
 > Note: Since queries are not represented using objects today, FluentValidation does not make sense.
-> However, we have an [issue](https://github.com/aksio-insurtech/Cratis/issues/670) for making it possible to represent input to a query as an object.
+> However, we have an [issue](https://github.com/cratis/Cratis/issues/670) for making it possible to represent input to a query as an object.
 > Until then you can use attribute based validation or make your query parameters a concept and use the concept validator approach.
 > You could also implement validators using the `DiscoverableValidator<>`.
 
@@ -100,7 +100,7 @@ public record AccountName(string Value) : ConceptAs<string>(Value);
 By inheriting the `ConceptValidator<>` type you can create rules for the concept:
 
 ```csharp
-using Aksio.Applications.Validation;
+using Cratis.Applications.Validation;
 
 public class AccountNameValidator : ConceptValidator<AccountName>
 {

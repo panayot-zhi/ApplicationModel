@@ -7,7 +7,7 @@ types; Commands & Queries.
 The proxy generator runs as part of your build process leveraging the C# Roslyn compilers code generator extensibility point
 to do this.
 
-All you need to do is add a reference to the [Aksio.Applications.ProxyGenerator](https://www.nuget.org/packages/Aksio.Applications.ProxyGenerator/) NuGet
+All you need to do is add a reference to the [Cratis.Applications.ProxyGenerator](https://www.nuget.org/packages/Cratis.Applications.ProxyGenerator/) NuGet
 package and it will at compile time do the magic.
 
 > Note: The projects that hold controllers should all have a reference to this package, since it is running as part of the
@@ -47,7 +47,7 @@ public record OpenDebitAccount(AccountId AccountId, AccountName Name, CustomerId
 This will generate:
 
 ```typescript
-import { Command } from '@aksio/applications/commands';
+import { Command } from '@cratis/applications/commands';
 
 export class OpenDebitAccount extends Command {
     readonly route: string = '/api/accounts/debit';
@@ -76,7 +76,7 @@ public class DebitAccount : Controller
 It will generate into:
 
 ```typescript
-import { Command } from '@aksio/applications/commands';
+import { Command } from '@cratis/applications/commands';
 import Handlebars from 'handlebars';
 
 const routeTemplate = Handlebars.compile('/api/accounts/debit/{{accountId}}/deposit/{{amount}}');
@@ -127,7 +127,7 @@ public record DebitAccount(AccountId Id, AccountName Name, CustomerId Owner, dou
 This all gets generated into the following TypeScript code:
 
 ```typescript
-import { QueryFor, QueryResultWithState, useQuery, PerformQuery } from '@aksio/applications/queries';
+import { QueryFor, QueryResultWithState, useQuery, PerformQuery } from '@cratis/applications/queries';
 import { DebitAccount } from './DebitAccount';
 import Handlebars from 'handlebars';
 
@@ -153,7 +153,7 @@ knowing what to render and one could for instance enable a spinner when the prop
 
 ## Getting started
 
-All you need is to reference the following **Aksio.ProxyGenerator** package and configure the property for the output
+All you need is to reference the following **Cratis.ProxyGenerator** package and configure the property for the output
 folder within your **.csproj** file. Lets say you have a structure as below:
 
 ```shell
@@ -170,7 +170,7 @@ files for the **Domain** and **Read** you would then add a dependency to the NuG
 
 ```xml
 <PropertyGroup>
-    <AksioProxyOutput>$(MSBuildThisFileDirectory)../Web</AksioProxyOutput>
+    <CratisProxyOutput>$(MSBuildThisFileDirectory)../Web</CratisProxyOutput>
 </PropertyGroup>
 ```
 
@@ -181,8 +181,8 @@ as the folder instead by adding the following property:
 
 ```xml
 <PropertyGroup>
-    <AksioUseRouteAsPath>true</AksioUseRouteAsPath>
+    <CratisUseRouteAsPath>true</CratisUseRouteAsPath>
 </PropertyGroup>
 ```
 
-The path from the route will be appended to the value of `<AksioProxyOutput/>`. It will strip away any prefix of `/api` in the route.
+The path from the route will be appended to the value of `<CratisProxyOutput/>`. It will strip away any prefix of `/api` in the route.

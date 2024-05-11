@@ -1,10 +1,10 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Validation;
+using Cratis.Validation;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Aksio.Applications.Validation.for_ModelErrorExtensions;
+namespace Cratis.Applications.Validation.for_ModelErrorExtensions;
 
 public class when_converting_nested_member_with_array : Specification
 {

@@ -1,7 +1,7 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Aksio.Applications.Identity.for_IdentityProviderEndpoint.when_handling;
+namespace Cratis.Applications.Identity.for_IdentityProviderEndpoint.when_handling;
 
 public class and_identity_is_valid_with_multiple_roles : given.a_valid_identity_request
 {

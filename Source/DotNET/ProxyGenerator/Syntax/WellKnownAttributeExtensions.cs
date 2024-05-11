@@ -1,9 +1,9 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.CodeAnalysis;
 
-namespace Aksio.Applications.ProxyGenerator.Syntax;
+namespace Cratis.Applications.ProxyGenerator.Syntax;
 
 /// <summary>
 /// Extension methods for working with well known attribute types.
@@ -15,8 +15,8 @@ public static class WellKnownAttributeExtensions
     const string FromRouteAttribute = "Microsoft.AspNetCore.Mvc.FromRouteAttribute";
     const string FromQueryAttribute = "Microsoft.AspNetCore.Mvc.FromQueryAttribute";
     const string RouteAttribute = "Microsoft.AspNetCore.Mvc.RouteAttribute";
-    const string DerivedTypeAttribute = "Aksio.Serialization.DerivedTypeAttribute";
-    const string AspNetResultAttribute = "Aksio.Applications.AspNetResultAttribute";
+    const string DerivedTypeAttribute = "Cratis.Serialization.DerivedTypeAttribute";
+    const string AspNetResultAttribute = "Cratis.Applications.AspNetResultAttribute";
 
     /// <summary>
     /// Get the route attribute - if any.

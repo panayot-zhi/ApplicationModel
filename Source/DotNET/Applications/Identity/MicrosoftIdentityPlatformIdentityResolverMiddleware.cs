@@ -1,26 +1,21 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace Aksio.Applications.Identity;
+namespace Cratis.Applications.Identity;
 
 /// <summary>
 /// Middleware for resolving identity details running in the context of Microsoft Identity Platform.
 /// </summary>
-public class MicrosoftIdentityPlatformIdentityResolverMiddleware
+/// <remarks>
+/// Initializes a new instance of the <see cref="MicrosoftIdentityPlatformIdentityResolverMiddleware"/> class.
+/// </remarks>
+/// <param name="next">The next middleware.</param>
+public class MicrosoftIdentityPlatformIdentityResolverMiddleware(RequestDelegate next)
 {
-    readonly RequestDelegate _next;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MicrosoftIdentityPlatformIdentityResolverMiddleware"/> class.
-    /// </summary>
-    /// <param name="next">The next middleware.</param>
-    public MicrosoftIdentityPlatformIdentityResolverMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
+    readonly RequestDelegate _next = next;
 
     /// <summary>
     /// Invoke the middleware.

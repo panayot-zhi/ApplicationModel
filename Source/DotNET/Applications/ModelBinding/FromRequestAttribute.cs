@@ -1,9 +1,9 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Aksio.Applications.ModelBinding;
+namespace Cratis.Applications.ModelBinding;
 
 /// <summary>
 /// Specifies that a parameter or property should be bound using the request body and allowing to be combined with route and query string using [FromRoute], [FromQuery] inside the object.

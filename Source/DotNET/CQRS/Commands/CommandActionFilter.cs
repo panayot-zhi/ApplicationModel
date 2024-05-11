@@ -1,31 +1,18 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Net;
-using Aksio.Applications.Validation;
-using Aksio.Commands;
-using Aksio.Execution;
+using Cratis.Applications.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Aksio.Applications.Commands;
+namespace Cratis.Applications.Commands;
 
 /// <summary>
-/// Represents a <see cref="IAsyncActionFilter"/> for providing a proper <see cref="CommandResult"/> for post actions.
+/// Represents a <see cref="IAsyncActionFilter"/> for providing a proper <see cref="CommandResult{T}"/> for post actions.
 /// </summary>
 public class CommandActionFilter : IAsyncActionFilter
 {
-    readonly IExecutionContextManager _executionContextManager;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CommandActionFilter"/> class.
-    /// </summary>
-    /// <param name="executionContextManager"><see cref="IExecutionContextManager"/> for getting execution context.</param>
-    public CommandActionFilter(IExecutionContextManager executionContextManager)
-    {
-        _executionContextManager = executionContextManager;
-    }
-
     /// <inheritdoc/>
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -62,11 +49,12 @@ public class CommandActionFilter : IAsyncActionFilter
                 }
             }
 
-            var commandResult = new CommandResult
+            var commandResult = new CommandResult<object>
             {
-                CorrelationId = _executionContextManager.Current.CorrelationId,
+                // TODO: Set correlation ID to the actual correlation ID
+                // CorrelationId = _executionContextManager.Current.CorrelationId,
                 ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(e => e.ToValidationResult(_.Key))),
-                ExceptionMessages = exceptionMessages.ToArray(),
+                ExceptionMessages = [.. exceptionMessages],
                 ExceptionStackTrace = exceptionStackTrace ?? string.Empty,
                 Response = response
             };

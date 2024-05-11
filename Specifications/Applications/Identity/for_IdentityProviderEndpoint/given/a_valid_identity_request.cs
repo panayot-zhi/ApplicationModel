@@ -1,9 +1,9 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Text.Json;
 
-namespace Aksio.Applications.Identity.for_IdentityProviderEndpoint.given;
+namespace Cratis.Applications.Identity.for_IdentityProviderEndpoint.given;
 
 public abstract class a_valid_identity_request : an_identity_provider_endpoint
 {

@@ -1,38 +1,27 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
 using System.Text.Json;
-using Aksio.Json;
+using Cratis.Json;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Aksio.Applications.ModelBinding;
+namespace Cratis.Applications.ModelBinding;
 
 /// <summary>
 /// Represents a <see cref="IModelBinder"/> for <see cref="FromRequestBindingSource"/>.
 /// </summary>
-public class FromRequestModelBinder : IModelBinder
+/// <remarks>
+/// Initializes a new instance of the <see cref="FromRequestModelBinder"/> class.
+/// </remarks>
+/// <param name="bodyModelBinder">The <see cref="IModelBinder"/> for resolving values from the HTTP body.</param>
+/// <param name="complexModelBinder">The <see cref="IModelBinder"/> for resolving values from other parts of the HTTP request.</param>
+public class FromRequestModelBinder(IModelBinder bodyModelBinder, IModelBinder complexModelBinder) : IModelBinder
 {
-    static class DefaultValueChecker<T>
-    {
-        public static bool IsDefault(T value) => EqualityComparer<T>.Default.Equals(value, default);
-    }
+    static readonly Dictionary<Type, MethodInfo> _isDefaultMethodsByType = [];
 
-    static readonly Dictionary<Type, MethodInfo> _isDefaultMethodsByType = new();
-
-    readonly IModelBinder _bodyModelBinder;
-    readonly IModelBinder _complexModelBinder;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FromRequestModelBinder"/> class.
-    /// </summary>
-    /// <param name="bodyModelBinder">The <see cref="IModelBinder"/> for resolving values from the HTTP body.</param>
-    /// <param name="complexModelBinder">The <see cref="IModelBinder"/> for resolving values from other parts of the HTTP request.</param>
-    public FromRequestModelBinder(IModelBinder bodyModelBinder, IModelBinder complexModelBinder)
-    {
-        _bodyModelBinder = bodyModelBinder;
-        _complexModelBinder = complexModelBinder;
-    }
+    readonly IModelBinder _bodyModelBinder = bodyModelBinder;
+    readonly IModelBinder _complexModelBinder = complexModelBinder;
 
     /// <inheritdoc/>
     public async Task BindModelAsync(ModelBindingContext bindingContext)
@@ -86,6 +75,11 @@ public class FromRequestModelBinder : IModelBinder
             _isDefaultMethodsByType[type] = isDefaultMethod;
         }
 
-        return (bool)isDefaultMethod.Invoke(null, new[] { value })!;
+        return (bool)isDefaultMethod.Invoke(null, [value])!;
+    }
+
+    static class DefaultValueChecker<T>
+    {
+        public static bool IsDefault(T value) => EqualityComparer<T>.Default.Equals(value, default);
     }
 }

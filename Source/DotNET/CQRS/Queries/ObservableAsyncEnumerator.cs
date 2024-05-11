@@ -1,9 +1,9 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Concurrent;
 
-namespace Aksio.Applications.Queries;
+namespace Cratis.Applications.Queries;
 
 /// <summary>
 /// Represents an <see cref="IAsyncEnumerator{T}"/> for a <see cref="ClientObservable{T}"/>.
@@ -15,9 +15,6 @@ public class ObservableAsyncEnumerator<T> : IAsyncEnumerator<T>
     readonly CancellationToken _cancellationToken;
     readonly ConcurrentQueue<T> _items = new();
     TaskCompletionSource _taskCompletionSource = new();
-
-    /// <inheritdoc/>
-    public T Current { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ObservableAsyncEnumerator{T}"/> class.
@@ -37,6 +34,9 @@ public class ObservableAsyncEnumerator<T> : IAsyncEnumerator<T>
         });
         _cancellationToken = cancellationToken;
     }
+
+    /// <inheritdoc/>
+    public T Current { get; private set; }
 
     /// <inheritdoc/>
     public ValueTask DisposeAsync()

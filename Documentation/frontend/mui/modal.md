@@ -1,6 +1,6 @@
 # Modal Dialogs
 
-> Part of the [@aksio/cratis-mui](https://www.npmjs.com/package/@aksio/cratis-mui) package.
+> Part of the [@cratis/cratis-mui](https://www.npmjs.com/package/@cratis/cratis-mui) package.
 
 The goal of the modal dialog encapsulation is:
 
@@ -14,7 +14,7 @@ The goal of the modal dialog encapsulation is:
 For the modals to work, it needs a provider typically added at the top level of your application.
 
 ```typescript
-import { ModalProvider } from '@aksio/cratis-mui';
+import { ModalProvider } from '@cratis/cratis-mui';
 
 ReactDOM.render(
     <ModalProvider>
@@ -53,7 +53,7 @@ For simple confirmation dialogs where one wants to ask a question and let the us
 by clicking ok/cancel or yes/no is a very common scenario in applications.
 
 ```typescript
-import { useModal, ModalButtons, ModalResult } from '@aksio/cratis-mui';
+import { useModal, ModalButtons, ModalResult } from '@cratis/cratis-mui';
 
 export const Transfer = () => {
     const [amount, setAmount] = useState(0);
@@ -89,7 +89,7 @@ Instead of passing a string to the `useModal` hook for the content, you can pass
 Lets say you have a modal for editing a bank accounts details:
 
 ```typescript
-import { IModalProps } from '@aksio/cratis-mui';
+import { IModalProps } from '@cratis/cratis-mui';
 
 export interface EditAccountInput {
     name: string;
@@ -126,7 +126,7 @@ export const EditAccountDetails =  (props: IModalProps<EditAccountInput, EditAcc
 > return the state from the dialog.
 
 ```typescript
-import { useModal, ModalButtons, ModalResult } from '@aksio/cratis-mui';
+import { useModal, ModalButtons, ModalResult } from '@cratis/cratis-mui';
 import { EditAccountDetails } from './EditAccountDetails';
 
 type BankAccount = {
@@ -175,7 +175,7 @@ export const BankAccounts = () => {
 If you don't need any input, the component can just pass `{}` to the first generic argument:
 
 ```typescript
-import { IModalProps } from '@aksio/cratis-mui';
+import { IModalProps } from '@cratis/cratis-mui';
 
 export interface CreateAccountOutput {
     name: string;

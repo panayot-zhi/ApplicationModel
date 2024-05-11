@@ -1,12 +1,11 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications;
-using Aksio.Conversion;
-using Aksio.DependencyInversion;
-using Aksio.Json;
-using Aksio.Serialization;
-using Aksio.Types;
+using Cratis.Applications;
+using Cratis.Conversion;
+using Cratis.Json;
+using Cratis.Serialization;
+using Cratis.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -20,19 +19,19 @@ namespace Microsoft.Extensions.Hosting;
 public static class HostBuilderExtensions
 {
     /// <summary>
-    /// Use Aksio defaults with the <see cref="IHostBuilder"/>.
+    /// Use Cratis defaults with the <see cref="IHostBuilder"/>.
     /// </summary>
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
     /// <param name="mvcOptionsDelegate">Optional delegate if one wants to configure MVC specifics, since this configured MVC automatically.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseAksio(
+    public static IHostBuilder UseCratis(
         this IHostBuilder builder,
         Action<MvcOptions>? mvcOptionsDelegate = default)
     {
 #pragma warning disable CA2000 // Dispose objects before losing scope => Disposed by the host
         var loggerFactory = builder.UseDefaultLogging();
 #pragma warning restore CA2000
-        var logger = loggerFactory.CreateLogger("Aksio setup");
+        var logger = loggerFactory.CreateLogger("Cratis setup");
         logger.SettingUpDefaults();
 
         builder.ConfigureAppConfiguration((context, config) => config.AddJsonFile(Path.Combine("./config", "appsettings.json"), optional: true, reloadOnChange: true));
@@ -51,8 +50,6 @@ public static class HostBuilderExtensions
                 .AddSingleton(Internals.Types)
                 .AddSingleton<IDerivedTypes>(derivedTypes)
                 .AddIdentityProvider(Internals.Types)
-                .AddSingleton<ProviderFor<IServiceProvider>>(() => Internals.ServiceProvider!)
-                .AddConfigurationObjects(Internals.Types, searchSubPaths: new[] { "config" }, logger: logger)
                 .AddControllersFromProjectReferencedAssembles(Internals.Types, derivedTypes)
                 .AddSwaggerGen(options =>
                 {
@@ -83,8 +80,7 @@ public static class HostBuilderExtensions
                 {
                     _.AddMvc();
                 }
-            })
-            .UseDefaultDependencyInversion(Internals.Types);
+            });
 
         return builder;
     }

@@ -1,11 +1,11 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications.ProxyGenerator.Syntax;
+using Cratis.Applications.ProxyGenerator.Syntax;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Aksio.Applications.ProxyGenerator;
+namespace Cratis.Applications.ProxyGenerator;
 
 /// <summary>
 /// Represents a <see cref="ISyntaxReceiver"/> that understands ASP.NET controllers and captures the types we want to generate proxies for.

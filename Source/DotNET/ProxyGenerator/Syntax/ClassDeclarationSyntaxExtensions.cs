@@ -1,4 +1,4 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics.Contracts;
@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Aksio.Applications.ProxyGenerator.Syntax;
+namespace Cratis.Applications.ProxyGenerator.Syntax;
 
 /// <summary>
 /// Extension methods for working with <see cref="ClassDeclarationSyntax"/>.

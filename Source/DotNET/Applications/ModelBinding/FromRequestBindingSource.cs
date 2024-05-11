@@ -1,9 +1,9 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Aksio.Applications.ModelBinding;
+namespace Cratis.Applications.ModelBinding;
 
 /// <summary>
 /// Represents a binding source for a binding type that allows an object to be bound in a combination of values on the HTTP body, route and querystring.

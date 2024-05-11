@@ -1,18 +1,18 @@
-# Aksio Application Model
+# Cratis Application Model
 
 ## Packages / Deployables
 
-[![Nuget](https://img.shields.io/nuget/v/Aksio.Applications?logo=nuget)](http://nuget.org/packages/aksio.applications)
-[![NPM](https://img.shields.io/npm/v/@aksio/applications?label=@aksio/applications&logo=npm)](https://www.npmjs.com/package/@aksio/applications)
+[![Nuget](https://img.shields.io/nuget/v/Cratis.Applications?logo=nuget)](http://nuget.org/packages/cratis.applications)
+[![NPM](https://img.shields.io/npm/v/@cratis/applications?label=@cratis/applications&logo=npm)](https://www.npmjs.com/package/@cratis/applications)
 
 ## Builds
 
-[![.NET Build](https://github.com/aksio-insurtech/ApplicationModel/actions/workflows/dotnet-build.yml/badge.svg)](https://github.com/aksio-insurtech/ApplicationModel/actions/workflows/dotnet-build.yml)
-[![JavaScript Build](https://github.com/aksio-insurtech/ApplicationModel/actions/workflows/javascript-build.yml/badge.svg)](https://github.com/aksio-insurtech/ApplicationModel/actions/workflows/javascript-build.yml)
+[![.NET Build](https://github.com/cratis/ApplicationModel/actions/workflows/dotnet-build.yml/badge.svg)](https://github.com/cratis/ApplicationModel/actions/workflows/dotnet-build.yml)
+[![JavaScript Build](https://github.com/cratis/ApplicationModel/actions/workflows/javascript-build.yml/badge.svg)](https://github.com/cratis/ApplicationModel/actions/workflows/javascript-build.yml)
 
 ## Description
 
-The Aksio Application model represents an opinionated approach to building consistent applications based on the concepts behind CQRS.
+The Cratis Application model represents an opinionated approach to building consistent applications based on the concepts behind CQRS.
 It offers extensions for different frameworks and is built on top of ASP.NET Core. One of the traits the application model has is the
 bridging between the backend and the frontend. The application model provides a tool, called **ProxyGenerator** that hooks into the
 C# Roslyn compiler and generates TypeScript code for recognized artifacts matching the criteria of what is considered a **commmand** or

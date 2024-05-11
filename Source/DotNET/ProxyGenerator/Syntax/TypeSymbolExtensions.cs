@@ -1,10 +1,10 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications.ProxyGenerator.Templates;
+using Cratis.Applications.ProxyGenerator.Templates;
 using Microsoft.CodeAnalysis;
 
-namespace Aksio.Applications.ProxyGenerator.Syntax;
+namespace Cratis.Applications.ProxyGenerator.Syntax;
 
 /// <summary>
 /// Extension methods for working with <see cref="ITypeSymbol"/>.
@@ -131,7 +131,7 @@ public static class TypeSymbolExtensions
             }
 
             if (baseType.IsGenericType &&
-                baseType.ContainingNamespace.ToDisplayString() == "Aksio.Concepts" &&
+                baseType.ContainingNamespace.ToDisplayString() == "Cratis.Concepts" &&
                 baseType.Name == "ConceptAs")
             {
                 return baseType!.TypeArguments[0];
@@ -186,7 +186,7 @@ public static class TypeSymbolExtensions
     /// <returns>True if it is an observable client, false if not.</returns>
     public static bool IsObservableClient(this ITypeSymbol symbol)
     {
-        return symbol.ToDisplayString().StartsWith("Aksio.Applications.Queries.ClientObservable<");
+        return symbol.ToDisplayString().StartsWith("Cratis.Applications.Queries.ClientObservable<");
     }
 
     /// <summary>

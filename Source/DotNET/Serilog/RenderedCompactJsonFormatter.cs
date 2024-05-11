@@ -1,11 +1,11 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Serilog.Events;
 using Serilog.Formatting;
 using Serilog.Formatting.Json;
 
-namespace Aksio.Applications.Serilog;
+namespace Cratis.Applications.Serilog;
 
 /// <summary>
 /// An <see cref="ITextFormatter"/> that writes events in a compact JSON format, for consumption in environments
@@ -14,19 +14,14 @@ namespace Aksio.Applications.Serilog;
 /// <remarks>
 /// Based on and adapted from https://github.com/serilog/serilog-formatting-compact.
 /// </remarks>
-public class RenderedCompactJsonFormatter : ITextFormatter
+/// <remarks>
+/// Initializes a new instance of the <see cref="RenderedCompactJsonFormatter"/> class.
+/// <see cref="LogEventPropertyValue"/>s on the event.
+/// </remarks>
+/// <param name="valueFormatter">A value formatter, or null.</param>
+public class RenderedCompactJsonFormatter(JsonValueFormatter? valueFormatter = null) : ITextFormatter
 {
-    readonly JsonValueFormatter _valueFormatter;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RenderedCompactJsonFormatter"/> class.
-    /// <see cref="LogEventPropertyValue"/>s on the event.
-    /// </summary>
-    /// <param name="valueFormatter">A value formatter, or null.</param>
-    public RenderedCompactJsonFormatter(JsonValueFormatter? valueFormatter = null)
-    {
-        _valueFormatter = valueFormatter ?? new JsonValueFormatter(typeTagName: "$type");
-    }
+    readonly JsonValueFormatter _valueFormatter = valueFormatter ?? new JsonValueFormatter(typeTagName: "$type");
 
     /// <summary>
     /// Format the log event into the output.
@@ -37,9 +32,9 @@ public class RenderedCompactJsonFormatter : ITextFormatter
     /// <exception cref="ArgumentNullException">If any out the parameters are null.</exception>
     public static void FormatEvent(LogEvent logEvent, TextWriter output, JsonValueFormatter valueFormatter)
     {
-        ArgumentNullException.ThrowIfNull(logEvent, nameof(logEvent));
-        ArgumentNullException.ThrowIfNull(output, nameof(output));
-        ArgumentNullException.ThrowIfNull(valueFormatter, nameof(valueFormatter));
+        ArgumentNullException.ThrowIfNull(logEvent);
+        ArgumentNullException.ThrowIfNull(output);
+        ArgumentNullException.ThrowIfNull(valueFormatter);
 
         output.Write("{\"Time\":\"");
         output.Write(logEvent.Timestamp.UtcDateTime.ToString("O"));

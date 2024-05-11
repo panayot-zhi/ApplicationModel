@@ -1,4 +1,4 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { IObservableQueryFor, OnNextResult } from './IObservableQueryFor';
@@ -8,8 +8,8 @@ import { ObservableQuerySubscription } from './ObservableQuerySubscription';
 import { ValidateRequestArguments } from './ValidateRequestArguments';
 import { IObservableQueryConnection } from './IObservableQueryConnection';
 import { NullObservableQueryConnection } from './NullObservableQueryConnection';
-import { Constructor } from '@aksio/fundamentals';
-import { JsonSerializer } from '@aksio/fundamentals';
+import { Constructor } from '@cratis/fundamentals';
+import { JsonSerializer } from '@cratis/fundamentals';
 import { QueryResult } from './QueryResult';
 
 /**

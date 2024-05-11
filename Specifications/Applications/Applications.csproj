@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AssemblyName>Aksio.Applications.Specs</AssemblyName>
-        <RootNamespace>Aksio.Applications</RootNamespace>
+        <AssemblyName>Cratis.Applications.Specs</AssemblyName>
+        <RootNamespace>Cratis.Applications</RootNamespace>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 

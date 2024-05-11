@@ -1,9 +1,9 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Aksio.Applications.ModelBinding.for_FromRequestModelBinder;
+namespace Cratis.Applications.ModelBinding.for_FromRequestModelBinder;
 
 public record TheModel(int intValue, string stringValue, int secondIntValue, string secondStringValue);
 

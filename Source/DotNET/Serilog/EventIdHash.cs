@@ -1,7 +1,7 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Aksio.Applications.Serilog;
+namespace Cratis.Applications.Serilog;
 
 /// <summary>
 /// Hash functions for message templates. See <see cref="Compute"/>.
@@ -20,7 +20,7 @@ public static class EventIdHash
     /// <returns>A 32-bit hash of the template.</returns>
     public static uint Compute(string messageTemplate)
     {
-        ArgumentNullException.ThrowIfNull(messageTemplate, nameof(messageTemplate));
+        ArgumentNullException.ThrowIfNull(messageTemplate);
 
         // Jenkins one-at-a-time https://en.wikipedia.org/wiki/Jenkins_hash_function
         unchecked
@@ -32,6 +32,7 @@ public static class EventIdHash
                 hash += hash << 10;
                 hash ^= hash >> 6;
             }
+
             hash += hash << 3;
             hash ^= hash >> 11;
             hash += hash << 15;

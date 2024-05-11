@@ -1,11 +1,11 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
-using Aksio.Concepts;
+using Cratis.Concepts;
 using FluentValidation;
 
-namespace Aksio.Applications.Validation;
+namespace Cratis.Applications.Validation;
 
 /// <summary>
 /// Represents a base validator that we use for discovery.

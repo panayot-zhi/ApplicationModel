@@ -1,13 +1,13 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Reflection;
-using Aksio.Types;
+using Cratis.Reflection;
+using Cratis.Types;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Aksio.Applications.Validation;
+namespace Cratis.Applications.Validation;
 
 /// <summary>
 /// Represents a <see cref="IModelValidatorProvider"/> for <see cref="DiscoverableValidator{T}"/>.

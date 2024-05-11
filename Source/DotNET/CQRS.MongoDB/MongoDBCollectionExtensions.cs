@@ -1,13 +1,13 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
 using System.Reflection;
-using Aksio.Concepts;
+using Cratis.Concepts;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Aksio.Applications.Queries.MongoDB;
+namespace Cratis.Applications.Queries.MongoDB;
 
 /// <summary>
 /// Extension methods for <see cref="IMongoCollection{T}"/>.
@@ -213,7 +213,7 @@ public static class MongoDBCollectionExtensions
             }
         });
 
-        observable.ClientDisconnected = () => cursor.Dispose();
+        observable.ClientDisconnected = cursor.Dispose;
 
         return observable;
     }

@@ -1,14 +1,12 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications.Validation;
+using Cratis.Applications.Validation;
 
-namespace Aksio.Applications.Commands;
+namespace Cratis.Applications.Commands;
 
 /// <summary>
 /// Represents the base type for a validator of commands.
 /// </summary>
 /// <typeparam name="T">Type of command.</typeparam>
-public class CommandValidator<T> : DiscoverableValidator<T>
-{
-}
+public class CommandValidator<T> : DiscoverableValidator<T>;

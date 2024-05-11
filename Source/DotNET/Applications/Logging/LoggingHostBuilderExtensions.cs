@@ -1,9 +1,7 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications.Serilog;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Exceptions;
@@ -24,8 +22,6 @@ public static class LoggingHostBuilderExtensions
     {
         Log.Logger = new LoggerConfiguration()
             .Enrich.WithExceptionDetails()
-            .Enrich.WithExecutionContext()
-            .ReadFrom.Configuration(ConfigurationHostBuilderExtensions.Configuration)
             .CreateLogger();
 
         builder.UseSerilog();
@@ -43,8 +39,6 @@ public static class LoggingHostBuilderExtensions
     public static ILoggerFactory UseDefaultLogging(this WebApplicationBuilder builder)
     {
         Log.Logger = new LoggerConfiguration().Enrich.WithExceptionDetails()
-            .Enrich.WithExecutionContext()
-            .ReadFrom.Configuration(ConfigurationHostBuilderExtensions.Configuration)
             .CreateLogger();
 
         builder.Logging.ClearProviders();

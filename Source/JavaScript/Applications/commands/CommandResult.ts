@@ -1,10 +1,10 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Guid } from '@aksio/fundamentals';
+import { Guid } from '@cratis/fundamentals';
 import { ICommandResult } from './ICommandResult';
 import { ValidationResult } from '../validation/ValidationResult';
-import { Constructor, JsonSerializer } from '@aksio/fundamentals';
+import { Constructor, JsonSerializer } from '@cratis/fundamentals';
 
 /**
  * Represents the result from executing a {@link ICommand}.

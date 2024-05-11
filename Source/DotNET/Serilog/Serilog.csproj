@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AssemblyName>Aksio.Applications.Serilog</AssemblyName>
-        <RootNamespace>Aksio.Applications.Serilog</RootNamespace>
+        <AssemblyName>Cratis.Applications.Serilog</AssemblyName>
+        <RootNamespace>Cratis.Applications.Serilog</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-		<PackageReference Include="Aksio.Fundamentals" />
+		<PackageReference Include="Cratis.Fundamentals" />
 		<PackageReference Include="Serilog" />
     </ItemGroup>
 </Project>

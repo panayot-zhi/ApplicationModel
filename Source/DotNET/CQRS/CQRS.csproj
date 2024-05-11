@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AssemblyName>Aksio.Applications.CQRS</AssemblyName>
-        <RootNamespace>Aksio.Applications</RootNamespace>
+        <AssemblyName>Cratis.Applications.CQRS</AssemblyName>
+        <RootNamespace>Cratis.Applications</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -9,7 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aksio.Fundamentals" />
+        <PackageReference Include="Cratis.Fundamentals" />
         <PackageReference Include="System.Reactive" />
         <PackageReference Include="FluentValidation" />
     </ItemGroup>

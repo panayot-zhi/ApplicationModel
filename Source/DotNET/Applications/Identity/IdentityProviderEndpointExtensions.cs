@@ -1,8 +1,8 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Aksio.Applications.Identity;
-using Aksio.Types;
+using Cratis.Applications.Identity;
+using Cratis.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,7 +50,7 @@ public static class IdentityProviderEndpointExtensions
         if (serviceProviderIsService!.IsService(typeof(IProvideIdentityDetails)))
         {
             endpoints.MapGet(
-                ".aksio/me",
+                ".cratis/me",
                 (HttpRequest request, HttpResponse response) =>
                     app.ApplicationServices.GetService<IdentityProviderEndpoint>()!.Handler(request, response));
         }

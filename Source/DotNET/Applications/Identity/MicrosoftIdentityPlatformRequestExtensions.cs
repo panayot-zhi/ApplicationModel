@@ -1,4 +1,4 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Immutable;
@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 
-namespace Aksio.Applications.Identity;
+namespace Cratis.Applications.Identity;
 
 /// <summary>
 /// Extensions for <see cref="HttpRequest"/> for Microsoft Identity Platform.

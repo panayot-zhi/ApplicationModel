@@ -1,4 +1,4 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Text.Encodings.Web;
@@ -6,10 +6,10 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 
-namespace Aksio.Applications.Identity;
+namespace Cratis.Applications.Identity;
 
 /// <summary>
-/// Represents the actual endpoint called for identity details (/.aksio/me).
+/// Represents the actual endpoint called for identity details (/.cratis/me).
 /// </summary>
 public class IdentityProviderEndpoint
 {
@@ -83,7 +83,7 @@ public class IdentityProviderEndpoint
             return true;
         }
 
-        claims = new JsonArray();
+        claims = [];
         return false;
     }
 }

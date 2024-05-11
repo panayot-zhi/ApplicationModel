@@ -1,4 +1,4 @@
-// Copyright (c) Aksio Insurtech. All rights reserved.
+// Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import React from 'react';
@@ -13,7 +13,7 @@ const defaultIdentityContext: IIdentityContext = {
 
 export const IdentityProviderContext = React.createContext<IIdentityContext>(defaultIdentityContext);
 
-const cookieName = '.aksio-identity';
+const cookieName = '.cratis-identity';
 
 export interface IdentityProviderProps {
     children?: JSX.Element | JSX.Element[]
@@ -38,7 +38,7 @@ export const IdentityProvider = (props: IdentityProviderProps) => {
     const [context, setContext] = useState<IIdentityContext>(defaultIdentityContext);
     const refresh = () => {
         clearCookie(cookieName);
-        fetch('/.aksio/me').then(async response => {
+        fetch('/.cratis/me').then(async response => {
             const json = await response.json();
             setContext({
                 details: json,
