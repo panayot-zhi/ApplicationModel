@@ -8,11 +8,11 @@ public class and_identity_is_valid_with_multiple_roles : given.a_valid_identity_
     protected override ClientPrincipal CreateClientPrincipal() => new()
     {
         auth_type = "aad",
-        claims = new[]
-        {
+        claims =
+        [
             new ClientPrincipalClaim { typ = "roles", val = "role1" },
             new ClientPrincipalClaim { typ = "roles", val = "role2" }
-        },
+        ],
         name_typ = "name",
         role_typ = "roles"
     };

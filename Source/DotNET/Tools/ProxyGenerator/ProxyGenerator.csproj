@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <AssemblyName>Cratis.ProxyGenerator</AssemblyName>
+        <RootNamespace>Cratis.ProxyGenerator</RootNamespace>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Templates/**/*.hbs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Cratis.Fundamentals" />
+        <PackageReference Include="handlebars.net" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../../CQRS/CQRS.csproj" />
+    </ItemGroup>
+</Project>

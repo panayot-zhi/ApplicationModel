@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Cratis.Applications.ModelBinding.for_FromRequestModelBinder;
 
-public record TheModel(int intValue, string stringValue, int secondIntValue, string secondStringValue);
-
 public class when_model_is_provided_partially_by_both_binders : Specification
 {
     FromRequestModelBinder binder;

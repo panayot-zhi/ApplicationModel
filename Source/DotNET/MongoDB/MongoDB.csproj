@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <AssemblyName>Cratis.MongoDB</AssemblyName>
+        <RootNamespace>Cratis.MongoDB</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cratis.Fundamentals" />
+        <PackageReference Include="polly.core" />
+        <PackageReference Include="castle.core" />
+        <PackageReference Include="MongoDB.Driver" />
+        <PackageReference Include="Microsoft.Extensions.Logging" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+    </ItemGroup>
+</Project>

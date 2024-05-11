@@ -34,11 +34,11 @@ public abstract class a_valid_identity_request : an_identity_provider_endpoint
         return new()
         {
             auth_type = "aad",
-            claims = new[]
-            {
+            claims =
+            [
                 new ClientPrincipalClaim { typ = "roles", val = "role1" },
                 new ClientPrincipalClaim { typ = "roles", val = "role2" }
-            },
+            ],
             name_typ = "name",
             role_typ = "roles"
         };

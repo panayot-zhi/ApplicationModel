@@ -16,7 +16,7 @@ public class and_there_are_multiple_providers : Specification
     {
         services = new();
         types = new();
-        types.Setup(_ => _.FindMultiple<IProvideIdentityDetails>()).Returns(new[] { typeof(object), typeof(object) });
+        types.Setup(_ => _.FindMultiple<IProvideIdentityDetails>()).Returns([typeof(object), typeof(object)]);
     }
 
     void Because() => exception = Catch.Exception(() => services.Object.AddIdentityProvider(types.Object));

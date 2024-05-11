@@ -26,7 +26,7 @@ public class an_identity_provider_endpoint : Specification
 
         request = new();
         request.SetupGet(_ => _.HttpContext).Returns(http_context.Object);
-        headers = new();
+        headers = [];
         request.SetupGet(_ => _.Headers).Returns(headers);
 
         response = new();

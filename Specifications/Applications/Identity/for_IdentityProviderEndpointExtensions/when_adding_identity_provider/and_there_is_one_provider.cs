@@ -21,7 +21,7 @@ public class and_there_is_one_provider : Specification
     {
         services = new();
         types = new();
-        types.Setup(_ => _.FindMultiple<IProvideIdentityDetails>()).Returns(new[] { typeof(MyIdentityProvider) });
+        types.Setup(_ => _.FindMultiple<IProvideIdentityDetails>()).Returns([typeof(MyIdentityProvider)]);
         services.Setup(_ => _.Add(IsAny<ServiceDescriptor>())).Callback((ServiceDescriptor _) => _serviceDescriptor = _);
     }
 
