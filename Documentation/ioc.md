@@ -25,49 +25,6 @@ the behavior of the system. Every unit is then in isolation and you don't need t
 infrastructure in order for you to set up reliable running contexts for your tests or specs. With the interface / contract,
 you can simply provide a [test double](https://duckduckgo.com/?q=mock+fake+stub&t=osx).
 
-### Autofac
-
-For the backend C# code, [Autofac](https://autofac.org) has been setup and ready to be leveraged. Autofac provides
-more capabilities than the built-in lightweight IoC container of ASP.NET Core.
-
-### Autofac Module
-
-One of the things you can do with Autofac is write [modules](https://autofac.readthedocs.io/en/latest/configuration/modules.html)
-that take on the responsibility of registering bindings. Any implementation of such a module is automatically discovered
-and hooked up on startup. The benefit of this is that you can keep your binding registrations close to where they belong, making
-your codebase more cohesive.
-
-All you need to do is drop in a `Module` implementation anywhere and override the `Load` method, like below:
-
-```csharp
-using Autofac;
-
-public class CarTransportModule : Module
-{
-  public bool ObeySpeedLimit { get; set; }
-
-  protected override void Load(ContainerBuilder builder)
-  {
-    builder.RegisterType<Car>().As<IVehicle>();
-
-    if (ObeySpeedLimit)
-    {
-      builder.RegisterType<SaneDriver>().As<IDriver>();
-    }
-    else
-    {
-      builder.RegisterType<CrazyDriver>().As<IDriver>();
-    }
-  }
-}
-```
-
-## Lifetime
-
-One of the benefits of using an IoC container is that we can control the lifetime of object instances from a higher level.
-This could be done using configuration or through automatic conventions. Lifetime can be specified during binding as
-detailed [here](https://autofac.readthedocs.io/en/latest/lifetime/index.html).
-
 ### Singleton
 
 Most of the time you'll find that for lifetimes such as singleton (one instance per process), you have this knowledge
@@ -101,9 +58,7 @@ public class MySystem : IMySystem
 ## Conventions
 
 If something ends up being a repeatable list of things to remember when doing something, its a good chance it could
-be automated by a computer. Conventions are about those recognized patterns and hooking them up. You can easily go
-and create your own [Autofac module](https://autofac.readthedocs.io/en/latest/configuration/modules.html) providing
-an automatic registration representing your conventions in your project.
+be automated by a computer. Conventions are about those recognized patterns and hooking them up. 
 
 Out of the box there is one convention setup; a default convention of matching an interface with an implementation
 if the name of the interface is the same as the implementation but prefixed with **I** (IFoo -> Foo).
@@ -117,6 +72,3 @@ public class MySystem : IMySystem
 {
 }
 ```
-
-This is a very common pattern and is automatically registered with the IoC. The convention honors the lifetime
-attributes.

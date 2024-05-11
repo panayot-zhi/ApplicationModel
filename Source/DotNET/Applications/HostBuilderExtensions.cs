@@ -67,10 +67,7 @@ public static class HostBuilderExtensions
                         options.IncludeXmlComments(file);
                     }
                 })
-                .AddEndpointsApiExplorer()
-
-                // Todo: Temporarily adding this, due to a bug in .NET 6 (https://www.ingebrigtsen.info/2021/09/29/autofac-asp-net-core-6-hot-reload-debug-crash/) :
-                .AddRazorPages();
+                .AddEndpointsApiExplorer();
 
                 if (mvcOptionsDelegate is not null)
                 {
