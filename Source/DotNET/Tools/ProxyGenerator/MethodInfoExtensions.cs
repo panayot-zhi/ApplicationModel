@@ -2,11 +2,10 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using Cratis.Applications;
-using Cratis.ProxyGenerator.Templates;
+using Cratis.Applications.ProxyGenerator.Templates;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cratis.ProxyGenerator;
+namespace Cratis.Applications.ProxyGenerator;
 
 /// <summary>
 /// Extension methods for <see cref="MethodInfo"/>.
@@ -51,18 +50,24 @@ public static class MethodInfoExtensions
     /// </summary>
     /// <param name="method">Method to check.</param>
     /// <returns>True if it is a query method, false otherwise.</returns>
-    public static bool IsQueryMethod(this MethodInfo method) =>
-         method.GetCustomAttribute<HttpGetAttribute>() != null &&
-         method.GetCustomAttribute<AspNetResultAttribute>() == null;
+    public static bool IsQueryMethod(this MethodInfo method)
+    {
+        var attributes = method.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
+        return attributes.Any(_ => _ == nameof(HttpGetAttribute)) &&
+            !attributes.Any(_ => _ == nameof(AspNetResultAttribute));
+    }
 
     /// <summary>
     /// Check if a method is a query method.
     /// </summary>
     /// <param name="method">Method to check.</param>
     /// <returns>True if it is a query method, false otherwise.</returns>
-    public static bool IsCommandMethod(this MethodInfo method) =>
-         method.GetCustomAttribute<HttpPostAttribute>() != null &&
-         method.GetCustomAttribute<AspNetResultAttribute>() == null;
+    public static bool IsCommandMethod(this MethodInfo method)
+    {
+        var attributes = method.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
+        return attributes.Any(_ => _ == nameof(HttpPostAttribute)) &&
+            !attributes.Any(_ => _ == nameof(AspNetResultAttribute));
+    }
 
     /// <summary>
     /// Get properties from a <see cref="MethodInfo"/>.

@@ -1,0 +1,12 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <!-- <CratisProxyGeneratorAssembly>$(MSBuildThisFileDirectory)../tasks/net8.0/Cratis.Applications.ProxyGenerator.Build.dll</CratisProxyGeneratorAssembly>    -->
+        <CratisProxyGeneratorAssembly>$(MSBuildThisFileDirectory)../bin/Debug/net8.0/Cratis.Applications.ProxyGenerator.Build.dll</CratisProxyGeneratorAssembly>
+    </PropertyGroup>
+
+    <UsingTask TaskName="Cratis.Applications.ProxyGenerator.Build.ProxyGeneratorBuildTask" AssemblyFile="$(CratisProxyGeneratorAssembly)" />
+
+    <Target Name="CratisProxyGenerator" AfterTargets="AfterBuild">
+        <ProxyGeneratorBuildTask InputAssembly="$(OutputPath)/$(AssemblyName).dll" OutputPath="$(CratisProxiesOutputPath)"/>
+    </Target>
+</Project>

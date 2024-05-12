@@ -2,10 +2,10 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using Cratis.ProxyGenerator.Templates;
+using Cratis.Applications.ProxyGenerator.Templates;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cratis.ProxyGenerator;
+namespace Cratis.Applications.ProxyGenerator;
 
 /// <summary>
 /// Extension methods for <see cref="ParameterInfo"/>.

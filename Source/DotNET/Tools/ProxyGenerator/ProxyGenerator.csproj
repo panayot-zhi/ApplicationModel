@@ -6,16 +6,19 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>proxygenerator</ToolCommandName>
     </PropertyGroup>
-    <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
+
     <ItemGroup>
         <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Templates/**/*.hbs" />
     </ItemGroup>
+
     <ItemGroup>
-        <PackageReference Include="Cratis.Fundamentals" />
-        <PackageReference Include="handlebars.net" />
+        <PackageReference Include="Cratis.Fundamentals" GeneratePathProperty="true" PrivateAssets="all" />
+        <PackageReference Include="handlebars.net" GeneratePathProperty="true" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.DependencyModel" GeneratePathProperty="true" PrivateAssets="all" />
+        <PackageReference Include="System.Reflection.MetadataLoadContext" />
     </ItemGroup>
 
     <ItemGroup>

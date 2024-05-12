@@ -1,0 +1,137 @@
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Loader;
+using Cratis.Applications.ProxyGenerator.Templates;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyModel;
+
+namespace Cratis.Applications.ProxyGenerator;
+
+/// <summary>
+/// Represents the actual generator.
+/// </summary>
+public static class Generator
+{
+    /// <summary>
+    /// Generate the proxies from an input assembly and output path.
+    /// </summary>
+    /// <param name="assemblyFile">Path to the assembly file.</param>
+    /// <param name="outputPath">The output path to output to.</param>
+    /// <param name="message">Logger to use for outputting messages.</param>
+    /// <param name="errorMessage">Logger to use for outputting error messages.</param>
+    /// <returns>True if successful, false if not.</returns>
+    public static async Task<bool> Generate(string assemblyFile, string outputPath, Action<string> message, Action<string> errorMessage)
+    {
+        assemblyFile = Path.GetFullPath(assemblyFile);
+        if (!File.Exists(assemblyFile))
+        {
+            errorMessage($"Assembly file '{assemblyFile}' does not exist");
+            return false;
+        }
+
+        if (!Directory.Exists(outputPath))
+        {
+            Directory.CreateDirectory(outputPath);
+        }
+
+        var overallStopwatch = Stopwatch.StartNew();
+
+        var assemblyFolder = Path.GetDirectoryName(assemblyFile)!;
+
+        var assembly = Assembly.LoadFile(assemblyFile);
+        var dependencyContext = DependencyContext.Load(assembly);
+        if (dependencyContext is null)
+        {
+            errorMessage($"Could not load dependency context for assembly '{assemblyFile}'");
+            return false;
+        }
+
+        message("  Gather all assemblies");
+
+        var root = RuntimeEnvironment.GetRuntimeDirectory();
+        root = Path.GetDirectoryName(root)!;
+        var version = Path.GetFileName(root)!;
+        var framework = Directory.GetParent(root)!;
+        var shared = Directory.GetParent(framework.FullName)!;
+        var aspNetCoreAppPath = Path.Combine(shared.FullName, "Microsoft.AspNetCore.App", version);
+
+        message($"  Using runtime: {root}");
+        message($"  Using AspNetCore: {aspNetCoreAppPath}");
+
+        var runtimeAssemblies = Directory.GetFiles(root, "*.dll");
+        var aspNetCoreAssemblies = Directory.GetFiles(aspNetCoreAppPath, "*.dll");
+        var appAssemblies = Directory.GetFiles(assemblyFolder, "*.dll");
+        string[] paths = [.. runtimeAssemblies, .. aspNetCoreAssemblies, .. appAssemblies];
+
+        var resolver = new PathAssemblyResolver(paths);
+        using var context = new MetadataLoadContext(resolver);
+
+        AssemblyLoadContext.Default.Resolving += (_, name) => resolver.Resolve(context, name);
+
+        var assemblies = dependencyContext.RuntimeLibraries
+                                        .Where(_ => _.Type.Equals("project"))
+                                        .Select(_ => context.LoadFromAssemblyPath(Path.Join(assemblyFolder, $"{_.Name}.dll")))
+                                        .Where(_ => _ is not null)
+                                        .Distinct()
+                                        .ToArray();
+
+        var commands = new List<MethodInfo>();
+        var queries = new List<MethodInfo>();
+
+        message($"  Discover controllers from {assemblies.Length} assemblies");
+
+        foreach (var controller in assemblies.SelectMany(_ => _.DefinedTypes).Where(__ => __.IsController()))
+        {
+            var methods = controller.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+            methods.Where(_ => _.IsQueryMethod()).ToList().ForEach(queries.Add);
+            methods.Where(_ => _.IsCommandMethod()).ToList().ForEach(commands.Add);
+        }
+
+        message($"  Found {commands.Count} commands and {queries.Count} queries");
+
+        if (Directory.Exists(outputPath)) Directory.Delete(outputPath, true);
+        if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
+
+        var typesInvolved = new List<Type>();
+        var directories = new List<string>();
+
+        var commandDescriptors = commands.ConvertAll(_ => _.ToCommandDescriptor(outputPath));
+        await commandDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Command, directories, "commands");
+
+        var queryDescriptors = queries.ConvertAll(_ => _.ToQueryDescriptor(outputPath));
+        var enumerableQueries = queryDescriptors.Where(_ => _.IsEnumerable).ToList();
+        await enumerableQueries.Write(outputPath, typesInvolved, TemplateTypes.Query, directories, "queries");
+        var observableQueries = queryDescriptors.Where(_ => _.IsObservable).ToList();
+        await observableQueries.Write(outputPath, typesInvolved, TemplateTypes.ObservableQuery, directories, "observable queries");
+
+        typesInvolved = typesInvolved.Distinct().ToList();
+        var enums = typesInvolved.Where(_ => _.IsEnum).ToList();
+
+        var typeDescriptors = typesInvolved.Where(_ => !enums.Contains(_)).ToList().ConvertAll(_ => _.ToTypeDescriptor(outputPath));
+        await typeDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Type, directories, "types");
+
+        var enumDescriptors = enums.ConvertAll(_ => _.ToEnumDescriptor());
+        await enumDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Enum, directories, "enums");
+
+        var stopwatch = Stopwatch.StartNew();
+        var directoriesWithContent = directories.Distinct().Select(_ => new DirectoryInfo(_));
+        foreach (var directory in directoriesWithContent)
+        {
+            var exports = directory.GetFiles("*.ts").Select(_ => $"./{Path.GetFileNameWithoutExtension(_.Name)}");
+            var descriptor = new IndexDescriptor(exports);
+            var content = TemplateTypes.Index(descriptor);
+            await File.WriteAllTextAsync(Path.Join(directory.FullName, "index.ts"), content);
+        }
+
+        message($"  {directoriesWithContent.Count()} index files written in {stopwatch.Elapsed}");
+
+        message($"  Overall time: {overallStopwatch.Elapsed}");
+
+        return true;
+    }
+}

@@ -4,7 +4,7 @@
 using Cratis.Strings;
 using HandlebarsDotNet;
 
-namespace Cratis.ProxyGenerator.Templates;
+namespace Cratis.Applications.ProxyGenerator.Templates;
 
 /// <summary>
 /// Holds all the available templates.

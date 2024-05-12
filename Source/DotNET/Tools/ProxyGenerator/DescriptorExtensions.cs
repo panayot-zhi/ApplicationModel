@@ -2,11 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
+using Cratis.Applications.ProxyGenerator.Templates;
 using Cratis.Collections;
-using Cratis.ProxyGenerator.Templates;
 using HandlebarsDotNet;
 
-namespace Cratis.ProxyGenerator;
+namespace Cratis.Applications.ProxyGenerator;
 
 /// <summary>
 /// Extension methods for <see cref="IDescriptor"/>.

@@ -3,7 +3,7 @@
 
 using System.Reflection;
 
-namespace Cratis.ProxyGenerator.Templates;
+namespace Cratis.Applications.ProxyGenerator.Templates;
 
 /// <summary>
 /// Describes a command for templating purposes.

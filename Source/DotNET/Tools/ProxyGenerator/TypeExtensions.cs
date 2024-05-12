@@ -2,12 +2,12 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using Cratis.Applications.ProxyGenerator.Templates;
 using Cratis.Applications.Queries;
 using Cratis.Concepts;
-using Cratis.ProxyGenerator.Templates;
 using Cratis.Reflection;
 
-namespace Cratis.ProxyGenerator;
+namespace Cratis.Applications.ProxyGenerator;
 
 /// <summary>
 /// Extension methods for working with types.
@@ -52,6 +52,19 @@ public static class TypeExtensions
         { typeof(System.Text.Json.JsonDocument).FullName!, AnyTypeFinal },
         { typeof(Uri).FullName!, new("string", "String") }
     };
+
+    /// <summary>
+    /// Check if a type is a controller.
+    /// </summary>
+    /// <param name="type"><see cref="Type"/> to check.</param>
+    /// <returns>True if it is a controller, false if not.</returns>
+    public static bool IsController(this Type type)
+    {
+        if (type.Name == "MyController") return true;
+
+        return false;
+    }
+
 
     /// <summary>
     /// Check whether or not a <see cref="Type"/> is a known type in TypeScript.

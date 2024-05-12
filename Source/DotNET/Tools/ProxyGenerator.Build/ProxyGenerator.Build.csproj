@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <AssemblyName>Cratis.Applications.ProxyGenerator.Build</AssemblyName>
+        <TargetFramework>net8.0</TargetFramework>
+        <NoPackageAnalysis>true</NoPackageAnalysis>
+        <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../ProxyGenerator/ProxyGenerator.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="./build/Cratis.Applications.ProxyGenerator.Build.props" PackagePath="build/" />
+        <Content Include="./build/Cratis.Applications.ProxyGenerator.Build targets" PackagePath="build/" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Build.Framework" />
+      <PackageReference Include="Microsoft.Build.Utilities.Core" />
+    </ItemGroup>
+
+    <!--
+        The include needs to happen after output has been copied to build output folder
+        but before NuGet generates a nuspec. See https://github.com/NuGet/Home/issues/4704.
+        -->
+
+
+    <!-- <Target Name="PublishBuildCLI" BeforeTargets="GenerateNuspec">
+        <Exec Command="dotnet publish -c $(Configuration)" WorkingDirectory="." />
+    </Target>
+
+    <Target Name="PackTaskDependencies" AfterTargets="PublishBuildCLI">
+        
+        <ItemGroup>
+            <_PackageFiles Include="./bin/$(Configuration)/net8.0/publish/**/*">
+                <PackagePath>tasks/net8.0/%(RecursiveDir)</PackagePath>
+                <Visible>false</Visible>
+                <BuildAction>Content</BuildAction>
+            </_PackageFiles>
+        </ItemGroup>
+    </Target> -->
+
+</Project>
