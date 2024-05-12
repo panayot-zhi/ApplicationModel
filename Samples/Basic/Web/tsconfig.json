@@ -1,0 +1,78 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "useDefineForClassFields": true,
+        "lib": [
+            "ES2020",
+            "ES2021.WeakRef",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "module": "ESNext",
+        "skipLibCheck": true,
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "baseUrl": "./",
+        "paths": {
+            "API/*": [
+                "./API/*"
+            ],
+            "Infrastructure/*": [
+                "./Infrastructure/*"
+            ],
+            "Browser": [
+                "./Infrastructure/Browser/index.ts"
+            ],
+            "Browser/*": [
+                "./Infrastructure/Browser/*"
+            ],
+            "MVVM": [
+                "Infrastructure/MVVM/index.ts"
+            ],
+            "MVVM/*": [
+                "Infrastructure/MVVM/*"
+            ],
+            "Components/*": [
+                "Components/*"
+            ],
+            "Layout/*": [
+                "Layout/*"
+            ],
+            "Features/*": [
+                "Features/*"
+            ],
+            "Strings": [
+                "Strings"
+            ]
+        }
+    },
+    "include": [
+        "global.d.ts",
+        "**/*.{ts,tsx}"
+    ],
+    "exclude": [
+    ],
+    "references": [
+        {
+            "path": "./tsconfig.node.json"
+        },
+        {
+            "path": "../../../Source/JavaScript/Applications"
+        },
+        {
+            "path": "../../../Source/JavaScript/Applications.React"
+        },
+        {
+            "path": "../../../Source/JavaScript/Applications.React.MVVM"
+        }
+    ]
+}

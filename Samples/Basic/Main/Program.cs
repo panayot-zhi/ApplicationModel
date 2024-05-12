@@ -4,27 +4,32 @@
 using System.Globalization;
 
 // Force invariant culture for the Kernel
-CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+
+
 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseCratis();
-
-var app = builder.Build();
-app.UseRouting();
-app.UseCratis();
-
-
-app.MapGet("/", (request) =>
-{
-    request.User.Claims.ToList().ForEach(claim =>
+builder.UseOrleans(_ => _
+    .UseLocalhostClustering()
+    .UseDashboard(options =>
     {
-        Console.WriteLine($"{claim.Type} = {claim.Value}");
-    });
+        options.Host = "*";
+        options.Port = 8081;
+        options.HostSelf = true;
+    }));
+var app = builder.Build();
 
-    return Task.FromResult("Hello World!");
-});
+// builder.Host.UseCratis();
+// app.UseRouting();
+// app.UseCratis();
 
-app.Run();
+// app.MapGet("/", (request) =>
+// {
+//     request.User.Claims.ToList().ForEach(claim => Console.WriteLine($"{claim.Type} = {claim.Value}"));
+
+//     return Task.CompletedTask;
+// });
+
+await app.RunAsync();
