@@ -3,7 +3,7 @@
 
 import sinon from 'sinon';
 import { CommandScopeImplementation } from '../CommandScopeImplementation';
-import { PropertyChanged } from '../ICommand';
+import { PropertyChanged } from '@cratis/applications/commands';
 import { FakeCommand } from './FakeCommand';
 
 describe('when property changes on added command', () => {

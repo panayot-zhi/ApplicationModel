@@ -2,8 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import sinon from 'sinon';
-import { CommandResult } from '../CommandResult';
-import { ICommand, PropertyChanged } from '../ICommand';
+import { CommandResult, ICommand, PropertyChanged } from '@cratis/applications/commands';
 
 export class FakeCommand implements ICommand {
     route = '';
