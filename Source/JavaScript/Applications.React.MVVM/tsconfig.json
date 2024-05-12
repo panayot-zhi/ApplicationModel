@@ -1,0 +1,15 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "dist"
+    },
+    "references": [
+        {
+            "path": "../Applications"
+        }
+    ],
+    "exclude": [
+        "dist",
+        "**/for_*/**"
+    ]
+}
