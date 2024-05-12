@@ -114,6 +114,8 @@ for (const workspaceName in workspaces) {
             const result = spawn('yarn', [task], { cwd: workspaceAbsoluteLocation });
             console.log(result.stdout.toString());
             if (result.status !== 0) {
+                console.log(`Error running task '${task}' on workspace '${workspaceName}'`);
+                console.log(result.stderr.toString());
                 process.exit(1);
                 return;
             }
