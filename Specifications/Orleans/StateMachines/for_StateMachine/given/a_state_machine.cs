@@ -25,7 +25,6 @@ public abstract class a_state_machine : Specification
     }
     protected virtual Type? initial_state => default;
     protected IStorage<StateMachineState> state_storage;
-
     protected TestKitSilo silo = new();
 
     void Establish()
@@ -34,7 +33,7 @@ public abstract class a_state_machine : Specification
         silo.AddService(states);
         silo.AddService(initial_state);
 
-        state_storage = silo.StorageManager.GetStorage<StateMachineState>(string.Empty);
+        state_storage = silo.StorageManager.GetStorage<StateMachineState>(typeof(StateMachineForTesting).FullName);
     }
 
     protected abstract IEnumerable<IState<StateMachineState>> CreateStates();
