@@ -2,9 +2,10 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>12.0</LangVersion>
+        <AssemblyName>Cratis.Applications.Roslyn</AssemblyName>
+        <RootNamespace>Cratis.Applications.Rolsyn</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <IsPackable>false</IsPackable>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     </PropertyGroup>
 

@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A495F734
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyGenerator", "Source\DotNET\Tools\ProxyGenerator\ProxyGenerator.csproj", "{D25312B1-B1F7-44EA-8FBF-1910DEC9C1FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roslyn.Extensions", "Source\DotNET\Tools\Roslyn.Extensions\Roslyn.Extensions.csproj", "{43565AB5-DF6C-4352-94D8-D12B25C65F18}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roslyn", "Source\DotNET\Tools\Roslyn\Roslyn.csproj", "{43565AB5-DF6C-4352-94D8-D12B25C65F18}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orleans", "Source\DotNET\Orleans\Orleans.csproj", "{972CE865-9F7F-45D7-900C-5D81151D8105}"
 EndProject
