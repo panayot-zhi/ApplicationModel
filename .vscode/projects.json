@@ -1,0 +1,7 @@
+[
+    {
+        "name": "Sample",
+        "path": "${workspaceFolder}/Samples/Basic/Main",
+        "outputPath": "${workspaceFolder}/Samples/Basic/Main/bin/Debug/net8.0/Main.dll"
+    }
+]
