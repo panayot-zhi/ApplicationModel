@@ -4,7 +4,10 @@
         "Brotli",
         "Bson",
         "Cratis",
-        "Swashbuckle"
+        "MVVM",
+        "primeicons",
+        "Swashbuckle",
+        "tsyringe"
     ],
     "dotnet.defaultSolution": "ApplicationModel.sln"
 }
