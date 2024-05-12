@@ -5,11 +5,11 @@ import 'reflect-metadata';
 import * as browser from './browser';
 import * as messaging from './messaging';
 import { withViewModel } from './withViewModel';
-import { MVVM, MVVMContext, MVVMContextDefinition, MVVMProps } from './MVVMContext';
+import { MVVM, MVVMContext, MVVMProps } from './MVVMContext';
 
 export {
     browser,
     messaging,
     withViewModel,
-    MVVM, MVVMContext, MVVMContextDefinition, MVVMProps
+    MVVM, MVVMContext, MVVMProps
 };

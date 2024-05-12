@@ -4,26 +4,26 @@
 import React from 'react';
 import { Bindings } from './Bindings';
 import { configure as configureMobx } from 'mobx';
+import { MobxOptions } from './MobxOptions';
 
 export interface MVVMProps {
     children?: JSX.Element | JSX.Element[];
+    mobx: MobxOptions | undefined
 }
 
-export interface MVVMContextDefinition {   
-}
-
-export const MVVMContext = React.createContext({} as MVVMContextDefinition);
+export const MVVMContext = React.createContext({});
 
 export const MVVM = (props: MVVMProps) => {
-    configureMobx({
-        enforceActions: 'never'
-    });
-    
+
+    const options: MobxOptions = { ...{ enforceActions: 'never' }, ...props.mobx || {} };
+
+    configureMobx(options);
+
     Bindings.initialize();
- 
+
     return (
         <MVVMContext.Provider value={{}}>
             {props.children}
-        </MVVMContext.Provider>
+        </MVVMContext.Provider >
     );
-}
+};
