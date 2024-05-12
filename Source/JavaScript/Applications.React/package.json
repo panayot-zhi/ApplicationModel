@@ -1,0 +1,68 @@
+{
+    "name": "@cratis/applications.react",
+    "version": "1.0.0",
+    "description": "",
+    "author": "Cratis",
+    "license": "MIT",
+    "repository": "github:cratis/applicationmodel",
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "dist",
+        "**/*.ts",
+        "**/*.tsx"
+    ],
+    "type": "module",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "types": "dist/esm/index.d.ts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js",
+            "types": "./dist/esm/index.d.ts"
+        },
+        "./commands": {
+            "import": "./dist/esm/commands/index.js",
+            "require": "./dist/cjs/commands/index.js",
+            "types": "./dist/esm/commands/index.d.ts"
+        },
+        "./queries": {
+            "import": "./dist/esm/queries/index.js",
+            "require": "./dist/cjs/queries/index.js",
+            "types": "./dist/esm/queries/index.d.ts"
+        },
+        "./dialogs": {
+            "import": "./dist/esm/dialogs/index.js",
+            "require": "./dist/cjs/dialogs/index.js",
+            "types": "./dist/esm/dialogs/index.js"
+        },
+        "./identity": {
+            "import": "./dist/esm/identity/index.js",
+            "require": "./dist/cjs/identity/index.js",
+            "types": "./dist/esm/identity/index.d.ts"
+        }
+    },
+    "scripts": {
+        "prepare": "yarn g:build",
+        "clean": "yarn g:clean",
+        "build": "yarn g:build",
+        "lint": "yarn g:lint",
+        "lint:ci": "yarn g:lint:ci",
+        "test": "yarn g:test",
+        "ci": "yarn g:ci",
+        "up": "yarn g:up"
+    },
+    "dependencies": {
+        "@cratis/applications": "1.0.0",
+        "@cratis/fundamentals": "5.0.8",
+        "handlebars": "4.7.7",
+        "react": "18.3.1"
+    },
+    "devDependencies": {
+        "@types/react": "18.3.2",
+        "@types/react-dom": "18.3.0"
+    }
+}

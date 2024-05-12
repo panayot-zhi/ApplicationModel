@@ -10,5 +10,3 @@ export * from './ObservableQueryFor';
 export * from './IObservableQueryConnection';
 export * from './ObservableQueryConnection';
 export * from './ObservableQuerySubscription';
-export * from './useQuery';
-export * from './useObservableQuery';

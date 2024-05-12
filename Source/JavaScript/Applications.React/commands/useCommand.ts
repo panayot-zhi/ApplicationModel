@@ -3,7 +3,7 @@
 
 import { Constructor } from '@cratis/fundamentals';
 import { useState, useEffect, useCallback } from 'react';
-import { Command } from './Command';
+import { Command } from '@cratis/applications/commands';
 import React from 'react';
 import { CommandScopeContext } from './CommandScope';
 

@@ -1,11 +1,9 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { QueryResultWithState } from './QueryResultWithState';
-import { IObservableQueryFor } from './IObservableQueryFor';
+import { QueryResultWithState, IObservableQueryFor, QueryResult } from '@cratis/applications/queries';
 import { Constructor } from '@cratis/fundamentals';
 import { useState, useEffect } from 'react';
-import { QueryResult } from './QueryResult';
 
 /**
  * React hook for working with {@link IObservableQueryFor} within the state management of React.

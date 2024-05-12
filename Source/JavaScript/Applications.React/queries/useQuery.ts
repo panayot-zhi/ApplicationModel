@@ -1,11 +1,9 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { IQueryFor } from './IQueryFor';
+import { IQueryFor, QueryResultWithState, QueryResult } from '@cratis/applications/queries';
 import { Constructor } from '@cratis/fundamentals';
 import { useState, useEffect } from 'react';
-import { QueryResultWithState } from './QueryResultWithState';
-import { QueryResult } from './QueryResult';
 
 /**
  * Delegate type for performing a {@link IQueryFor} in the context of the {@link useQuery} hook.

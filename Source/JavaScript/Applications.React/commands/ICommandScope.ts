@@ -1,8 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { ICommand } from './ICommand';
-import { CommandResults } from './CommandResults';
+import { ICommand, CommandResults } from '@cratis/applications/commands';
 
 /**
  * Defines the system for tracking commands in a scope.
@@ -15,7 +14,7 @@ export interface ICommandScope {
 
     /**
      * Add a command for tracking in the scope.
-     * @param {ICommand} command Command to add.
+     * @param {ICommand} command Command to add.
      */
     addCommand(command: ICommand): void;
 
