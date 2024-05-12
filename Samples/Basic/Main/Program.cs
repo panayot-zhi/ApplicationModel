@@ -4,8 +4,6 @@
 using System.Globalization;
 
 // Force invariant culture for the Kernel
-
-
 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -20,16 +18,5 @@ builder.UseOrleans(_ => _
         options.HostSelf = true;
     }));
 var app = builder.Build();
-
-// builder.Host.UseCratis();
-// app.UseRouting();
-// app.UseCratis();
-
-// app.MapGet("/", (request) =>
-// {
-//     request.User.Claims.ToList().ForEach(claim => Console.WriteLine($"{claim.Type} = {claim.Value}"));
-
-//     return Task.CompletedTask;
-// });
 
 await app.RunAsync();
