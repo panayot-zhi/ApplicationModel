@@ -25,7 +25,9 @@ for (const workspaceDef of rootPackageJson.workspaces) {
 
     const files = glob(workspaceDef, { cwd: process.cwd() });
 
-    const packages = files.filter(_ => path.basename(_) === 'package.json' && _.indexOf(distFolder) < 0 && _.indexOf('node_modules') < 0);
+    const packages = files
+        .filter(_ => path.basename(_) === 'package.json' && _.indexOf(distFolder) < 0 && _.indexOf('node_modules') < 0)
+        .sort((a, b) => a.length - b.length);
     packages.forEach(_ => {
         const package = JSON.parse(fs.readFileSync(_).toString());
         workspaces[package.name] = path.dirname(_);
