@@ -34,16 +34,6 @@
             "require": "./dist/cjs/queries/index.js",
             "types": "./dist/esm/queries/index.d.ts"
         },
-        "./dialogs": {
-            "import": "./dist/esm/dialogs/index.js",
-            "require": "./dist/cjs/dialogs/index.js",
-            "types": "./dist/esm/dialogs/index.js"
-        },
-        "./identity": {
-            "import": "./dist/esm/identity/index.js",
-            "require": "./dist/cjs/identity/index.js",
-            "types": "./dist/esm/identity/index.d.ts"
-        },
         "./validation": {
             "import": "./dist/esm/validation/index.js",
             "requireefault": "./dist/cjs/validation/index.js",
@@ -61,8 +51,7 @@
         "up": "yarn g:up"
     },
     "dependencies": {
-        "@cratis/fundamentals": "1.5.0",
-        "@cratis/typescript": "1.5.0",
+        "@cratis/fundamentals": "5.0.8",
         "handlebars": "4.7.7"
     }
 }
