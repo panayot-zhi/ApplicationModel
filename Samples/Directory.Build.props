@@ -6,7 +6,6 @@
         <NoWarn>$(NoWarn);IDE0005;SA0001</NoWarn>
         <IsPackable>false</IsPackable>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)'==''">
