@@ -21,9 +21,9 @@ public static class MethodInfoExtensions
     {
         var routeTemplates = new string[]
         {
-            method.DeclaringType?.GetCustomAttribute<RouteAttribute>()?.Template ?? string.Empty,
-            method.GetCustomAttribute<HttpGetAttribute>()?.Template ?? string.Empty,
-            method.GetCustomAttribute<HttpGetAttribute>()?.Template ?? string.Empty
+            method.DeclaringType?.GetAttributeConstructorArgument(nameof(RouteAttribute), 0)?.ToString() ?? string.Empty,
+            method.GetAttributeConstructorArgument(nameof(HttpGetAttribute), 0)?.ToString() ?? string.Empty,
+            method.GetAttributeConstructorArgument(nameof(HttpPostAttribute), 0)?.ToString() ?? string.Empty
         };
 
         var route = string.Empty;
@@ -76,4 +76,19 @@ public static class MethodInfoExtensions
     /// <returns>Collection of <see cref="PropertyDescriptor"/>.</returns>
     public static IEnumerable<PropertyDescriptor> GetPropertyDescriptors(this MethodInfo method) =>
         method.GetParameters().ToList().ConvertAll(_ => _.ToPropertyDescriptor());
+
+    /// <summary>
+    /// Get the constructor argument for an attribute.
+    /// </summary>
+    /// <param name="member">Member to get from.</param>
+    /// <param name="attributeName">Name of the attribute.</param>
+    /// <param name="index">Optional argument index.</param>
+    /// <returns>Argument if it was found, false if not.</returns>
+    public static object? GetAttributeConstructorArgument(this MemberInfo member, string attributeName, int index = 0)
+    {
+        var attribute = member.GetCustomAttributesData().FirstOrDefault(_ => _.AttributeType.Name == attributeName);
+        if (attribute is null) return null;
+        if (attribute.ConstructorArguments.Count <= index) return null;
+        return attribute.ConstructorArguments[index].Value;
+    }
 }
