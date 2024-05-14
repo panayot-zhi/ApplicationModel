@@ -3,7 +3,6 @@
 
 using System.Reflection;
 using Cratis.Applications.ProxyGenerator.Templates;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Cratis.Applications.ProxyGenerator;
 
@@ -28,7 +27,10 @@ public static class ParameterInfoExtensions
     /// </summary>
     /// <param name="parameter">Method to check.</param>
     /// <returns>True if it is a query method, false otherwise.</returns>
-    public static bool IsRequestArgument(this ParameterInfo parameter) =>
-         parameter.GetCustomAttribute<FromRouteAttribute>() != null ||
-         parameter.GetCustomAttribute<FromQueryAttribute>() != null;
+    public static bool IsRequestArgument(this ParameterInfo parameter)
+    {
+        var attributes = parameter.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
+        return attributes.Any(_ => _ == "FromRouteAttribute") ||
+               attributes.Any(_ => _ == "FromQueryAttribute");
+    }
 }

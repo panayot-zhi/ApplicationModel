@@ -23,7 +23,7 @@ public static class QueryExtensions
         var arguments = method.GetArgumentDescriptors();
         var responseModel = ModelDescriptor.Empty;
 
-        if (method.ReturnType.IsAssignableTo(typeof(Task)) && method.ReturnType.IsGenericType)
+        if (method.ReturnType.IsAssignableTo<Task>() && method.ReturnType.IsGenericType)
         {
             var responseType = method.ReturnType.GetGenericArguments()[0];
             responseModel = responseType.ToModelDescriptor();

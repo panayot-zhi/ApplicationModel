@@ -1,11 +1,13 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Collections;
+using System.Dynamic;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 using Cratis.Applications.ProxyGenerator.Templates;
-using Cratis.Applications.Queries;
-using Cratis.Concepts;
-using Cratis.Reflection;
+using Microsoft.Extensions.DependencyModel;
 
 namespace Cratis.Applications.ProxyGenerator;
 
@@ -23,6 +25,19 @@ public static class TypeExtensions
     /// Gets the definition of any type that is a final one.
     /// </summary>
     public static readonly TargetType AnyTypeFinal = new("any", "Object", Final: true);
+
+#pragma warning disable SA1600 // Elements should be documented
+    internal static Type _conceptType = typeof(object);
+    internal static Type _nullableType = typeof(Nullable<>);
+    internal static Type _expandoObjectType = typeof(ExpandoObject);
+    internal static Type _stringType = typeof(string);
+    internal static Type _enumerableType = typeof(IEnumerable);
+    internal static Type _genericEnumerableType = typeof(IEnumerable<>);
+    internal static Type _dictionaryType = typeof(IDictionary<,>);
+    internal static Type _asyncEnumerableType = typeof(IAsyncEnumerable<>);
+    internal static Type _controllerBaseType = typeof(object);
+    internal static Type _clientObservableType = typeof(object);
+#pragma warning restore SA1600 // Elements should be documented
 
     static readonly Dictionary<string, TargetType> _primitiveTypeMap = new()
     {
@@ -53,18 +68,111 @@ public static class TypeExtensions
         { typeof(Uri).FullName!, new("string", "String") }
     };
 
+    static readonly Dictionary<string, Assembly> _assembliesByName = [];
+
+    static PathAssemblyResolver? _assemblyResolver;
+    static MetadataLoadContext? _metadataLoadContext;
+
+    /// <summary>
+    /// Gets all assemblies gathered from the <see cref="InitializeProjectAssemblies(string, Action{string}, Action{string})"/> method.
+    /// </summary>
+    public static IEnumerable<Assembly> Assemblies { get; private set; } = [];
+
+    /// <summary>
+    /// Initialize the project assemblies.
+    /// </summary>
+    /// <param name="assemblyFile">Assembly file to start from.</param>
+    /// <param name="message">Callback for outputting messages.</param>
+    /// <param name="errorMessage">Callback for outputting error messages.</param>
+    /// <returns>True if successful, false if not.</returns>
+    public static bool InitializeProjectAssemblies(string assemblyFile, Action<string> message, Action<string> errorMessage)
+    {
+        message($"  Gather all project referenced assemblies for {assemblyFile}");
+        var assemblyFolder = Path.GetDirectoryName(assemblyFile)!;
+
+        var assembly = Assembly.LoadFile(assemblyFile);
+        var dependencyContext = DependencyContext.Load(assembly);
+        if (dependencyContext is null)
+        {
+            errorMessage($"Could not load dependency context for assembly '{assemblyFile}'");
+            return false;
+        }
+
+        var root = RuntimeEnvironment.GetRuntimeDirectory();
+        root = Path.GetDirectoryName(root)!;
+        var version = Path.GetFileName(root)!;
+        var framework = Directory.GetParent(root)!;
+        var shared = Directory.GetParent(framework.FullName)!;
+        var aspNetCoreAppPath = Path.Combine(shared.FullName, "Microsoft.AspNetCore.App", version);
+
+        message($"  Runtime assemblies: {root}");
+        message($"  AspNetCoreApp assemblies: {aspNetCoreAppPath}");
+
+        var runtimeAssemblies = Directory.GetFiles(root, "*.dll");
+        var aspNetCoreAssemblies = Directory.GetFiles(aspNetCoreAppPath, "*.dll");
+        var appAssemblies = Directory.GetFiles(assemblyFolder, "*.dll");
+        string[] paths = [.. runtimeAssemblies, .. aspNetCoreAssemblies, .. appAssemblies];
+
+        _assemblyResolver = new PathAssemblyResolver(paths);
+#pragma warning disable CA2000 // Dispose objects before losing scope
+        _metadataLoadContext = new MetadataLoadContext(_assemblyResolver);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
+        AssemblyLoadContext.Default.Resolving += (_, name) =>
+            _assembliesByName[name.Name!] = _assemblyResolver.Resolve(_metadataLoadContext, name)!;
+
+        Assemblies = dependencyContext.RuntimeLibraries
+                                        .Where(_ => _.Type.Equals("project"))
+                                        .Select(_ => _metadataLoadContext.LoadFromAssemblyPath(Path.Join(assemblyFolder, $"{_.Name}.dll")))
+                                        .Where(_ => _ is not null)
+                                        .Distinct()
+                                        .ToArray();
+
+        foreach (var loadedAssembly in _metadataLoadContext.GetAssemblies())
+        {
+            _assembliesByName[loadedAssembly.GetName().Name!] = loadedAssembly;
+        }
+
+        InitializeWellKnownTypes();
+
+        return true;
+    }
+
     /// <summary>
     /// Check if a type is a controller.
     /// </summary>
     /// <param name="type"><see cref="Type"/> to check.</param>
     /// <returns>True if it is a controller, false if not.</returns>
-    public static bool IsController(this Type type)
-    {
-        if (type.Name == "MyController") return true;
+    public static bool IsController(this Type type) => type.IsAssignableTo(_controllerBaseType);
 
+    /// <summary>
+    /// Check if a type is observable.
+    /// </summary>
+    /// <param name="type">Type to check.</param>
+    /// <returns>True if it is observable, false if not.</returns>
+    public static bool IsObservable(this Type type) => type.IsAssignableTo(_clientObservableType);
+
+    /// <summary>
+    /// Check if a type is a String or not.
+    /// </summary>
+    /// <param name="type"><see cref="Type"/> to check.</param>
+    /// <returns>True if type is a string, false otherwise.</returns>
+    public static bool IsString(this Type type) => type == _stringType;
+
+    /// <summary>
+    /// Check if a type is assignable to a specific type.
+    /// </summary>
+    /// <param name="type">Type to check.</param>
+    /// <typeparam name="T">Type to check if is assignable to.</typeparam>
+    /// <returns>True if it is, false if not.</returns>
+    public static bool IsAssignableTo<T>(this Type type)
+    {
+        if (_assembliesByName.TryGetValue(typeof(T).Assembly.GetName().Name!, out var assembly))
+        {
+            return type.IsAssignableTo(assembly.GetType(typeof(T).FullName!));
+        }
         return false;
     }
-
 
     /// <summary>
     /// Check whether or not a <see cref="Type"/> is a known type in TypeScript.
@@ -85,6 +193,15 @@ public static class TypeExtensions
 
         return _primitiveTypeMap.ContainsKey(type.FullName!);
     }
+
+    /// <summary>
+    /// Check if a type is a dictionary.
+    /// </summary>
+    /// <param name="type">Type to check.</param>
+    /// <returns>True if it is, false if not.</returns>
+    public static bool IsDictionary(this Type type) =>
+        (type.IsGenericType && type.GetGenericTypeDefinition() == _dictionaryType) ||
+        type.GetInterfaces().Any(_ => _.IsGenericType && _.GetGenericTypeDefinition() == _dictionaryType);
 
     /// <summary>
     /// Get property descriptors for a type.
@@ -193,13 +310,6 @@ public static class TypeExtensions
     }
 
     /// <summary>
-    /// Check if a type is observable.
-    /// </summary>
-    /// <param name="type">Type to check.</param>
-    /// <returns>True if it is observable, false if not.</returns>
-    public static bool IsObservable(this Type type) => type.IsAssignableTo(typeof(IClientObservable));
-
-    /// <summary>
     /// Resolve the relative path for a type.
     /// </summary>
     /// <param name="type">Type to resolve for.</param>
@@ -262,5 +372,156 @@ public static class TypeExtensions
         {
             CollectTypesInvolved(subProperty, typesInvolved);
         }
+    }
+
+    /// <summary>
+    /// Check if a type is enumerable. Note that string is an IEnumerable, but in this case the string is excluded, as well as ExpandoObject.
+    /// </summary>
+    /// <param name="type"><see cref="Type"/> to check.</param>
+    /// <returns>True if type is enumerable, false if not an enumerable.</returns>
+    public static bool IsEnumerable(this Type type)
+    {
+        return !type.IsAPrimitiveType() && type != _expandoObjectType && !type.IsString() && _enumerableType.IsAssignableFrom(type);
+    }
+
+    /// <summary>
+    /// Check if a type is a "primitive" type.  This is not just dot net primitives but basic types like string, decimal, datetime,
+    /// that are not classified as primitive types.
+    /// </summary>
+    /// <param name="type"><see cref="Type"/> to check.</param>
+    /// <returns>True if <see cref="Type"/> is a primitive type.</returns>
+    public static bool IsAPrimitiveType(this Type type)
+    {
+        return type.GetTypeInfo().IsPrimitive
+                || type.IsNullable() || _primitiveTypeMap.ContainsKey(type.FullName!);
+    }
+
+    /// <summary>
+    /// Check if a type is nullable or not.
+    /// </summary>
+    /// <param name="type"><see cref="Type"/> to check.</param>
+    /// <returns>True if type is nullable, false if not.</returns>
+    public static bool IsNullable(this Type type)
+    {
+        while (!type.Equals(typeof(object)))
+        {
+            if (type.GetTypeInfo().IsGenericType &&
+               type.GetGenericTypeDefinition() == _nullableType)
+            {
+                return true;
+            }
+
+            if (type.BaseType is null) break;
+
+            type = type.BaseType;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the element type of an enumerable.
+    /// </summary>
+    /// <param name="enumerableType">The <see cref="Type">type of the enumerable</see>.</param>
+    /// <returns>Enumerable element <see cref="Type"/>.</returns>
+    /// <remarks>
+    /// https://stackoverflow.com/questions/906499/getting-type-t-from-ienumerablet.
+    /// </remarks>
+    public static Type GetEnumerableElementType(this Type enumerableType)
+    {
+        if (enumerableType.IsArray)
+        {
+            return enumerableType.GetElementType()!;
+        }
+
+        if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == _genericEnumerableType)
+        {
+            return enumerableType.GetGenericArguments()[0];
+        }
+
+        return enumerableType.GetInterfaces()
+            .Where(t => t.IsGenericType &&
+                t.GetGenericTypeDefinition() == _genericEnumerableType)
+            .Select(t => t.GenericTypeArguments[0]).FirstOrDefault()!;
+    }
+
+    /// <summary>
+    /// Gets the element type of an <see cref="IAsyncEnumerable{T}"/>.
+    /// </summary>
+    /// <param name="asyncEnumerableType">The <see cref="Type"/> to get from.</param>
+    /// <returns>The element type.</returns>
+    public static Type GetAsyncEnumerableElementType(this Type asyncEnumerableType)
+    {
+        if (asyncEnumerableType.IsGenericType && asyncEnumerableType.GetGenericTypeDefinition() == _asyncEnumerableType)
+        {
+            return asyncEnumerableType.GetGenericArguments()[0];
+        }
+
+        return asyncEnumerableType.GetInterfaces()
+            .Where(t => t.IsGenericType &&
+                t.GetGenericTypeDefinition() == _asyncEnumerableType)
+            .Select(t => t.GenericTypeArguments[0]).FirstOrDefault()!;
+    }
+
+    /// <summary>
+    /// Check if a type derives from an open generic type.
+    /// </summary>
+    /// <param name="type"><see cref="Type"/> to check.</param>
+    /// <param name="openGenericType">Open generic <see cref="Type"/> to check for.</param>
+    /// <returns>True if type matches the open generic <see cref="Type"/>.</returns>
+    public static bool IsDerivedFromOpenGeneric(this Type type, Type openGenericType)
+    {
+        var typeToCheck = type;
+        while (typeToCheck != null && typeToCheck != typeof(object))
+        {
+            var currentType = typeToCheck.GetTypeInfo().IsGenericType ? typeToCheck.GetGenericTypeDefinition() : typeToCheck;
+            if (openGenericType == currentType)
+                return true;
+
+            typeToCheck = typeToCheck.GetTypeInfo().BaseType;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Check if a type is a concept or not.
+    /// </summary>
+    /// <param name="objectType"><see cref="Type"/> to check.</param>
+    /// <returns>True if type is a concept, false if not.</returns>
+    public static bool IsConcept(this Type objectType)
+    {
+        return objectType.IsDerivedFromOpenGeneric(_conceptType);
+    }
+
+    /// <summary>
+    /// Get the type of the value inside a concept.
+    /// </summary>
+    /// <param name="type"><see cref="Type"/> to get value type from.</param>
+    /// <returns>The type of the concept value.</returns>
+    public static Type GetConceptValueType(this Type type)
+    {
+        return ConceptMap.GetConceptValueType(type);
+    }
+
+    static void InitializeWellKnownTypes()
+    {
+        var assembly = _metadataLoadContext!.CoreAssembly!;
+        _nullableType = assembly.GetType(typeof(Nullable<>).FullName!)!;
+        _expandoObjectType = assembly.GetType(typeof(ExpandoObject).FullName!)!;
+        _stringType = assembly.GetType(typeof(string).FullName!)!;
+        _enumerableType = assembly.GetType(typeof(IEnumerable).FullName!)!;
+        _genericEnumerableType = assembly.GetType(typeof(IEnumerable<>).FullName!)!;
+        _asyncEnumerableType = assembly.GetType(typeof(IAsyncEnumerable<>).FullName!)!;
+        _dictionaryType = assembly.GetType(typeof(IDictionary<,>).FullName!)!;
+
+        var fundamentals = _metadataLoadContext.LoadFromAssemblyName("Cratis.Fundamentals")!;
+        _conceptType = fundamentals.GetType("Cratis.Concepts.ConceptAs`1")!;
+
+        var aspNetCore = _metadataLoadContext.LoadFromAssemblyName("Microsoft.AspNetCore.Mvc.Core");
+        _controllerBaseType = aspNetCore.GetType("Microsoft.AspNetCore.Mvc.ControllerBase")!;
+
+        var cqrs = _metadataLoadContext.LoadFromAssemblyName("Cratis.Applications.CQRS");
+        _clientObservableType = cqrs.GetType("Cratis.Applications.Queries.IClientObservable")!;
     }
 }

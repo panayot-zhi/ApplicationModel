@@ -3,11 +3,7 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Loader;
 using Cratis.Applications.ProxyGenerator.Templates;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyModel;
 
 namespace Cratis.Applications.ProxyGenerator;
 
@@ -40,51 +36,14 @@ public static class Generator
 
         var overallStopwatch = Stopwatch.StartNew();
 
-        var assemblyFolder = Path.GetDirectoryName(assemblyFile)!;
-
-        var assembly = Assembly.LoadFile(assemblyFile);
-        var dependencyContext = DependencyContext.Load(assembly);
-        if (dependencyContext is null)
-        {
-            errorMessage($"Could not load dependency context for assembly '{assemblyFile}'");
-            return false;
-        }
-
-        message("  Gather all assemblies");
-
-        var root = RuntimeEnvironment.GetRuntimeDirectory();
-        root = Path.GetDirectoryName(root)!;
-        var version = Path.GetFileName(root)!;
-        var framework = Directory.GetParent(root)!;
-        var shared = Directory.GetParent(framework.FullName)!;
-        var aspNetCoreAppPath = Path.Combine(shared.FullName, "Microsoft.AspNetCore.App", version);
-
-        message($"  Using runtime: {root}");
-        message($"  Using AspNetCore: {aspNetCoreAppPath}");
-
-        var runtimeAssemblies = Directory.GetFiles(root, "*.dll");
-        var aspNetCoreAssemblies = Directory.GetFiles(aspNetCoreAppPath, "*.dll");
-        var appAssemblies = Directory.GetFiles(assemblyFolder, "*.dll");
-        string[] paths = [.. runtimeAssemblies, .. aspNetCoreAssemblies, .. appAssemblies];
-
-        var resolver = new PathAssemblyResolver(paths);
-        using var context = new MetadataLoadContext(resolver);
-
-        AssemblyLoadContext.Default.Resolving += (_, name) => resolver.Resolve(context, name);
-
-        var assemblies = dependencyContext.RuntimeLibraries
-                                        .Where(_ => _.Type.Equals("project"))
-                                        .Select(_ => context.LoadFromAssemblyPath(Path.Join(assemblyFolder, $"{_.Name}.dll")))
-                                        .Where(_ => _ is not null)
-                                        .Distinct()
-                                        .ToArray();
+        TypeExtensions.InitializeProjectAssemblies(assemblyFile, message, errorMessage);
 
         var commands = new List<MethodInfo>();
         var queries = new List<MethodInfo>();
 
-        message($"  Discover controllers from {assemblies.Length} assemblies");
+        message($"  Discover controllers from {TypeExtensions.Assemblies.Count()} assemblies");
 
-        foreach (var controller in assemblies.SelectMany(_ => _.DefinedTypes).Where(__ => __.IsController()))
+        foreach (var controller in TypeExtensions.Assemblies.SelectMany(_ => _.DefinedTypes).Where(__ => __.IsController()))
         {
             var methods = controller.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 

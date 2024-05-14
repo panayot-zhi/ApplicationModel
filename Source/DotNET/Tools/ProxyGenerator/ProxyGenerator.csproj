@@ -15,13 +15,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cratis.Fundamentals" GeneratePathProperty="true" PrivateAssets="all" />
         <PackageReference Include="handlebars.net" GeneratePathProperty="true" PrivateAssets="all" />
         <PackageReference Include="Microsoft.Extensions.DependencyModel" GeneratePathProperty="true" PrivateAssets="all" />
         <PackageReference Include="System.Reflection.MetadataLoadContext" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="../../CQRS/CQRS.csproj" />
     </ItemGroup>
 </Project>

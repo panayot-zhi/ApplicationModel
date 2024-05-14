@@ -3,7 +3,6 @@
 
 using System.Reflection;
 using Cratis.Applications.ProxyGenerator.Templates;
-using Cratis.Reflection;
 
 namespace Cratis.Applications.ProxyGenerator;
 
@@ -42,7 +41,7 @@ public static class PropertyExtensions
             isNullable = propertyType.IsNullable();
             if (isNullable)
             {
-                propertyType = propertyType.GetNullableType()!;
+                propertyType = propertyType.GetGenericArguments()[0];
             }
         }
 

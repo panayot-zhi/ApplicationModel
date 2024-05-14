@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using Cratis.Applications.ProxyGenerator.Templates;
-using Cratis.Collections;
 using HandlebarsDotNet;
 
 namespace Cratis.Applications.ProxyGenerator;
@@ -48,7 +47,13 @@ public static class DescriptorExtensions
             await File.WriteAllTextAsync(fullPath, proxyContent);
         }
 
-        descriptors.SelectMany(_ => _.TypesInvolved).ForEach(typesInvolved.Add);
+        foreach (var type in descriptors.SelectMany(_ => _.TypesInvolved))
+        {
+            if (!typesInvolved.Contains(type))
+            {
+                typesInvolved.Add(type);
+            }
+        }
 
         Console.WriteLine($"{descriptors.Count()} {typeNameToEcho} in {stopwatch.Elapsed}");
     }

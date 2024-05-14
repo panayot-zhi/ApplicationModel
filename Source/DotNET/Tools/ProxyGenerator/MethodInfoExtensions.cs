@@ -3,7 +3,6 @@
 
 using System.Reflection;
 using Cratis.Applications.ProxyGenerator.Templates;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Cratis.Applications.ProxyGenerator;
 
@@ -21,9 +20,9 @@ public static class MethodInfoExtensions
     {
         var routeTemplates = new string[]
         {
-            method.DeclaringType?.GetAttributeConstructorArgument(nameof(RouteAttribute), 0)?.ToString() ?? string.Empty,
-            method.GetAttributeConstructorArgument(nameof(HttpGetAttribute), 0)?.ToString() ?? string.Empty,
-            method.GetAttributeConstructorArgument(nameof(HttpPostAttribute), 0)?.ToString() ?? string.Empty
+            method.DeclaringType?.GetAttributeConstructorArgument("RouteAttribute", 0)?.ToString() ?? string.Empty,
+            method.GetAttributeConstructorArgument("HttpGetAttribute", 0)?.ToString() ?? string.Empty,
+            method.GetAttributeConstructorArgument("HttpPostAttribute", 0)?.ToString() ?? string.Empty
         };
 
         var route = string.Empty;
@@ -53,8 +52,8 @@ public static class MethodInfoExtensions
     public static bool IsQueryMethod(this MethodInfo method)
     {
         var attributes = method.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
-        return attributes.Any(_ => _ == nameof(HttpGetAttribute)) &&
-            !attributes.Any(_ => _ == nameof(AspNetResultAttribute));
+        return attributes.Any(_ => _ == "HttpGetAttribute") &&
+            !attributes.Any(_ => _ == "AspNetResultAttribute");
     }
 
     /// <summary>
@@ -65,8 +64,8 @@ public static class MethodInfoExtensions
     public static bool IsCommandMethod(this MethodInfo method)
     {
         var attributes = method.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
-        return attributes.Any(_ => _ == nameof(HttpPostAttribute)) &&
-            !attributes.Any(_ => _ == nameof(AspNetResultAttribute));
+        return attributes.Any(_ => _ == "HttpPostAttribute") &&
+            !attributes.Any(_ => _ == "AspNetResultAttribute");
     }
 
     /// <summary>
