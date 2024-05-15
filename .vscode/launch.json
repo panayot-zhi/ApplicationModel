@@ -25,8 +25,8 @@
             "cwd": "${workspaceFolder}/Source/DotNET/Tools/ProxyGenerator",
             "program": "${workspaceFolder}/Source/DotNET/Tools/ProxyGenerator/bin/Debug/net8.0/Cratis.Applications.ProxyGenerator.dll",
             "args": [
-                "${workspaceFolder}/Samples/Basic/Main/bin/Debug/net8.0/Main.dll",
-                "${workspaceFolder}/Samples/Basic/Web/API"
+                "${workspaceFolder}/Samples/eCommerce/Basic/Main/bin/Debug/net8.0/Main.dll",
+                "${workspaceFolder}/Samples/eCommerce/Basic/Web/API"
             ],
             "stopAtEntry": false,
             "env": {

@@ -1,12 +1,21 @@
 <Project>
-    <Import Project="$(MSBuildThisFileDirectory)../Directory.Build.props" />
+    <Import Project="$(MSBuildThisFileDirectory)../../Directory.Build.props" />
 
     <PropertyGroup>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
-        <NoWarn>$(NoWarn);IDE0005;SA0001</NoWarn>
+        <NoWarn>$(NoWarn);IDE0005;SA0001;ORLEANS0010</NoWarn>
         <IsPackable>false</IsPackable>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
     </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="$(MSBuildThisFileDirectory)/GlobalUsings.cs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Cratis.Fundamentals" />
+    </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)'==''">
         <Configuration>Debug</Configuration>

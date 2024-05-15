@@ -3,6 +3,5 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
-export * from './TopLevelType';
-export * from './GetStuff';
-export * from './ChildType';
+export * from './AddItem';
+export * from './AddItemToCart';

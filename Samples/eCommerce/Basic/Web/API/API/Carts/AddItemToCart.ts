@@ -6,11 +6,11 @@
 import { field } from '@cratis/fundamentals';
 
 
-export class ChildType {
+export class AddItemToCart {
 
     @field(String)
-    value!: string;
+    sku!: string;
 
     @field(Number)
-    number!: number;
+    quantity!: number;
 }

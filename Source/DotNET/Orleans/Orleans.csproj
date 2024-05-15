@@ -8,6 +8,7 @@
     <ItemGroup>
         <PackageReference Include="Cratis.Fundamentals" />
         <PackageReference Include="Microsoft.Orleans.Core.Abstractions" />
+        <PackageReference Include="Microsoft.Orleans.Serialization" />
         <PackageReference Include="Microsoft.Extensions.Logging" />
         <!-- <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" /> -->
     </ItemGroup>
