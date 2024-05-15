@@ -33,6 +33,10 @@ public static class IdentityProviderEndpointExtensions
         {
             services.AddSingleton(typeof(IProvideIdentityDetails), providerTypes[0]);
         }
+        else
+        {
+            services.AddSingleton<IProvideIdentityDetails, DefaultIdentityDetailsProvider>();
+        }
 
         return services;
     }
