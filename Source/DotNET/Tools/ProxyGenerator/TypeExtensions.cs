@@ -210,6 +210,8 @@ public static class TypeExtensions
     /// <returns>Collection of <see cref="PropertyDescriptor"/>.</returns>
     public static IEnumerable<PropertyDescriptor> GetPropertyDescriptors(this Type type)
     {
+        if (type.IsAPrimitiveType()) return [];
+
         return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToList().ConvertAll(_ => _.ToPropertyDescriptor());
     }
 
@@ -350,7 +352,7 @@ public static class TypeExtensions
     /// <remarks>It skips any types already added to the collection passed to it.</remarks>
     public static void CollectTypesInvolved(this PropertyDescriptor property, IList<Type> typesInvolved)
     {
-        if (typesInvolved.Contains(property.OriginalType)) return;
+        if (typesInvolved.Contains(property.OriginalType) || property.OriginalType.IsAPrimitiveType()) return;
         typesInvolved.Add(property.OriginalType);
         foreach (var subProperty in property.OriginalType.GetPropertyDescriptors().Where(_ => !_.OriginalType.IsKnownType()))
         {

@@ -60,22 +60,22 @@ public static class Generator
         var directories = new List<string>();
 
         var commandDescriptors = commands.ConvertAll(_ => _.ToCommandDescriptor(outputPath));
-        await commandDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Command, directories, "commands");
+        await commandDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Command, directories, "commands", message);
 
         var queryDescriptors = queries.ConvertAll(_ => _.ToQueryDescriptor(outputPath));
         var enumerableQueries = queryDescriptors.Where(_ => _.IsEnumerable).ToList();
-        await enumerableQueries.Write(outputPath, typesInvolved, TemplateTypes.Query, directories, "queries");
+        await enumerableQueries.Write(outputPath, typesInvolved, TemplateTypes.Query, directories, "queries", message);
         var observableQueries = queryDescriptors.Where(_ => _.IsObservable).ToList();
-        await observableQueries.Write(outputPath, typesInvolved, TemplateTypes.ObservableQuery, directories, "observable queries");
+        await observableQueries.Write(outputPath, typesInvolved, TemplateTypes.ObservableQuery, directories, "observable queries", message);
 
         typesInvolved = typesInvolved.Distinct().ToList();
         var enums = typesInvolved.Where(_ => _.IsEnum).ToList();
 
         var typeDescriptors = typesInvolved.Where(_ => !enums.Contains(_)).ToList().ConvertAll(_ => _.ToTypeDescriptor(outputPath));
-        await typeDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Type, directories, "types");
+        await typeDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Type, directories, "types", message);
 
         var enumDescriptors = enums.ConvertAll(_ => _.ToEnumDescriptor());
-        await enumDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Enum, directories, "enums");
+        await enumDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Enum, directories, "enums", message);
 
         var stopwatch = Stopwatch.StartNew();
         var directoriesWithContent = directories.Distinct().Select(_ => new DirectoryInfo(_));

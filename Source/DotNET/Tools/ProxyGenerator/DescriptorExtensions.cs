@@ -21,6 +21,7 @@ public static class DescriptorExtensions
     /// <param name="template">Template to use for writing.</param>
     /// <param name="directories">All directories that has been written to.</param>
     /// <param name="typeNameToEcho">The type name to echo for statistics.</param>
+    /// <param name="message">Logger to use for outputting messages.</param>
     /// <returns>Awaitable task.</returns>
     public static async Task Write(
         this IEnumerable<IDescriptor> descriptors,
@@ -28,7 +29,8 @@ public static class DescriptorExtensions
         IList<Type> typesInvolved,
         HandlebarsTemplate<object, object> template,
         IList<string> directories,
-        string typeNameToEcho)
+        string typeNameToEcho,
+        Action<string> message)
     {
         var stopwatch = Stopwatch.StartNew();
         foreach (var descriptor in descriptors)
@@ -55,6 +57,10 @@ public static class DescriptorExtensions
             }
         }
 
-        Console.WriteLine($"{descriptors.Count()} {typeNameToEcho} in {stopwatch.Elapsed}");
+        var count = descriptors.Count();
+        if (count > 0)
+        {
+            message($"  {count} {typeNameToEcho} in {stopwatch.Elapsed}");
+        }
     }
 }

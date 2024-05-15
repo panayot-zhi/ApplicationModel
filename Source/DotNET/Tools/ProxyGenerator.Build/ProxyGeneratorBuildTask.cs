@@ -26,13 +26,15 @@ public class ProxyGeneratorBuildTask : Task
     /// <inheritdoc/>
     public override bool Execute()
     {
-        Log.LogMessage(MessageImportance.High, "Cratis Proxy Generator\n");
-        Log.LogMessage(MessageImportance.High, $"  Using assembly: {InputAssembly.ItemSpec}");
-        Log.LogMessage(MessageImportance.High, $"  Outputting to: {OutputPath.ItemSpec}");
+        var inputAssembly = Path.GetFullPath(InputAssembly.ItemSpec);
+        var outputPath = Path.GetFullPath(OutputPath.ItemSpec);
+        Log.LogMessage(MessageImportance.High, "\n\nCratis Proxy Generator\n");
+        Log.LogMessage(MessageImportance.High, $"  Using assembly: {inputAssembly}");
+        Log.LogMessage(MessageImportance.High, $"  Outputting to: {outputPath}");
 
         return Generator.Generate(
-            InputAssembly.ItemSpec,
-            OutputPath.ItemSpec,
+            inputAssembly,
+            outputPath,
             s => Log.LogMessage(MessageImportance.High, s),
             s => Log.LogError(s)).GetAwaiter().GetResult();
     }

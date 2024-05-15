@@ -5,18 +5,14 @@ using Cratis.Applications.ProxyGenerator;
 
 Console.WriteLine("Cratis Proxy Generator\n");
 
-// if (args.Length != 2)
-// {
-//     Console.WriteLine("Usage: ");
-//     Console.WriteLine("  Cratis.ProxyGenerator <assembly> <output-path>");
-//     return 1;
-// }
-// var assemblyFile = args[0];
-// var outputPath = Path.GetFullPath(args[0]);
-
- var assemblyFile = "/Users/einari/Projects/Cratis/ApplicationModel/Samples/Basic/Main/bin/Debug/net8.0/Main.dll";
-//var assemblyFile = "/Users/einari/Projects/Cratis/ApplicationModel/Samples/Basic/Domain/bin/Debug/net8.0/Domain.dll";
-var outputPath = "/Users/einari/Projects/Cratis/ApplicationModel/Samples/Basic/Web/API";
+if (args.Length != 2)
+{
+    Console.WriteLine("Usage: ");
+    Console.WriteLine("  Cratis.ProxyGenerator <assembly> <output-path>");
+    return 1;
+}
+var assemblyFile = Path.GetFullPath(args[0]);
+var outputPath = Path.GetFullPath(args[1]);
 
 var result = await Generator.Generate(
     assemblyFile,
