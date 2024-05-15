@@ -10,6 +10,6 @@ namespace Microsoft.Extensions.Hosting;
 /// </summary>
 internal static partial class HostBuilderExtensionsLogMessages
 {
-    [LoggerMessage(0, LogLevel.Information, "Setting up Cratis defaults")]
+    [LoggerMessage(0, LogLevel.Information, "Setting up Cratis Application Model defaults")]
     internal static partial void SettingUpDefaults(this ILogger logger);
 }

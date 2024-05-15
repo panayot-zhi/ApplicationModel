@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Exceptions;
@@ -17,12 +18,19 @@ public static class LoggingHostBuilderExtensions
     /// Use default logging.
     /// </summary>
     /// <param name="builder"><see cref="IHostBuilder"/> to use with.</param>
+    /// <param name="configuration">Optional <see cref="IConfiguration"/> used for the host. Logging configuration will be loaded from this.</param>
     /// <returns><see cref="ILoggerFactory"/> for continuation.</returns>
-    public static ILoggerFactory UseDefaultLogging(this IHostBuilder builder)
+    public static ILoggerFactory UseDefaultLogging(this IHostBuilder builder, IConfiguration? configuration = default)
     {
-        Log.Logger = new LoggerConfiguration()
-            .Enrich.WithExceptionDetails()
-            .CreateLogger();
+        var loggerConfiguration = new LoggerConfiguration()
+            .Enrich.WithExceptionDetails();
+
+        if (configuration is not null)
+        {
+            loggerConfiguration = loggerConfiguration.ReadFrom.Configuration(configuration);
+        }
+
+        Log.Logger = loggerConfiguration.CreateLogger();
 
         builder.UseSerilog();
 
@@ -39,6 +47,8 @@ public static class LoggingHostBuilderExtensions
     public static ILoggerFactory UseDefaultLogging(this WebApplicationBuilder builder)
     {
         Log.Logger = new LoggerConfiguration().Enrich.WithExceptionDetails()
+            .Enrich.WithExceptionDetails()
+            .ReadFrom.Configuration(builder.Configuration)
             .CreateLogger();
 
         builder.Logging.ClearProviders();
