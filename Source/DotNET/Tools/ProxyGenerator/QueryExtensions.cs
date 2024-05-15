@@ -28,7 +28,7 @@ public static class QueryExtensions
             var responseType = method.ReturnType.GetGenericArguments()[0];
             responseModel = responseType.ToModelDescriptor();
         }
-        else if (method.ReturnType != typeof(void) && method.ReturnType != typeof(Task))
+        else if (method.ReturnType != TypeExtensions._voidType && method.ReturnType != TypeExtensions._taskType)
         {
             responseModel = method.ReturnType.ToModelDescriptor();
         }

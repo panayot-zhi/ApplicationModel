@@ -24,13 +24,13 @@ public static class CommandExtensions
         var hasResponse = false;
         var responseModel = ModelDescriptor.Empty;
 
-        if (method.ReturnType.IsAssignableTo(typeof(Task)) && method.ReturnType.IsGenericType)
+        if (method.ReturnType.IsAssignableTo<Task>() && method.ReturnType.IsGenericType)
         {
             hasResponse = true;
             var responseType = method.ReturnType.GetGenericArguments()[0];
             responseModel = responseType.ToModelDescriptor();
         }
-        else if (method.ReturnType != typeof(void) && method.ReturnType != typeof(Task))
+        else if (method.ReturnType != TypeExtensions._voidType && method.ReturnType != TypeExtensions._taskType)
         {
             hasResponse = true;
             responseModel = method.ReturnType.ToModelDescriptor();

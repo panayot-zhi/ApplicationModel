@@ -37,6 +37,8 @@ public static class TypeExtensions
     internal static Type _asyncEnumerableType = typeof(IAsyncEnumerable<>);
     internal static Type _controllerBaseType = typeof(object);
     internal static Type _clientObservableType = typeof(object);
+    internal static Type _taskType = typeof(Task);
+    internal static Type _voidType = typeof(void);
 #pragma warning restore SA1600 // Elements should be documented
 
     static readonly Dictionary<string, TargetType> _primitiveTypeMap = new()
@@ -516,6 +518,8 @@ public static class TypeExtensions
         _genericEnumerableType = assembly.GetType(typeof(IEnumerable<>).FullName!)!;
         _asyncEnumerableType = assembly.GetType(typeof(IAsyncEnumerable<>).FullName!)!;
         _dictionaryType = assembly.GetType(typeof(IDictionary<,>).FullName!)!;
+        _taskType = assembly.GetType(typeof(Task).FullName!)!;
+        _voidType = assembly.GetType(typeof(void).FullName!)!;
 
         var fundamentals = _metadataLoadContext.LoadFromAssemblyName("Cratis.Fundamentals")!;
         _conceptType = fundamentals.GetType("Cratis.Concepts.ConceptAs`1")!;
