@@ -9,17 +9,7 @@ namespace Cratis.MongoDB;
 public static class ConventionPacks
 {
     /// <summary>
-    /// Gets the camel case convention pack name.
-    /// </summary>
-    public const string CamelCase = "camelCase element name convention";
-
-    /// <summary>
     /// Gets the ignore extra elements convention pack name.
     /// </summary>
     public const string IgnoreExtraElements = "Ignore extra elements convention";
-
-    /// <summary>
-    /// Gets the custom object discriminator convention pack name.
-    /// </summary>
-    public const string CustomObjectDiscriminator = "Custom object discriminator convention";
 }
