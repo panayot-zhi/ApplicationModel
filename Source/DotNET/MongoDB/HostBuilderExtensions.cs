@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using Cratis.MongoDB;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -25,6 +26,7 @@ public static class HostBuilderExtensions
     public static IHostBuilder UseMongoDB(this IHostBuilder builder, IMongoDBArtifacts? mongoDBArtifacts = default, JsonSerializerOptions? jsonSerializerOptions = default)
     {
         MongoDBDefaults.Initialize(mongoDBArtifacts, jsonSerializerOptions);
+        builder.ConfigureServices((context, services) => services.AddHostedService<MongoDBInitializer>());
         return builder;
     }
 }

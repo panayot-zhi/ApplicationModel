@@ -1,8 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Cratis.Strings;
-using Humanizer;
+using Cratis.Models;
 
 namespace MongoDB.Driver;
 
@@ -12,6 +11,11 @@ namespace MongoDB.Driver;
 public static class DatabaseExtensions
 {
     /// <summary>
+    /// The <see cref="IModelNameResolver"/> to use.
+    /// </summary>
+    internal static IModelNameResolver ModelNameResolver = new ModelNameResolver(new DefaultModelNameConvention());
+
+    /// <summary>
     /// Get a collection - with name of collection as convention (camelCase of typename).
     /// </summary>
     /// <param name="database"><see cref="IMongoDatabase"/> to extend.</param>
@@ -20,8 +24,6 @@ public static class DatabaseExtensions
     /// <returns>The collection for your type.</returns>
     public static IMongoCollection<T> GetCollection<T>(this IMongoDatabase database, MongoCollectionSettings? settings = default)
     {
-        var name = typeof(T).Name.Pluralize();
-        var camelCaseName = name.ToCamelCase();
-        return database.GetCollection<T>(camelCaseName, settings);
+        return database.GetCollection<T>(ModelNameResolver.GetNameFor(typeof(T)), settings);
     }
 }
