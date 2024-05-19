@@ -3,7 +3,7 @@
 
 using Orleans.TestKit;
 
-namespace Cratis.Kernel.Orleans.StateMachines.when_transitioning;
+namespace Cratis.Applications.Orleans.StateMachines.when_transitioning;
 
 public class and_state_can_be_transitioned_to : given.a_state_machine_with_well_known_states
 {
@@ -13,7 +13,7 @@ public class and_state_can_be_transitioned_to : given.a_state_machine_with_well_
     {
         // We clear this, because we don't care about the initial state transitions and state written to storage in this spec
         _ = state_machine;  // Since the state machine is lazily created, we need an instance of it before we can clear states since it performs operations on creation that we record
-        silo.StorageStats<StateMachineForTesting, StateMachineState>().ResetCounts();
+        silo.StorageStats<StateMachineForTesting, StateMachineStateForTesting>().ResetCounts();
         on_calls.Clear();
 
         state_machine.OnBeforeEnteringStates.Clear();
@@ -30,7 +30,8 @@ public class and_state_can_be_transitioned_to : given.a_state_machine_with_well_
     [Fact] void should_call_the_state_transitioned_from() => on_calls[0].Type.ShouldEqual(typeof(StateThatSupportsTransitioningFrom));
     [Fact] void should_call_on_leave_on_the_state_transitioned_from() => on_calls[0].IsEnter.ShouldBeFalse();
     [Fact] void should_call_on_leave_with_the_state_transitioned_from() => on_calls[0].State.ShouldEqual(state_that_supports_transitioning.StateToReturnOnEnter);
-    [Fact] void should_write_state_once() => silo.StorageStats<StateMachineForTesting, StateMachineState>().Writes.ShouldEqual(1);
+    [Fact] void should_write_state_once() => silo.StorageStats<StateMachineForTesting, StateMachineStateForTesting>().Writes.ShouldEqual(1);
+    [Fact] void should_write_current_state() => state_storage.State.CurrentState.ShouldEqual(typeof(StateThatDoesNotSupportTransitioningFrom).FullName);
     [Fact] void should_write_state_coming_from_on_enter() => state_storage.State.ShouldEqual(state_that_does_not_support_transitioning.StateToReturnOnEnter);
     [Fact] void should_call_on_before_entering_state_for_state_entered() => state_machine.OnBeforeEnteringStates.ShouldContainOnly(new[] { state_that_does_not_support_transitioning });
     [Fact] void should_call_on_after_entering_state_for_state_entered() => state_machine.OnAfterEnteringStates.ShouldContainOnly(new[] { state_that_does_not_support_transitioning });

@@ -3,7 +3,7 @@
 
 using System.Collections.Immutable;
 
-namespace Cratis.Kernel.Orleans.StateMachines;
+namespace Cratis.Applications.Orleans.StateMachines;
 
 public class StateWithAllowedTransitionState : BaseState
 {

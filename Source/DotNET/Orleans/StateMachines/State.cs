@@ -3,13 +3,14 @@
 
 using System.Collections.Immutable;
 
-namespace Cratis.Kernel.Orleans.StateMachines;
+namespace Cratis.Applications.Orleans.StateMachines;
 
 /// <summary>
 /// Represents an implementation of <see cref="IState{TStoredState}"/>.
 /// </summary>
 /// <typeparam name="TStoredState">Type of state object associated.</typeparam>
-public abstract class State<TStoredState> : IState<TStoredState>
+public class State<TStoredState> : IState<TStoredState>
+    where TStoredState : StateMachineState
 {
     /// <summary>
     /// Internal field for <see cref="StateMachine"/>.
@@ -28,8 +29,8 @@ public abstract class State<TStoredState> : IState<TStoredState>
     public virtual Task<bool> CanTransitionTo<TTargetState>(TStoredState state) => Task.FromResult(AllowedTransitions.Contains(typeof(TTargetState)));
 
     /// <inheritdoc/>
-    public abstract Task<TStoredState> OnEnter(TStoredState state);
+    public virtual Task<TStoredState> OnEnter(TStoredState state) => Task.FromResult(state);
 
     /// <inheritdoc/>
-    public abstract Task<TStoredState> OnLeave(TStoredState state);
+    public virtual Task<TStoredState> OnLeave(TStoredState state) => Task.FromResult(state);
 }

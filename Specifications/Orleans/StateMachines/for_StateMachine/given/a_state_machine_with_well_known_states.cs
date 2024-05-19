@@ -1,7 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.Kernel.Orleans.StateMachines.given;
+namespace Cratis.Applications.Orleans.StateMachines.given;
 
 public abstract class a_state_machine_with_well_known_states : a_state_machine
 {
@@ -9,11 +9,11 @@ public abstract class a_state_machine_with_well_known_states : a_state_machine
     protected StateThatDoesNotSupportTransitioningFrom state_that_does_not_support_transitioning;
     protected StateThatTransitionsOnEnter state_that_transitions_on_enter;
     protected StateThatTransitionsOnLeave state_that_transitions_on_leave;
-    protected List<(Type Type, bool IsEnter, StateMachineState State)> on_calls;
+    protected List<(Type Type, bool IsEnter, StateMachineStateForTesting State)> on_calls;
 
-    void AddCall(Type type, bool isEnter, StateMachineState state) => on_calls.Add((type, isEnter, state));
+    void AddCall(Type type, bool isEnter, StateMachineStateForTesting state) => on_calls.Add((type, isEnter, state));
 
-    protected override IEnumerable<IState<StateMachineState>> CreateStates()
+    protected override IEnumerable<IState<StateMachineStateForTesting>> CreateStates()
     {
         on_calls = [];
 

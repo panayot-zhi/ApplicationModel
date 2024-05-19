@@ -3,26 +3,26 @@
 
 using System.Collections.Immutable;
 
-namespace Cratis.Kernel.Orleans.StateMachines;
+namespace Cratis.Applications.Orleans.StateMachines;
 
-public class StateMachineForTesting(IEnumerable<IState<StateMachineState>> states, Type? initialState = default) : StateMachine<StateMachineState>
+public class StateMachineForTesting(IEnumerable<IState<StateMachineStateForTesting>> states, Type? initialState = default) : StateMachine<StateMachineStateForTesting>
 {
     readonly Type _initialState = initialState;
-    IImmutableList<IState<StateMachineState>> _states = states.ToImmutableList();
+    IImmutableList<IState<StateMachineStateForTesting>> _states = states.ToImmutableList();
 
-    public List<IState<StateMachineState>> OnBeforeEnteringStates { get; } = [];
-    public List<IState<StateMachineState>> OnAfterEnteringStates { get; } = [];
-    public List<IState<StateMachineState>> OnBeforeLeavingStates { get; } = [];
-    public List<IState<StateMachineState>> OnAfterLeavingStates { get; } = [];
+    public List<IState<StateMachineStateForTesting>> OnBeforeEnteringStates { get; } = [];
+    public List<IState<StateMachineStateForTesting>> OnAfterEnteringStates { get; } = [];
+    public List<IState<StateMachineStateForTesting>> OnBeforeLeavingStates { get; } = [];
+    public List<IState<StateMachineStateForTesting>> OnAfterLeavingStates { get; } = [];
 
 
     protected override Type InitialState => _initialState ?? base.InitialState;
 
-    public override IImmutableList<IState<StateMachineState>> CreateStates() => _states;
+    public override IImmutableList<IState<StateMachineStateForTesting>> CreateStates() => _states;
 
-    protected override Task OnBeforeEnteringState(IState<StateMachineState> state)
+    protected override Task OnBeforeEnteringState(IState<StateMachineStateForTesting> state)
     {
-        if (state is NoOpState<StateMachineState>)
+        if (state is NoOpState<StateMachineStateForTesting>)
         {
             return Task.CompletedTask;
         }
@@ -31,9 +31,9 @@ public class StateMachineForTesting(IEnumerable<IState<StateMachineState>> state
         return Task.CompletedTask;
     }
 
-    protected override Task OnAfterEnteringState(IState<StateMachineState> state)
+    protected override Task OnAfterEnteringState(IState<StateMachineStateForTesting> state)
     {
-        if (state is NoOpState<StateMachineState>)
+        if (state is NoOpState<StateMachineStateForTesting>)
         {
             return Task.CompletedTask;
         }
@@ -42,9 +42,9 @@ public class StateMachineForTesting(IEnumerable<IState<StateMachineState>> state
         return Task.CompletedTask;
     }
 
-    protected override Task OnBeforeLeavingState(IState<StateMachineState> state)
+    protected override Task OnBeforeLeavingState(IState<StateMachineStateForTesting> state)
     {
-        if (state is NoOpState<StateMachineState>)
+        if (state is NoOpState<StateMachineStateForTesting>)
         {
             return Task.CompletedTask;
         }
@@ -53,9 +53,9 @@ public class StateMachineForTesting(IEnumerable<IState<StateMachineState>> state
         return Task.CompletedTask;
     }
 
-    protected override Task OnAfterLeavingState(IState<StateMachineState> state)
+    protected override Task OnAfterLeavingState(IState<StateMachineStateForTesting> state)
     {
-        if (state is NoOpState<StateMachineState>)
+        if (state is NoOpState<StateMachineStateForTesting>)
         {
             return Task.CompletedTask;
         }

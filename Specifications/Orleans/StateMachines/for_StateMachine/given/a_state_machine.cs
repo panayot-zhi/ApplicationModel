@@ -4,8 +4,9 @@
 using Orleans.Core;
 using Orleans.Runtime;
 using Orleans.TestKit;
+using Orleans.TestKit.Storage;
 
-namespace Cratis.Kernel.Orleans.StateMachines.given;
+namespace Cratis.Applications.Orleans.StateMachines.given;
 
 public abstract class a_state_machine : Specification
 {
@@ -23,18 +24,18 @@ public abstract class a_state_machine : Specification
             }
         }
     }
-    protected virtual Type? initial_state => default;
-    protected IStorage<StateMachineState> state_storage;
+    protected virtual Type? initial_state => null;
+    protected IStorage<StateMachineStateForTesting> state_storage;
     protected TestKitSilo silo = new();
 
     void Establish()
     {
         var states = CreateStates();
         silo.AddService(states);
-        silo.AddService(initial_state);
+        silo.AddService(initial_state ?? typeof(NoOpState<StateMachineStateForTesting>));
 
-        state_storage = silo.StorageManager.GetStorage<StateMachineState>(typeof(StateMachineForTesting).FullName);
+        state_storage = silo.StorageManager.GetStorage<StateMachineStateForTesting>(typeof(StateMachineForTesting).FullName);
     }
 
-    protected abstract IEnumerable<IState<StateMachineState>> CreateStates();
+    protected abstract IEnumerable<IState<StateMachineStateForTesting>> CreateStates();
 }

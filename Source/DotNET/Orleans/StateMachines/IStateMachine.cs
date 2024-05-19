@@ -3,13 +3,14 @@
 
 using System.Collections.Immutable;
 
-namespace Cratis.Kernel.Orleans.StateMachines;
+namespace Cratis.Applications.Orleans.StateMachines;
 
 /// <summary>
 /// Defines a state machine.
 /// </summary>
 /// <typeparam name="TStoredState">Type of stored state.</typeparam>
 public interface IStateMachine<TStoredState>
+    where TStoredState : StateMachineState
 {
     /// <summary>
     /// Gets the current state.

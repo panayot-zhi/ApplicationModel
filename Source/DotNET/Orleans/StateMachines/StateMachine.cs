@@ -7,13 +7,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Orleans;
 
-namespace Cratis.Kernel.Orleans.StateMachines;
+namespace Cratis.Applications.Orleans.StateMachines;
 
 /// <summary>
 /// Represents a base implementation of <see cref="IStateMachine{TStoredState}"/>.
 /// </summary>
 /// <typeparam name="TStoredState">Type of stored state.</typeparam>
 public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMachine<TStoredState>
+    where TStoredState : StateMachineState
 {
     static readonly NoOpState<TStoredState> _noOpState = new();
 
@@ -22,7 +23,7 @@ public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMa
     bool _isTransitioning;
     bool _isLeaving;
     Type? _scheduledTransition;
-    ILogger<StateMachine<object>>? _logger;
+    ILogger<StateMachine<StateMachineState>>? _logger;
 
     /// <summary>
     /// Gets the initial state of the state machine.
@@ -33,7 +34,7 @@ public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMa
     /// <inheritdoc/>
     public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        _logger = ServiceProvider.GetService<ILogger<StateMachine<object>>>() ?? NullLogger<StateMachine<object>>.Instance;
+        _logger = ServiceProvider.GetService<ILogger<StateMachine<StateMachineState>>>() ?? NullLogger<StateMachine<StateMachineState>>.Instance;
 
         await OnActivation(cancellationToken);
         _states = CreateStates().ToDictionary(_ => _.GetType());
@@ -46,9 +47,17 @@ public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMa
             }
         }
 
-        InvalidTypeForState.ThrowIfInvalid(InitialState);
-        ThrowIfUnknownStateType(InitialState);
-        await TransitionTo(InitialState);
+        var initialState = InitialState;
+
+        if (!string.IsNullOrEmpty(State.CurrentState))
+        {
+            var state = _states.Values.FirstOrDefault(_ => _.GetType().FullName == State.CurrentState) ?? throw new UnknownCurrentState(State.CurrentState, GetType());
+            initialState = state.GetType();
+        }
+
+        InvalidTypeForState.ThrowIfInvalid(initialState);
+        ThrowIfUnknownStateType(initialState);
+        await TransitionTo(initialState);
     }
 
     /// <inheritdoc/>
@@ -146,6 +155,7 @@ public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMa
         State = await _currentState.OnEnter(State);
         await OnAfterEnteringState(_currentState);
 
+        State.CurrentState = _currentState.GetType().FullName!;
         await WriteStateAsync();
 
         _isTransitioning = false;

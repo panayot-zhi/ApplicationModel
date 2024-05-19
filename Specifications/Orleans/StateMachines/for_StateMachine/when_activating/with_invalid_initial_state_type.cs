@@ -1,14 +1,14 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.Kernel.Orleans.StateMachines.when_activating;
+namespace Cratis.Applications.Orleans.StateMachines.when_activating;
 
 public class with_invalid_initial_state_type : given.a_state_machine
 {
     Exception exception;
 
     protected override Type initial_state => typeof(string);
-    protected override IEnumerable<IState<StateMachineState>> CreateStates() => [];
+    protected override IEnumerable<IState<StateMachineStateForTesting>> CreateStates() => [];
 
     async Task Because() => exception = await Catch.Exception(async () => await state_machine.OnActivateAsync(CancellationToken.None));
 

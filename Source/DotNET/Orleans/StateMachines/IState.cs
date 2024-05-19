@@ -1,13 +1,14 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.Kernel.Orleans.StateMachines;
+namespace Cratis.Applications.Orleans.StateMachines;
 
 /// <summary>
 /// Defines a state in a <see cref="IStateMachine{T}"/>.
 /// </summary>
 /// <typeparam name="TStoredState">Type of state object associated.</typeparam>
 public interface IState<TStoredState>
+    where TStoredState : StateMachineState
 {
     /// <summary>
     /// Gets the state machine.
