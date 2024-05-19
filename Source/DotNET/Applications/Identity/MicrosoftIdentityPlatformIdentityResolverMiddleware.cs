@@ -34,7 +34,7 @@ public class MicrosoftIdentityPlatformIdentityResolverMiddleware(RequestDelegate
                 .Add(new Claim(ClaimTypes.NameIdentifier, context.Request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString()))
                 .Add(new Claim("sub", context.Request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString()));
 
-            context.Request.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            context.Request.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(claims, "MicrosoftIdentityPlatform"));
         }
 
         await _next(context);
