@@ -10,9 +10,12 @@
         <ProjectReference Include="../API/API.csproj" />
         <ProjectReference Include="../Concepts/Concepts.csproj" />
         <ProjectReference Include="../Domain/Domain.csproj" />
+        <ProjectReference Include="../Read/Read.csproj" />
         <ProjectReference Include="../Domain.Interfaces/Domain.Interfaces.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/Applications/Applications.csproj" />
+        <ProjectReference Include="../../../../Source\DotNET/MongoDB/MongoDB.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/Orleans/Orleans.csproj" />
+        <ProjectReference Include="../../../../Source\DotNET/Orleans.MongoDB/Orleans.MongoDB.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/Tools/ProxyGenerator.Build/ProxyGenerator.Build.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/CQRS/CQRS.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/CQRS.MongoDB/CQRS.MongoDB.csproj" />

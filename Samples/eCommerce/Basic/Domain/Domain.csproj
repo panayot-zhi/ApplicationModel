@@ -2,6 +2,7 @@
 
     <ItemGroup>
         <ProjectReference Include="../Domain.Interfaces/Domain.Interfaces.csproj" />
+        <ProjectReference Include="../Read/Read.csproj" />
     </ItemGroup>
 
     <ItemGroup>

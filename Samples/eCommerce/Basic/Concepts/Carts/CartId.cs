@@ -10,6 +10,11 @@ namespace Concepts.Carts;
 public record CartId(Guid value) : ConceptAs<Guid>(value)
 {
     /// <summary>
+    /// The cart id value representing not set.
+    /// </summary>
+    public static readonly CartId NotSet = Guid.Empty;
+
+    /// <summary>
     /// Implicitly convert from a <see cref="Guid"/> to a <see cref="CartId"/>.
     /// </summary>
     /// <param name="value">Guid value to convert from.</param>
