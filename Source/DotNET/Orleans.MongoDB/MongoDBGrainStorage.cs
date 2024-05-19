@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Concepts;
 using Cratis.MongoDB;
 using MongoDB.Driver;
 using Orleans.Runtime;
@@ -52,6 +53,7 @@ public class MongoDBGrainStorage : IGrainStorage
     {
         var collection = _database.GetCollection<T>();
         var filter = GetFilter<T>(grainId);
+        SetIdFromGrainId(grainState.State, grainId);
         return collection.ReplaceOneAsync(filter, grainState.State, new ReplaceOptions { IsUpsert = true });
     }
 
@@ -67,5 +69,35 @@ public class MongoDBGrainStorage : IGrainStorage
         }
 
         return Builders<T>.Filter.Eq("_id", grainId.ToString());
+    }
+
+    void SetIdFromGrainId<T>(T state, GrainId grainId)
+    {
+        if (state is null) return;
+
+        var idProperty = state.GetType().GetProperty("Id");
+        if (idProperty?.CanWrite != true) return;
+
+        object? value;
+
+        if (grainId.TryGetGuidKey(out var guidKey, out _))
+        {
+            value = guidKey;
+        }
+        else if (grainId.TryGetIntegerKey(out var integerKey, out _))
+        {
+            value = integerKey;
+        }
+        else
+        {
+            value = grainId.ToString();
+        }
+
+        if (idProperty.PropertyType.IsConcept())
+        {
+            value = ConceptFactory.CreateConceptInstance(idProperty.PropertyType, value);
+        }
+
+        idProperty.SetValue(state, value);
     }
 }
