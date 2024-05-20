@@ -60,7 +60,7 @@ public static class TypeExtensions
         { typeof(decimal).FullName!, new("number", "Number") },
         { typeof(DateTime).FullName!, new("Date",  "Date") },
         { typeof(DateTimeOffset).FullName!, new("Date", "Date") },
-        { typeof(Guid).FullName!, new("string", "String") },
+        { typeof(Guid).FullName!, new("Guid", "Guid", "@cratis/fundamentals") },
         { typeof(DateOnly).FullName!, new("Date", "Date") },
         { typeof(TimeOnly).FullName!, new("Date", "Date") },
         { typeof(System.Text.Json.Nodes.JsonNode).FullName!, AnyTypeFinal },
@@ -247,25 +247,34 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type">Type to convert.</param>
     /// <param name="targetPath">The target path the proxies are generated to.</param>
+    /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
     /// <returns>Converted <see cref="TypeDescriptor"/>.</returns>
-    public static TypeDescriptor ToTypeDescriptor(this Type type, string targetPath)
+    public static TypeDescriptor ToTypeDescriptor(this Type type, string targetPath, int segmentsToSkip)
     {
-        var imports = new List<ImportStatement>();
         var typesInvolved = new List<Type>();
 
         var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToList();
         var propertyDescriptors = properties.ConvertAll(_ => _.ToPropertyDescriptor());
+        List<ImportStatement> imports = [];
 
-        foreach (var property in propertyDescriptors.Where(_ => !_.OriginalType.IsKnownType()))
+        foreach (var property in propertyDescriptors)
         {
-            property.CollectTypesInvolved(typesInvolved);
+            if (!property.OriginalType.IsKnownType())
+            {
+                property.CollectTypesInvolved(typesInvolved);
+            }
+            if (!string.IsNullOrEmpty(property.Module))
+            {
+                imports.Add(new ImportStatement(property.Type, property.Module));
+            }
         }
+        imports.AddRange(typesInvolved.GetImports(targetPath, type!.ResolveTargetPath(segmentsToSkip), segmentsToSkip));
 
         return new TypeDescriptor(
             type,
             type.GetTargetType().Type,
             propertyDescriptors,
-            typesInvolved.GetImports(targetPath, type!.ResolveTargetPath()),
+            imports,
             typesInvolved);
     }
 
@@ -317,10 +326,12 @@ public static class TypeExtensions
     /// Resolve the relative path for a type.
     /// </summary>
     /// <param name="type">Type to resolve for.</param>
+    /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
     /// <returns>Resolved path.</returns>
-    public static string ResolveTargetPath(this Type type)
+    public static string ResolveTargetPath(this Type type, int segmentsToSkip)
     {
-        var path = type.Namespace!.Replace(Globals.NamespacePrefix, string.Empty).Replace('.', Path.DirectorySeparatorChar);
+        var ns = type.Namespace!.Replace(Globals.NamespacePrefix, string.Empty);
+        var path = string.Join(Path.DirectorySeparatorChar, ns.Split('.').Skip(segmentsToSkip));
         if (string.IsNullOrEmpty(path))
         {
             path = $"{Path.DirectorySeparatorChar}";
@@ -335,12 +346,13 @@ public static class TypeExtensions
     /// <param name="types">Types to get from.</param>
     /// <param name="targetPath">The target path the proxies are generated to.</param>
     /// <param name="relativePath">The relative path to work from.</param>
+    /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
     /// <returns>A collection of <see cref="ImportStatement"/>.</returns>
-    public static IEnumerable<ImportStatement> GetImports(this IEnumerable<Type> types, string targetPath, string relativePath) =>
+    public static IEnumerable<ImportStatement> GetImports(this IEnumerable<Type> types, string targetPath, string relativePath, int segmentsToSkip) =>
          types.Select(_ =>
         {
             var fullPath = Path.Join(targetPath, relativePath);
-            var fullPathForType = Path.Join(targetPath, _.ResolveTargetPath());
+            var fullPathForType = Path.Join(targetPath, _.ResolveTargetPath(segmentsToSkip));
             var importPath = Path.GetRelativePath(fullPath, fullPathForType);
             importPath = $"{importPath}/{_.Name}";
             return new ImportStatement(_.GetTargetType().Type, importPath);
@@ -354,7 +366,7 @@ public static class TypeExtensions
     /// <remarks>It skips any types already added to the collection passed to it.</remarks>
     public static void CollectTypesInvolved(this PropertyDescriptor property, IList<Type> typesInvolved)
     {
-        if (typesInvolved.Contains(property.OriginalType) || property.OriginalType.IsAPrimitiveType()) return;
+        if (typesInvolved.Contains(property.OriginalType) || property.OriginalType.IsAPrimitiveType() || property.OriginalType.IsConcept()) return;
         typesInvolved.Add(property.OriginalType);
         foreach (var subProperty in property.OriginalType.GetPropertyDescriptors().Where(_ => !_.OriginalType.IsKnownType()))
         {

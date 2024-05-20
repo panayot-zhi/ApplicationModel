@@ -73,8 +73,22 @@ public static class MethodInfoExtensions
     /// </summary>
     /// <param name="method">Method to get for.</param>
     /// <returns>Collection of <see cref="PropertyDescriptor"/>.</returns>
-    public static IEnumerable<PropertyDescriptor> GetPropertyDescriptors(this MethodInfo method) =>
-        method.GetParameters().ToList().ConvertAll(_ => _.ToPropertyDescriptor());
+    public static IEnumerable<PropertyDescriptor> GetPropertyDescriptors(this MethodInfo method)
+    {
+        List<PropertyDescriptor> properties = [];
+        var parameters = method.GetParameters();
+        var primitives = parameters.Where(_ => _.ParameterType.IsAPrimitiveType());
+        var complex = parameters.Where(_ => !_.ParameterType.IsAPrimitiveType());
+
+        properties.AddRange(primitives.ToList().ConvertAll(_ => _.ToPropertyDescriptor()));
+
+        foreach (var complexType in complex)
+        {
+            properties.AddRange(complexType.ParameterType.GetProperties().Select(_ => _.ToPropertyDescriptor()));
+        }
+
+        return properties;
+    }
 
     /// <summary>
     /// Get the constructor argument for an attribute.

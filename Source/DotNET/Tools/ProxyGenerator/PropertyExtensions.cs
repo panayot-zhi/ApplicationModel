@@ -52,6 +52,7 @@ public static class PropertyExtensions
             name,
             targetType.Type,
             targetType.Constructor,
+            targetType.Module,
             isEnumerable,
             isNullable);
     }

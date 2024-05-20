@@ -5,18 +5,20 @@ using Cratis.Applications.ProxyGenerator;
 
 Console.WriteLine("Cratis Proxy Generator\n");
 
-if (args.Length != 2)
+if (args.Length < 2)
 {
     Console.WriteLine("Usage: ");
-    Console.WriteLine("  Cratis.ProxyGenerator <assembly> <output-path>");
+    Console.WriteLine("  Cratis.ProxyGenerator <assembly> <output-path> [segments-to-skip]");
     return 1;
 }
 var assemblyFile = Path.GetFullPath(args[0]);
 var outputPath = Path.GetFullPath(args[1]);
+var segmentsToSkip = args.Length > 2 ? int.Parse(args[2]) : 0;
 
 var result = await Generator.Generate(
     assemblyFile,
     outputPath,
+    segmentsToSkip,
     Console.WriteLine,
     Console.Error.WriteLine);
 return result ? 0 : 1;

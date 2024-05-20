@@ -16,8 +16,9 @@ public static class CommandExtensions
     /// </summary>
     /// <param name="method">Method to convert.</param>
     /// <param name="targetPath">The target path the proxies are generated to.</param>
+    /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
     /// <returns>Converted <see cref="CommandDescriptor"/>.</returns>
-    public static CommandDescriptor ToCommandDescriptor(this MethodInfo method, string targetPath)
+    public static CommandDescriptor ToCommandDescriptor(this MethodInfo method, string targetPath, int segmentsToSkip)
     {
         var typesInvolved = new List<Type>();
         var properties = method.GetPropertyDescriptors();
@@ -43,7 +44,7 @@ public static class CommandExtensions
 
         var propertiesWithComplexTypes = properties.Where(_ => !_.OriginalType.IsKnownType());
         typesInvolved.AddRange(propertiesWithComplexTypes.Select(_ => _.OriginalType));
-        var imports = typesInvolved.GetImports(targetPath, method.DeclaringType!.ResolveTargetPath());
+        var imports = typesInvolved.GetImports(targetPath, method.DeclaringType!.ResolveTargetPath(segmentsToSkip), segmentsToSkip);
 
         var additionalTypesInvolved = new List<Type>();
         foreach (var property in propertiesWithComplexTypes)

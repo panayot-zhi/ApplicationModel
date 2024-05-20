@@ -20,6 +20,7 @@ public static class DescriptorExtensions
     /// <param name="typesInvolved">Collection of types that are involved from any of the types written.</param>
     /// <param name="template">Template to use for writing.</param>
     /// <param name="directories">All directories that has been written to.</param>
+    /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
     /// <param name="typeNameToEcho">The type name to echo for statistics.</param>
     /// <param name="message">Logger to use for outputting messages.</param>
     /// <returns>Awaitable task.</returns>
@@ -29,13 +30,14 @@ public static class DescriptorExtensions
         IList<Type> typesInvolved,
         HandlebarsTemplate<object, object> template,
         IList<string> directories,
+        int segmentsToSkip,
         string typeNameToEcho,
         Action<string> message)
     {
         var stopwatch = Stopwatch.StartNew();
         foreach (var descriptor in descriptors)
         {
-            var path = descriptor.Type.ResolveTargetPath();
+            var path = descriptor.Type.ResolveTargetPath(segmentsToSkip);
             var fullPath = Path.Join(targetPath, path, $"{descriptor.Name}.ts");
             var directory = Path.GetDirectoryName(fullPath)!;
             if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);

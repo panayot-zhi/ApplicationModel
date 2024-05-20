@@ -8,6 +8,6 @@ namespace Cratis.Applications.ProxyGenerator;
 /// </summary>
 /// <param name="Type">Type.</param>
 /// <param name="Constructor">The JavaScript constructor type.</param>
-/// <param name="ImportFromModule">Module to import from. default or empty means no need to import.</param>
+/// <param name="Module">Module the type should be imported from. default or empty means no need to import.</param>
 /// <param name="Final">Whether or not it absolutely is this type and do not try to resolve a more specific one.</param>
-public record TargetType(string Type, string Constructor, string ImportFromModule = "", bool Final = false);
+public record TargetType(string Type, string Constructor, string Module = "", bool Final = false);
