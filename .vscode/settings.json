@@ -5,9 +5,11 @@
         "Bson",
         "camelcase",
         "Cratis",
+        "datatable",
         "Expando",
         "MVVM",
         "primeicons",
+        "primereact",
         "Swashbuckle",
         "tsyringe"
     ],
