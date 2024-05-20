@@ -10,6 +10,7 @@ namespace Cratis.Applications.ProxyGenerator.Templates;
 /// <param name="Name">Name of the property.</param>
 /// <param name="Type">Type of the property.</param>
 /// <param name="Constructor">The JavaScript constructor for the type.</param>
+/// <param name="Module">The module, if any, the type belongs to.</param>
 /// <param name="IsEnumerable">Whether or not the property is an enumerable or not.</param>
 /// <param name="IsNullable">Whether or not the property is nullable or not.</param>
 public record PropertyDescriptor(
@@ -17,5 +18,6 @@ public record PropertyDescriptor(
     string Name,
     string Type,
     string Constructor,
+    string Module,
     bool IsEnumerable,
     bool IsNullable);
