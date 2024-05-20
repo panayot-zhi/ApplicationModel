@@ -14,30 +14,30 @@
         "**/*.tsx"
     ],
     "type": "module",
-    "main": "dist/cjs/index.js",
-    "module": "dist/esm/index.js",
-    "types": "dist/esm/index.d.ts",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "import": "./dist/esm/index.js",
-            "require": "./dist/cjs/index.js",
-            "types": "./dist/esm/index.d.ts"
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
         },
         "./commands": {
-            "import": "./dist/esm/commands/index.js",
-            "require": "./dist/cjs/commands/index.js",
-            "types": "./dist/esm/commands/index.d.ts"
+            "import": "./dist/commands/index.js",
+            "require": "./dist/commands/index.js",
+            "types": "./dist/commands/index.d.ts"
         },
         "./queries": {
-            "import": "./dist/esm/queries/index.js",
-            "require": "./dist/cjs/queries/index.js",
-            "types": "./dist/esm/queries/index.d.ts"
+            "import": "./dist/queries/index.js",
+            "require": "./dist/queries/index.js",
+            "types": "./dist/queries/index.d.ts"
         },
         "./validation": {
-            "import": "./dist/esm/validation/index.js",
-            "requireefault": "./dist/cjs/validation/index.js",
-            "types": "./dist/esm/validation/index.d.ts"
+            "import": "./dist/validation/index.js",
+            "require": "./dist/validation/index.js",
+            "types": "./dist/validation/index.d.ts"
         }
     },
     "scripts": {
@@ -51,7 +51,7 @@
         "up": "yarn g:up"
     },
     "dependencies": {
-        "@cratis/fundamentals": "5.0.8",
+        "@cratis/fundamentals": "5.2.3",
         "handlebars": "4.7.7"
     }
 }

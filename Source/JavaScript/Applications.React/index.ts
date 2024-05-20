@@ -4,9 +4,11 @@
 import * as commands from './commands';
 import * as dialogs from './dialogs';
 import * as identity from './identity';
+import * as queries from './queries';
 
 export {
     commands,
     dialogs,
-    identity
+    identity,
+    queries
 };

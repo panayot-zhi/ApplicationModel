@@ -14,25 +14,25 @@
         "**/*.tsx"
     ],
     "type": "module",
-    "main": "dist/cjs/index.js",
-    "module": "dist/esm/index.js",
-    "types": "dist/esm/index.d.ts",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "import": "./dist/esm/index.js",
-            "require": "./dist/cjs/index.js",
-            "types": "./dist/esm/index.d.ts"
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
         },
         "./browser": {
-            "import": "./dist/esm/browser/index.js",
-            "require": "./dist/cjs/browser/index.js",
-            "types": "./dist/esm/browser/index.d.ts"
+            "import": "./dist/browser/index.js",
+            "require": "./dist/browser/index.js",
+            "types": "./dist/browser/index.d.ts"
         },
         "./messaging": {
-            "import": "./dist/esm/messaging/index.js",
-            "require": "./dist/cjs/messaging/index.js",
-            "types": "./dist/esm/messaging/index.d.ts"
+            "import": "./dist/messaging/index.js",
+            "require": "./dist/messaging/index.js",
+            "types": "./dist/messaging/index.d.ts"
         }
     },
     "scripts": {
@@ -47,7 +47,7 @@
     },
     "dependencies": {
         "@cratis/applications": "1.0.0",
-        "@cratis/fundamentals": "5.0.8",
+        "@cratis/fundamentals": "5.2.3",
         "mobx": "6.12.3",
         "mobx-react": "9.1.1",
         "react": "18.3.1",
