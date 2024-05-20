@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.Build.Framework;
+using Microsoft.Build.Utilities;
 using Task = Microsoft.Build.Utilities.Task;
 
 namespace Cratis.Applications.ProxyGenerator.Build;
@@ -23,6 +24,11 @@ public class ProxyGeneratorBuildTask : Task
     [Required]
     public required ITaskItem OutputPath { get; set; }
 
+    /// <summary>
+    /// Gets or sets number of segments to skip from the namespace when generating the output path. Defaults to 0.
+    /// </summary>
+    public ITaskItem SegmentsToSkip { get; set; } = new TaskItem("0");
+
     /// <inheritdoc/>
     public override bool Execute()
     {
@@ -35,6 +41,7 @@ public class ProxyGeneratorBuildTask : Task
         return Generator.Generate(
             inputAssembly,
             outputPath,
+            int.Parse(SegmentsToSkip.ItemSpec),
             s => Log.LogMessage(MessageImportance.High, s),
             s => Log.LogError(s)).GetAwaiter().GetResult();
     }
