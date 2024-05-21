@@ -68,7 +68,7 @@ public class MongoDBGrainStorage : IGrainStorage
             return Builders<T>.Filter.Eq("_id", integerKey);
         }
 
-        return Builders<T>.Filter.Eq("_id", grainId.ToString());
+        return Builders<T>.Filter.Eq("_id", grainId.Key.ToString());
     }
 
     void SetIdFromGrainId<T>(T state, GrainId grainId)
@@ -90,7 +90,7 @@ public class MongoDBGrainStorage : IGrainStorage
         }
         else
         {
-            value = grainId.ToString();
+            value = grainId.Key.ToString();
         }
 
         if (idProperty.PropertyType.IsConcept())
