@@ -55,6 +55,7 @@ public class MongoDBClientFactory(ILogger<MongoDBClientFactory> logger) : IMongo
         {
             Selector = new MongoClientInterceptorSelector(proxyGenerator, resiliencePipeline, client)
         };
+
         return proxyGenerator.CreateInterfaceProxyWithTarget<IMongoClient>(client, proxyGeneratorOptions);
     }
 
