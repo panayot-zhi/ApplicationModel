@@ -23,7 +23,7 @@ public class DiscoverableModelValidator(IValidator validator) : IModelValidator
         {
             var validationContextType = typeof(ValidationContext<>).MakeGenericType(context.ModelMetadata.ModelType);
             var validationContext = Activator.CreateInstance(validationContextType, [context.Model!]) as IValidationContext;
-            var result = validator.Validate(validationContext);
+            var result = validator.ValidateAsync(validationContext).GetAwaiter().GetResult();
             failures.AddRange(result.Errors.Select(x => new ModelValidationResult(x.PropertyName, x.ErrorMessage)));
         }
         return failures;
