@@ -2,6 +2,7 @@
 
     <ItemGroup>
         <ProjectReference Include="../Concepts/Concepts.csproj" />
+        <ProjectReference Include="../../../../Source/DotNET/Orleans/Orleans.csproj" />
     </ItemGroup>
 
 </Project>

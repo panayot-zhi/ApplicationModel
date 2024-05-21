@@ -13,5 +13,6 @@
         "Swashbuckle",
         "tsyringe"
     ],
-    "dotnet.defaultSolution": "ApplicationModel.sln"
+    "dotnet.defaultSolution": "ApplicationModel.sln",
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

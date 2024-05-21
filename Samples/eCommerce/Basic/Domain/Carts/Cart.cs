@@ -14,8 +14,19 @@ public class Cart : Grain<Read.Carts.Cart>, ICart
     /// <inheritdoc/>
     public async Task AddItem(SKU sku, Price price, Quantity quantity)
     {
-        var item = new CartItem(sku, price, quantity);
-        State.Items.Add(item);
+        var existingItem = State.Items.FirstOrDefault(_ => _.SKU == sku && _.Price == price);
+        if (existingItem is not null)
+        {
+            var index = State.Items.IndexOf(existingItem);
+            State.Items.Remove(existingItem);
+            State.Items.Insert(index, existingItem with { Quantity = existingItem.Quantity + quantity });
+        }
+        else
+        {
+            var item = new CartItem(sku, price, quantity);
+            State.Items.Add(item);
+        }
+
         await WriteStateAsync();
     }
 }

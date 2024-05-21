@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
+        "target": "ES2021",
         "useDefineForClassFields": true,
         "lib": [
             "ES2020",
@@ -15,31 +15,19 @@
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
+        "allowUmdGlobalAccess": true,
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "baseUrl": "./",
         "paths": {
             "API/*": [
                 "./API/*"
-            ],
-            "Infrastructure/*": [
-                "./Infrastructure/*"
-            ],
-            "Browser": [
-                "./Infrastructure/Browser/index.ts"
-            ],
-            "Browser/*": [
-                "./Infrastructure/Browser/*"
-            ],
-            "MVVM": [
-                "Infrastructure/MVVM/index.ts"
-            ],
-            "MVVM/*": [
-                "Infrastructure/MVVM/*"
             ],
             "Components/*": [
                 "Components/*"
@@ -66,13 +54,16 @@
             "path": "./tsconfig.node.json"
         },
         {
-            "path": "../../../Source/JavaScript/Applications"
+            "path": "../../../../Source/JavaScript/Applications"
         },
         {
-            "path": "../../../Source/JavaScript/Applications.React"
+            "path": "../../../../Source/JavaScript/Applications.React"
         },
         {
-            "path": "../../../Source/JavaScript/Applications.React.MVVM"
+            "path": "../../../../Source/JavaScript/Applications.React.MVVM"
+        },
+        {
+            "path": "../../../../Source/JavaScript/Applications.Vite"
         }
     ]
 }

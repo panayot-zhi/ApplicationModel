@@ -3,14 +3,5 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
-import { field } from '@cratis/fundamentals';
-
-
-export class AddItemToCart {
-
-    @field(String)
-    sku!: string;
-
-    @field(Number)
-    quantity!: number;
-}
+export * from './SetPrice';
+export * from './AddProduct';

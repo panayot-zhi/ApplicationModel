@@ -6,12 +6,12 @@ namespace Concepts;
 /// <summary>
 /// Represents the domain concept of price.
 /// </summary>
-/// <param name="Value">Value to initialize it with.</param>
-public record Price(decimal Value) : ConceptAs<decimal>(Value)
+/// <param name="Net">The net price.</param>
+/// <param name="Gross">The gross price.</param>
+public record Price(decimal Net, decimal Gross)
 {
     /// <summary>
-    /// Implicitly convert from a <see cref="decimal"/> to a <see cref="Price"/>.
+    /// The zero price.
     /// </summary>
-    /// <param name="value">Decimal to convert from.</param>
-    public static implicit operator Price(decimal value) => new(value);
+    public static readonly Price Zero = new(0, 0);
 }

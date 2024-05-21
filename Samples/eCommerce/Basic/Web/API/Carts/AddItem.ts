@@ -3,20 +3,22 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
-import { Command, CommandValidator, CommandPropertyValidators, useCommand, SetCommandValues, ClearCommandValues } from 'Infrastructure/commands';
-import { Validator } from 'Infrastructure/validation';
-import { AddItemToCart } from './AddItemToCart';
+import { Command, CommandValidator, CommandPropertyValidators } from '@cratis/applications/commands';
+import { useCommand, SetCommandValues, ClearCommandValues } from '@cratis/applications.react/commands';
+import { Validator } from '@cratis/applications/validation';
 import Handlebars from 'handlebars';
 
 const routeTemplate = Handlebars.compile('/api/carts/add-item');
 
 export interface IAddItem {
-    addItemToCart?: AddItemToCart;
+    sku?: string;
+    quantity?: number;
 }
 
 export class AddItemValidator extends CommandValidator {
     readonly properties: CommandPropertyValidators = {
-        addItemToCart: new Validator(),
+        sku: new Validator(),
+        quantity: new Validator(),
     };
 }
 
@@ -25,7 +27,8 @@ export class AddItem extends Command<IAddItem> implements IAddItem {
     readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
     readonly validation: CommandValidator = new AddItemValidator();
 
-    private _addItemToCart!: AddItemToCart;
+    private _sku!: string;
+    private _quantity!: number;
 
     constructor() {
         super(Object, false);
@@ -38,17 +41,26 @@ export class AddItem extends Command<IAddItem> implements IAddItem {
 
     get properties(): string[] {
         return [
-            'addItemToCart',
+            'sku',
+            'quantity',
         ];
     }
 
-    get addItemToCart(): AddItemToCart {
-        return this._addItemToCart;
+    get sku(): string {
+        return this._sku;
     }
 
-    set addItemToCart(value: AddItemToCart) {
-        this._addItemToCart = value;
-        this.propertyChanged('addItemToCart');
+    set sku(value: string) {
+        this._sku = value;
+        this.propertyChanged('sku');
+    }
+    get quantity(): number {
+        return this._quantity;
+    }
+
+    set quantity(value: number) {
+        this._quantity = value;
+        this.propertyChanged('quantity');
     }
 
     static use(initialValues?: IAddItem): [AddItem, SetCommandValues<IAddItem>, ClearCommandValues] {

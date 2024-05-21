@@ -2,6 +2,10 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Globalization;
+using System.Text.Json.Nodes;
+using Cratis.Applications.MongoDB;
+using Cratis.Json;
+using Cratis.MongoDB;
 using Main;
 using MongoDB.Driver;
 using Orleans.Serialization;
@@ -15,13 +19,28 @@ CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication
     .CreateBuilder(args)
-    .UseApplicationModel();
+    .UseApplicationModel(mvc => mvc.AddCQRS());
 
 // Todo: This should be part of the "Use application model" extension method, with overrides
 builder.Services.AddDefaultModelNameConvention();
 builder.Host.UseMongoDB();
+
+var mongoClient = new MongoClient("mongodb://localhost:27017");
+builder.Services.AddSingleton(mongoClient);
+builder.Services.AddSingleton(mongoClient.GetDatabase("eCommerce"));
+builder.Services.AddTransient(typeof(IMongoCollection<>), typeof(MongoCollectionAdapter<>));
+
 builder.UseOrleans(_ => _
-    .ConfigureServices(services => services.AddConceptSerializer())
+    .ConfigureServices(services =>
+    {
+        services.AddConceptSerializer();
+        services.AddSerializer(serializerBuilder => serializerBuilder.AddJsonSerializer(
+            _ =>
+                _ == typeof(JsonObject) ||
+                (_.Namespace?.StartsWith("Read") ?? false) ||
+                (_.Namespace?.StartsWith("Concepts") ?? false),
+            Globals.JsonSerializerOptions));
+    })
     .UseLocalhostClustering()
     .AddMongoDBStorageAsDefault(options =>
     {
@@ -36,6 +55,7 @@ builder.UseOrleans(_ => _
     }));
 
 var app = builder.Build();
+app.UseWebSockets();
 app.UseRouting();
 app.UseApplicationModel();
 

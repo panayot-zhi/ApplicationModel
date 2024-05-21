@@ -2,14 +2,16 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { injectable } from 'tsyringe';
+import { Cart, CartForCurrentUser } from './API/Carts';
 
 @injectable()
 export class FeatureViewModel {
-    constructor() {
-        setInterval(() => {
-            this.count++;
-        }, 1000);
+    constructor(readonly query: CartForCurrentUser) {
+
+        query.subscribe(result => {
+            this.cart = result.data;
+        });
     }
 
-    count: number = 0;
+    cart: Cart = new Cart();
 }
