@@ -1,7 +1,6 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Text.Json;
 using Cratis.Applications.ModelBinding;
 using Cratis.Json;
 using Cratis.Reflection;
@@ -41,7 +40,7 @@ public static class ServiceCollectionExtensions
             })
             .AddJsonOptions(_ =>
             {
-                _.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                _.JsonSerializerOptions.PropertyNamingPolicy = AcronymFriendlyJsonCamelCaseNamingPolicy.Instance;
                 foreach (var converter in Globals.JsonSerializerOptions!.Converters)
                 {
                     _.JsonSerializerOptions.Converters.Add(converter);
