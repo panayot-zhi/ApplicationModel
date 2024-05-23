@@ -52,7 +52,7 @@ public class CommandActionFilter : IAsyncActionFilter
             var commandResult = new CommandResult<object>
             {
                 // TODO: Set correlation ID to the actual correlation ID
-                // CorrelationId = _executionContextManager.Current.CorrelationId,
+                // CorrelationId = context.HttpContext.GetCorrelationId(),
                 ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(e => e.ToValidationResult(_.Key))),
                 ExceptionMessages = [.. exceptionMessages],
                 ExceptionStackTrace = exceptionStackTrace ?? string.Empty,
