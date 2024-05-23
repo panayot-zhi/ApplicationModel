@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace Cratis.Applications.Queries;
 
 /// <summary>
-/// Defines an observable that is observed by a connected client.
+/// Defines an enumerable that is observed by a connected client.
 /// </summary>
-public interface IClientObservable
+public interface IClientEnumerableObservable
 {
     /// <summary>
     /// Handle the action context and result from the action.
@@ -16,11 +16,4 @@ public interface IClientObservable
     /// <param name="context"><see cref="ActionExecutingContext"/> to handle for.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     Task HandleConnection(ActionExecutingContext context);
-
-    /// <summary>
-    /// Get an async enumerator for the observable.
-    /// </summary>
-    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
-    /// <returns>Async enumerator.</returns>
-    object GetAsynchronousEnumerator(CancellationToken cancellationToken = default);
 }

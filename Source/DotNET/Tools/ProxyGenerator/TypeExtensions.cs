@@ -36,7 +36,6 @@ public static class TypeExtensions
     internal static Type _dictionaryType = typeof(IDictionary<,>);
     internal static Type _asyncEnumerableType = typeof(IAsyncEnumerable<>);
     internal static Type _controllerBaseType = typeof(object);
-    internal static Type _clientObservableType = typeof(object);
     internal static Type _taskType = typeof(Task);
     internal static Type _voidType = typeof(void);
 #pragma warning restore SA1600 // Elements should be documented
@@ -148,11 +147,18 @@ public static class TypeExtensions
     public static bool IsController(this Type type) => type.IsAssignableTo(_controllerBaseType);
 
     /// <summary>
+    /// Check if a type is an async enumerable.
+    /// </summary>
+    /// <param name="type">Type to check.</param>
+    /// <returns>True if it is an async enumerable, false if not.</returns>
+    public static bool IsAsyncEnumerable(this Type type) => type.IsAssignableTo(_asyncEnumerableType);
+
+    /// <summary>
     /// Check if a type is observable.
     /// </summary>
     /// <param name="type">Type to check.</param>
     /// <returns>True if it is observable, false if not.</returns>
-    public static bool IsObservable(this Type type) => type.IsAssignableTo(_clientObservableType);
+    public static bool IsSubject(this Type type) => type.FullName!.StartsWith("System.Reactive.Subjects.ISubject`1");
 
     /// <summary>
     /// Check if a type is a String or not.
@@ -285,8 +291,13 @@ public static class TypeExtensions
     /// <returns>Converted <see cref="ModelDescriptor"/>.</returns>
     public static ModelDescriptor ToModelDescriptor(this Type type)
     {
-        var isObservable = type.IsObservable();
-        if (isObservable)
+        var isSubject = type.IsSubject();
+        if (isSubject)
+        {
+            type = type.GetSubjectElementType()!;
+        }
+        var isAsyncEnumerable = type.IsAsyncEnumerable();
+        if (isAsyncEnumerable)
         {
             type = type.GetAsyncEnumerableElementType()!;
         }
@@ -304,7 +315,7 @@ public static class TypeExtensions
             targetType.Type,
             targetType.Constructor,
             isEnumerable,
-            isObservable,
+            isSubject || isAsyncEnumerable,
             []);
     }
 
@@ -462,6 +473,24 @@ public static class TypeExtensions
     }
 
     /// <summary>
+    /// Gets the element type of a System.Reactive.Subjects.ISubject{T}.
+    /// </summary>
+    /// <param name="subjectType">The <see cref="Type"/> to get from.</param>
+    /// <returns>The element type.</returns>
+    public static Type GetSubjectElementType(this Type subjectType)
+    {
+        if (subjectType.IsGenericType && subjectType.IsSubject() )
+        {
+            return subjectType.GetGenericArguments()[0];
+        }
+
+        return subjectType.GetInterfaces()
+            .Where(t => t.IsGenericType &&
+                t.GetGenericTypeDefinition().Name.StartsWith("ISubject`1"))
+            .Select(t => t.GenericTypeArguments[0]).FirstOrDefault()!;
+    }
+
+    /// <summary>
     /// Gets the element type of an <see cref="IAsyncEnumerable{T}"/>.
     /// </summary>
     /// <param name="asyncEnumerableType">The <see cref="Type"/> to get from.</param>
@@ -538,8 +567,5 @@ public static class TypeExtensions
 
         var aspNetCore = _metadataLoadContext.LoadFromAssemblyName("Microsoft.AspNetCore.Mvc.Core");
         _controllerBaseType = aspNetCore.GetType("Microsoft.AspNetCore.Mvc.ControllerBase")!;
-
-        var cqrs = _metadataLoadContext.LoadFromAssemblyName("Cratis.Applications.CQRS");
-        _clientObservableType = cqrs.GetType("Cratis.Applications.Queries.IClientObservable")!;
     }
 }

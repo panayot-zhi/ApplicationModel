@@ -16,30 +16,18 @@ namespace Cratis.Applications.Queries;
 /// <remarks>
 /// Initializes a new instance of the <see cref="ClientObservable{T}"/> class.
 /// </remarks>
-/// <param name="clientDisconnected">Optional callback that gets called when client is disconnected.</param>
-public class ClientObservable<T>(Action? clientDisconnected = default) : IClientObservable, IAsyncEnumerable<T>, IDisposable
+/// <param name="subject">The <see cref="ISubject{T}"/> the observable wraps.</param>
+/// <param name="jsonOptions">The <see cref="JsonOptions"/>.</param>
+public class ClientObservable<T>(ISubject<T> subject, JsonOptions jsonOptions) : IClientObservable, IAsyncEnumerable<T>
 {
-    readonly ReplaySubject<T> _subject = new();
-
-    /// <inheritdoc/>
-    public bool IsDisposed => _subject.IsDisposed;
-
-    /// <summary>
-    /// Gets or sets the callback that gets called when the client disconnects.
-    /// </summary>
-    public Action? ClientDisconnected { get; set; } = clientDisconnected;
-
-    /// <inheritdoc/>
-    public void Dispose() => _subject.Dispose();
-
     /// <summary>
     /// Notifies all subscribed and future observers about the arrival of the specified element in the sequence.
     /// </summary>
     /// <param name="next">The value to send to all observers.</param>
-    public void OnNext(T next) => _subject.OnNext(next);
+    public void OnNext(T next) => subject.OnNext(next);
 
     /// <inheritdoc/>
-    public async Task HandleConnection(ActionExecutingContext context, JsonOptions jsonOptions)
+    public async Task HandleConnection(ActionExecutingContext context)
     {
         using var webSocket = await context.HttpContext.WebSockets.AcceptWebSocketAsync();
         IDisposable? subscription = default;
@@ -47,7 +35,7 @@ public class ClientObservable<T>(Action? clientDisconnected = default) : IClient
         using var cts = new CancellationTokenSource();
 
 #pragma warning disable MA0147 // Avoid async void method for delegate
-        subscription = _subject.Subscribe(async _ =>
+        subscription = subject.Subscribe(async _ =>
         {
             queryResult.Data = _!;
 
@@ -61,7 +49,7 @@ public class ClientObservable<T>(Action? clientDisconnected = default) : IClient
             {
                 Console.Error.WriteLine($"Error sending message to client: {ex.Message}\n{ex.StackTrace}");
                 subscription?.Dispose();
-                ClientDisconnected?.Invoke();
+                subject.OnCompleted();
             }
         });
 #pragma warning restore MA0147 // Avoid async void method for delegate
@@ -85,14 +73,13 @@ public class ClientObservable<T>(Action? clientDisconnected = default) : IClient
         finally
         {
             cts.Cancel();
-            _subject.OnCompleted();
+            subject.OnCompleted();
             subscription?.Dispose();
-            ClientDisconnected?.Invoke();
         }
     }
 
     /// <inheritdoc/>
-    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default) => new ObservableAsyncEnumerator<T>(_subject, cancellationToken);
+    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default) => new ObservableAsyncEnumerator<T>(subject, cancellationToken);
 
     /// <inheritdoc/>
     public object GetAsynchronousEnumerator(CancellationToken cancellationToken = default) => GetAsyncEnumerator(cancellationToken);

@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Linq.Expressions;
+using System.Reactive.Subjects;
 using System.Reflection;
 using Cratis.Concepts;
 using MongoDB.Bson;
@@ -26,22 +27,37 @@ public static class MongoDBCollectionExtensions
         collection.Find(Builders<T>.Filter.Eq(new StringFieldDefinition<T, TId>("_id"), id)).SingleOrDefault();
 
     /// <summary>
+    /// Find a single document based on Id - asynchronous.
+    /// </summary>
+    /// <param name="collection"><see cref="IMongoCollection{T}"/> to extend.</param>
+    /// <param name="id">Id of document.</param>
+    /// <typeparam name="T">Type of document.</typeparam>
+    /// <typeparam name="TId">Type of identifier.</typeparam>
+    /// <returns>The document if found, default if not.</returns>
+    public static async Task<T?> FindByIdAsync<T, TId>(this IMongoCollection<T> collection, TId id)
+    {
+        var result = await collection.FindAsync(Builders<T>.Filter.Eq(new StringFieldDefinition<T, TId>("_id"), id));
+        return result.SingleOrDefault();
+    }
+
+    /// <summary>
     /// Create an observable query that will observe the collection for changes matching the filter criteria.
     /// </summary>
     /// <param name="collection"><see cref="IMongoCollection{T}"/> to extend.</param>
     /// <param name="filter">Optional filter.</param>
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
-    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ClientObservable<IEnumerable<TDocument>>> Observe<TDocument>(
+    /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
+    public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
         FindOptions<TDocument, TDocument>? options = null)
     {
         filter ??= _ => true;
-        return await collection.Observe<TDocument, IEnumerable<TDocument>>(
+        return await collection.Observe(
             () => collection.FindAsync(filter, options),
             filter,
+            documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
             (cursor, observable) => observable.OnNext(cursor.ToList()));
     }
 
@@ -52,8 +68,8 @@ public static class MongoDBCollectionExtensions
     /// <param name="filter">Optional filter.</param>
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
-    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ClientObservable<TDocument>> ObserveSingle<TDocument>(
+    /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
+    public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
         FindOptions<TDocument, TDocument>? options = null)
@@ -69,16 +85,17 @@ public static class MongoDBCollectionExtensions
     /// <param name="filter">Optional filter.</param>
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
-    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ClientObservable<IEnumerable<TDocument>>> Observe<TDocument>(
+    /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
+    public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
         FindOptions<TDocument, TDocument>? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.Observe<TDocument, IEnumerable<TDocument>>(
+        return await collection.Observe(
             () => collection.FindAsync(filter, options),
             filter,
+            documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
             (documents, observable) => observable.OnNext(documents));
     }
 
@@ -89,8 +106,8 @@ public static class MongoDBCollectionExtensions
     /// <param name="filter">Optional filter.</param>
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
-    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ClientObservable<TDocument>> ObserveSingle<TDocument>(
+    /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
+    public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
         FindOptions<TDocument, TDocument>? options = null)
@@ -106,14 +123,14 @@ public static class MongoDBCollectionExtensions
     /// <param name="id">The identifier of the document to observe.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <typeparam name="TId">Type of id - key.</typeparam>
-    /// <returns>Async Task holding <see cref="ClientObservable{T}"/> with an instance of the type.</returns>
-    public static async Task<ClientObservable<TDocument>> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
+    /// <returns>Async Task holding <see cref="Subject{T}"/> with an instance of the type.</returns>
+    public static async Task<ISubject<TDocument>> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
     {
         var filter = Builders<TDocument>.Filter.Eq(new StringFieldDefinition<TDocument, TId>("_id"), id);
         return await collection.ObserveSingle(() => collection.FindAsync(filter), filter);
     }
 
-    static async Task<ClientObservable<TDocument>> ObserveSingle<TDocument>(
+    static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
          this IMongoCollection<TDocument> collection,
          Func<Task<IAsyncCursor<TDocument>>> findCall,
          FilterDefinition<TDocument> filter)
@@ -121,26 +138,38 @@ public static class MongoDBCollectionExtensions
         return await collection.Observe<TDocument, TDocument>(
             findCall,
             filter,
-            (documents, observable) =>
-        {
-            var result = documents.FirstOrDefault();
-            if (result is not null)
+            documents =>
             {
-                observable.OnNext(result);
-            }
-        });
+                var result = documents.FirstOrDefault();
+                if (result is not null)
+                {
+                    return new BehaviorSubject<TDocument>(result);
+                }
+
+                return new Subject<TDocument>();
+            },
+            (documents, observable) =>
+            {
+                var result = documents.FirstOrDefault();
+                if (result is not null)
+                {
+                    observable.OnNext(result);
+                }
+            });
     }
 
-    static async Task<ClientObservable<TResult>> Observe<TDocument, TResult>(
+    static async Task<ISubject<TResult>> Observe<TDocument, TResult>(
         this IMongoCollection<TDocument> collection,
         Func<Task<IAsyncCursor<TDocument>>> findCall,
         FilterDefinition<TDocument> filter,
-        Action<IEnumerable<TDocument>, ClientObservable<TResult>> onNext)
+        Func<IEnumerable<TDocument>, ISubject<TResult>> createSubject,
+        Action<IEnumerable<TDocument>, ISubject<TResult>> onNext)
     {
-        var observable = new ClientObservable<TResult>();
         var response = await findCall();
         var documents = response.ToList();
-        onNext(documents, observable);
+        var subject = createSubject(documents);
+
+        onNext(documents, subject);
         response.Dispose();
         response = null!;
 
@@ -169,7 +198,8 @@ public static class MongoDBCollectionExtensions
             {
                 while (await cursor.MoveNextAsync())
                 {
-                    if (observable.IsDisposed)
+                    if (subject is Subject<TResult> disposableSubject && disposableSubject.IsDisposed &&
+                        subject is BehaviorSubject<TResult> disposableBehaviorSubject && disposableBehaviorSubject.IsDisposed)
                     {
                         cursor.Dispose();
                         return;
@@ -204,18 +234,29 @@ public static class MongoDBCollectionExtensions
                         }
                     }
 
-                    onNext(documents, observable);
+                    onNext(documents, subject);
                 }
             }
             catch (ObjectDisposedException)
             {
                 Console.WriteLine("Cursor disposed.");
+                cursor.Dispose();
+                subject.OnCompleted();
+
+                if (subject is Subject<TResult> disposableSubject)
+                {
+                    disposableSubject.Dispose();
+                }
+                if (subject is BehaviorSubject<TResult> disposableBehaviorSubject)
+                {
+                    disposableBehaviorSubject.Dispose();
+                }
             }
         });
 
-        observable.ClientDisconnected = cursor.Dispose;
+        subject.Subscribe(_ => { }, cursor.Dispose);
 
-        return observable;
+        return subject;
     }
 
     static void PrefixKeys(BsonDocument document)

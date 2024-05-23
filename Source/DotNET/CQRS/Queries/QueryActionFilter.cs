@@ -1,7 +1,9 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Reactive.Subjects;
 using Cratis.Applications.Validation;
+using Cratis.Reflection;
 using Cratis.Strings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,51 +34,43 @@ public class QueryActionFilter(
         if (context.HttpContext.Request.Method == HttpMethod.Get.Method &&
             context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
         {
-            var exceptionMessages = new List<string>();
-            var exceptionStackTrace = string.Empty;
-            object? response = null;
-            ActionExecutedContext? result = null;
-
-            if (context.ModelState.IsValid)
+            var callResult = await CallNextAndHandleValidationAndExceptions(context, next);
+            if (callResult.Result?.Result is ObjectResult objectResult && IsStreamingResult(objectResult))
             {
-                result = await next();
-
-                if (context.IsAspNetResult()) return;
-
-                if (result.Exception is not null)
+                if (IsSubjectResult(objectResult))
                 {
-                    var exception = result.Exception;
-                    exceptionStackTrace = exception.StackTrace;
+                    logger.ClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
+                    var clientObservable = CreateClientObservableFrom(objectResult);
+                    HandleWebSocketHeadersForMultipleProxies(context.HttpContext);
 
-                    do
+                    if (context.HttpContext.WebSockets.IsWebSocketRequest)
                     {
-                        exceptionMessages.Add(exception.Message);
-                        exception = exception.InnerException;
+                        logger.RequestIsWebSocket();
+                        await clientObservable.HandleConnection(context);
+                        callResult.Result.Result = null;
                     }
-                    while (exception is not null);
-
-                    result.Exception = null!;
+                    else
+                    {
+                        logger.RequestIsHttp();
+                        callResult.Result.Result = new ObjectResult(clientObservable);
+                    }
                 }
+                else if (IsAsyncEnumerableResult(objectResult))
+                {
+                    logger.AsyncEnumerableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
+                    var clientEnumerableObservable = CreateClientEnumerableObservableFrom(objectResult);
 
-                if (result.Result is ObjectResult objectResult)
-                {
-                    response = objectResult.Value;
-                }
-            }
-
-            if (result?.Result is ObjectResult or && or.Value is IClientObservable clientObservable)
-            {
-                logger.ClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
-                HandleWebSocketHeadersForMultipleProxies(context.HttpContext);
-                if (context.HttpContext.WebSockets.IsWebSocketRequest)
-                {
-                    logger.RequestIsWebSocket();
-                    await clientObservable.HandleConnection(context, _options);
-                    result.Result = null;
-                }
-                else
-                {
-                    logger.RequestIsHttp();
+                    HandleWebSocketHeadersForMultipleProxies(context.HttpContext);
+                    if (context.HttpContext.WebSockets.IsWebSocketRequest)
+                    {
+                        logger.RequestIsWebSocket();
+                        await clientEnumerableObservable.HandleConnection(context);
+                    }
+                    else
+                    {
+                        logger.RequestIsHttp();
+                        callResult.Result.Result = new ObjectResult(objectResult.Value);
+                    }
                 }
             }
             else
@@ -85,9 +79,9 @@ public class QueryActionFilter(
                 var queryResult = new QueryResult<object>
                 {
                     ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase()))),
-                    ExceptionMessages = [.. exceptionMessages],
-                    ExceptionStackTrace = exceptionStackTrace ?? string.Empty,
-                    Data = response!
+                    ExceptionMessages = callResult.ExceptionMessages,
+                    ExceptionStackTrace = callResult.ExceptionStackTrace ?? string.Empty,
+                    Data = callResult.Response!
                 };
 
                 if (!queryResult.IsAuthorized)
@@ -105,9 +99,9 @@ public class QueryActionFilter(
 
                 var actualResult = new ObjectResult(queryResult);
 
-                if (result is not null)
+                if (callResult.Result is not null)
                 {
-                    result.Result = actualResult;
+                    callResult.Result.Result = actualResult;
                 }
                 else
                 {
@@ -120,6 +114,29 @@ public class QueryActionFilter(
             await next();
         }
     }
+
+    IClientEnumerableObservable CreateClientEnumerableObservableFrom(ObjectResult objectResult)
+    {
+        var type = objectResult.Value!.GetType();
+        var clientEnumerableObservableType = typeof(ClientEnumerableObservable<>).MakeGenericType(type.GetGenericArguments()[0]);
+        return (Activator.CreateInstance(clientEnumerableObservableType, objectResult.Value, _options) as IClientEnumerableObservable)!;
+    }
+
+    IClientObservable CreateClientObservableFrom(ObjectResult objectResult)
+    {
+        var type = objectResult.Value!.GetType();
+        var subjectType = type.GetInterfaces().First(_ => _.IsGenericType && _.GetGenericTypeDefinition() == typeof(ISubject<>));
+        var clientObservableType = typeof(ClientObservable<>).MakeGenericType(subjectType.GetGenericArguments()[0]);
+        return (Activator.CreateInstance(clientObservableType, objectResult.Value, _options) as IClientObservable)!;
+    }
+
+    bool IsStreamingResult(ObjectResult objectResult) => IsAsyncEnumerableResult(objectResult) || IsSubjectResult(objectResult);
+
+    bool IsAsyncEnumerableResult(ObjectResult objectResult) =>
+        objectResult.Value?.GetType().ImplementsOpenGeneric(typeof(IAsyncEnumerable<>)) ?? false;
+
+    bool IsSubjectResult(ObjectResult objectResult) =>
+        objectResult.Value?.GetType().ImplementsOpenGeneric(typeof(ISubject<>)) ?? false;
 
     /// <summary>
     /// Handles the Web Socket headers for connections that are going through multiple proxies.
@@ -166,5 +183,45 @@ public class QueryActionFilter(
         {
             httpContext.Request.Headers.SecWebSocketKey = keys[^1];
         }
+    }
+
+    async Task<(ActionExecutedContext? Result, IEnumerable<string> ExceptionMessages, string? ExceptionStackTrace, object? Response)> CallNextAndHandleValidationAndExceptions(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        var exceptionMessages = new List<string>();
+        var exceptionStackTrace = string.Empty;
+        object? response = null;
+        ActionExecutedContext? result = null;
+
+        if (context.ModelState.IsValid)
+        {
+            result = await next();
+
+            if (context.IsAspNetResult())
+            {
+                return (null, exceptionMessages, exceptionStackTrace, response);
+            }
+
+            if (result.Exception is not null)
+            {
+                var exception = result.Exception;
+                exceptionStackTrace = exception.StackTrace;
+
+                do
+                {
+                    exceptionMessages.Add(exception.Message);
+                    exception = exception.InnerException;
+                }
+                while (exception is not null);
+
+                result.Exception = null!;
+            }
+
+            if (result.Result is ObjectResult objectResult)
+            {
+                response = objectResult.Value;
+            }
+        }
+
+        return (result, exceptionMessages, exceptionStackTrace, response);
     }
 }

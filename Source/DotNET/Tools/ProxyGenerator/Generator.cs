@@ -64,8 +64,13 @@ public static class Generator
         await commandDescriptors.Write(outputPath, typesInvolved, TemplateTypes.Command, directories, segmentsToSkip, "commands", message);
 
         var queryDescriptors = queries.ConvertAll(_ => _.ToQueryDescriptor(outputPath, segmentsToSkip));
+
+        var singleModelQueries = queryDescriptors.Where(_ => !_.IsEnumerable && !_.IsObservable).ToList();
+        await singleModelQueries.Write(outputPath, typesInvolved, TemplateTypes.Query, directories, segmentsToSkip, "single model queries", message);
+
         var enumerableQueries = queryDescriptors.Where(_ => _.IsEnumerable).ToList();
         await enumerableQueries.Write(outputPath, typesInvolved, TemplateTypes.Query, directories, segmentsToSkip, "queries", message);
+
         var observableQueries = queryDescriptors.Where(_ => _.IsObservable).ToList();
         await observableQueries.Write(outputPath, typesInvolved, TemplateTypes.ObservableQuery, directories, segmentsToSkip, "observable queries", message);
 
