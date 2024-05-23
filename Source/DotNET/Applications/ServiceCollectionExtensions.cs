@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
                 options.ModelBinderProviders.Insert(0, new FromRequestModelBinderProvider(bodyModelBinderProvider!, complexObjectModelBinderProvider!));
                 options
                     .AddValidation(types)
+                    .AddCorrelationId()
                     .AddCQRS();
             })
             .AddJsonOptions(_ =>
