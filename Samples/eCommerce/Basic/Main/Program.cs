@@ -19,7 +19,7 @@ CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication
     .CreateBuilder(args)
-    .UseApplicationModel(mvc => mvc.AddCQRS());
+    .UseApplicationModel();
 
 // Todo: This should be part of the "Use application model" extension method, with overrides
 builder.Services.AddDefaultModelNameConvention();

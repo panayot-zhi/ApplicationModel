@@ -3,15 +3,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
-import { QueryFor, QueryResultWithState } from '@cratis/applications/queries';
-import { useQuery, PerformQuery } from '@cratis/applications.react/queries';
+import { ObservableQueryFor, QueryResultWithState } from '@cratis/applications/queries';
+import { useObservableQuery } from '@cratis/applications.react/queries';
 import { Cart } from './Cart';
 import Handlebars from 'handlebars';
 
-const routeTemplate = Handlebars.compile('/api/carts');
+const routeTemplate = Handlebars.compile('/api/carts/observe');
 
-export class CartForCurrentUser extends QueryFor<Cart> {
-    readonly route: string = '/api/carts';
+export class ObserveCartForCurrentUser extends ObservableQueryFor<Cart> {
+    readonly route: string = '/api/carts/observe';
     readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
     readonly defaultValue: Cart = {} as any;
 
@@ -24,7 +24,7 @@ export class CartForCurrentUser extends QueryFor<Cart> {
         ];
     }
 
-    static use(): [QueryResultWithState<Cart>, PerformQuery] {
-        return useQuery<Cart, CartForCurrentUser>(CartForCurrentUser);
+    static use(): [QueryResultWithState<Cart>] {
+        return useObservableQuery<Cart, ObserveCartForCurrentUser>(ObserveCartForCurrentUser);
     }
 }
