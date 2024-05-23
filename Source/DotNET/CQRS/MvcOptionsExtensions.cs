@@ -21,6 +21,7 @@ public static class MvcOptionsExtensions
     {
         options.Filters.Add<CommandActionFilter>();
         options.Filters.Add<QueryActionFilter>();
+        options.OutputFormatters.Insert(0, new JsonLinesStreamingFormatter());
         return options;
     }
 }
