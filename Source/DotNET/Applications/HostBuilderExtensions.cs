@@ -8,7 +8,6 @@ using Cratis.Json;
 using Cratis.Serialization;
 using Cratis.Types;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,13 +22,11 @@ public static class HostBuilderExtensions
     /// Use Cratis ApplicationModel with the <see cref="WebApplicationBuilder"/>.
     /// </summary>
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
-    /// <param name="mvcOptionsDelegate">Optional delegate if one wants to configure MVC specifics, since this configured MVC automatically.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
     public static WebApplicationBuilder UseApplicationModel(
-        this WebApplicationBuilder builder,
-        Action<MvcOptions>? mvcOptionsDelegate = default)
+        this WebApplicationBuilder builder)
     {
-        builder.Host.UseApplicationModel(mvcOptionsDelegate, builder.Configuration);
+        builder.Host.UseApplicationModel(builder.Configuration);
         return builder;
     }
 
@@ -37,12 +34,10 @@ public static class HostBuilderExtensions
     /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
     /// </summary>
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
-    /// <param name="mvcOptionsDelegate">Optional delegate if one wants to configure MVC specifics, since this configured MVC automatically.</param>
     /// <param name="configuration"><see cref="IConfiguration"/> used for the host.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
     public static IHostBuilder UseApplicationModel(
         this IHostBuilder builder,
-        Action<MvcOptions>? mvcOptionsDelegate = default,
         IConfiguration? configuration = default)
     {
 #pragma warning disable CA2000 // Dispose objects before losing scope => Disposed by the host
@@ -71,33 +66,7 @@ public static class HostBuilderExtensions
                 .AddIdentityProvider(Internals.Types)
                 .AddControllersFromProjectReferencedAssembles(Internals.Types, derivedTypes)
                 .AddBindingsByConvention()
-                .AddSelfBindings()
-                .AddSwaggerGen(options =>
-                {
-                    var files = Directory.GetFiles(AppContext.BaseDirectory).Where(file => Path.GetExtension(file) == ".xml");
-                    var documentationFiles = files.Where(file =>
-                        {
-                            var fileName = Path.GetFileNameWithoutExtension(file);
-                            var dllFileName = Path.Combine(AppContext.BaseDirectory, $"{fileName}.dll");
-                            var xmlFileName = Path.Combine(AppContext.BaseDirectory, $"{fileName}.xml");
-                            return File.Exists(dllFileName) && File.Exists(xmlFileName);
-                        });
-
-                    foreach (var file in documentationFiles)
-                    {
-                        options.IncludeXmlComments(file);
-                    }
-                })
-                .AddEndpointsApiExplorer();
-
-                if (mvcOptionsDelegate is not null)
-                {
-                    _.AddMvc(mvcOptionsDelegate);
-                }
-                else
-                {
-                    _.AddMvc();
-                }
+                .AddSelfBindings();
             });
 
         return builder;

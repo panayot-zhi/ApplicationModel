@@ -4,6 +4,7 @@
 using System.Globalization;
 using System.Text.Json.Nodes;
 using Cratis.Applications.MongoDB;
+using Cratis.Execution;
 using Cratis.Json;
 using Cratis.MongoDB;
 using Main;
@@ -22,7 +23,27 @@ var builder = WebApplication
     .UseApplicationModel();
 
 // Todo: This should be part of the "Use application model" extension method, with overrides
-builder.Services.AddDefaultModelNameConvention();
+builder.Services
+    .AddDefaultModelNameConvention()
+    .AddSwaggerGen(options =>
+    {
+        var files = Directory.GetFiles(AppContext.BaseDirectory).Where(file => Path.GetExtension(file) == ".xml");
+        var documentationFiles = files.Where(file =>
+            {
+                var fileName = Path.GetFileNameWithoutExtension(file);
+                var dllFileName = Path.Combine(AppContext.BaseDirectory, $"{fileName}.dll");
+                var xmlFileName = Path.Combine(AppContext.BaseDirectory, $"{fileName}.xml");
+                return File.Exists(dllFileName) && File.Exists(xmlFileName);
+            });
+
+        foreach (var file in documentationFiles)
+        {
+            options.IncludeXmlComments(file);
+        }
+    })
+    .AddEndpointsApiExplorer()
+    .AddMvc();
+
 builder.UseMongoDB();
 
 var mongoClient = new MongoClient("mongodb://localhost:27017");
@@ -55,8 +76,25 @@ builder.UseOrleans(_ => _
     }));
 
 var app = builder.Build();
+app.UseApplicationModel();
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+if (RuntimeEnvironment.IsDevelopment)
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger"));
+}
+
 app.UseWebSockets();
 app.UseRouting();
+
+app.MapControllers();
+app.MapIdentityProvider();
+
 app.UseApplicationModel();
+
+app.RunAsSinglePageApplication();
 
 await app.RunAsync();

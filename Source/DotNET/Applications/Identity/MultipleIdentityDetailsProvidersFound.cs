@@ -1,9 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Cratis.Applications.Identity;
-
-namespace Microsoft.AspNetCore.Builder;
+namespace Cratis.Applications.Identity;
 
 /// <summary>
 /// Exception that gets thrown when there are <see cref="IProvideIdentityDetails">multiple identity details providers</see>.

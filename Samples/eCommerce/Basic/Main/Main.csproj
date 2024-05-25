@@ -28,6 +28,7 @@
         <PackageReference Include="Microsoft.Orleans.Serialization" />
         <PackageReference Include="Microsoft.Orleans.Serialization.SystemTextJson" />
         <PackageReference Include="OrleansDashboard" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 
 </Project>

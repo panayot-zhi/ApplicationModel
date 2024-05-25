@@ -23,7 +23,6 @@
 		<PackageReference Include="Serilog.Sinks.PeriodicBatching" />
 		<PackageReference Include="serilog.aspnetcore" />
 		<PackageReference Include="Serilog.Sinks.Seq" />
-		<PackageReference Include="Swashbuckle.AspNetCore" />
 		<PackageReference Include="OpenTelemetry.Exporter.InMemory" />
 	</ItemGroup>
 </Project>
