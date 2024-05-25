@@ -2,8 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using System.Text.Json;
-using Cratis.Json;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
@@ -22,9 +20,8 @@ public static class MongoDBDefaults
     /// <summary>
     /// Initializes the MongoDB defaults.
     /// </summary>
-    /// <param name="mongoDBArtifacts">Optional <see cref="IMongoDBArtifacts"/> to use. Will default to <see cref="DefaultMongoDBArtifacts"/> which discovers at runtime.</param>
-    /// <param name="jsonSerializerOptions">Optional The <see cref="JsonSerializerOptions"/> to use.</param>
-    public static void Initialize(IMongoDBArtifacts? mongoDBArtifacts = default, JsonSerializerOptions? jsonSerializerOptions = default)
+    /// <param name="builder">An instance of a <see cref="IMongoDBBuilder"/> used for configuring the defaults.</param>
+    public static void Initialize(IMongoDBBuilder builder)
     {
         lock (_lock)
         {
@@ -34,13 +31,10 @@ public static class MongoDBDefaults
             }
             _initialized = true;
 
-            mongoDBArtifacts ??= new DefaultMongoDBArtifacts(Types.Types.Instance);
-
-            var conventionPackFilters = mongoDBArtifacts
+            var conventionPackFilters = builder
                 .ConventionPackFilters
                 .Select(_ => (Activator.CreateInstance(_) as ICanFilterMongoDBConventionPacksForType)!)
                 .ToArray();
-            jsonSerializerOptions ??= Globals.JsonSerializerOptions;
 
             BsonSerializer
                 .RegisterSerializationProvider(new ConceptSerializationProvider());
@@ -72,13 +66,13 @@ public static class MongoDBDefaults
             RegisterConventionAsPack(conventionPackFilters, AcronymFriendlyCamelCaseElementNameConvention.ConventionName, new AcronymFriendlyCamelCaseElementNameConvention());
             RegisterConventionAsPack(conventionPackFilters, ConventionPacks.IgnoreExtraElements, new IgnoreExtraElementsConvention(true));
 
-            RegisterClassMaps(mongoDBArtifacts);
+            RegisterClassMaps(builder);
         }
     }
 
-    static void RegisterClassMaps(IMongoDBArtifacts mongoDBArtifacts)
+    static void RegisterClassMaps(IMongoDBBuilder builder)
     {
-        foreach (var classMapType in mongoDBArtifacts.ClassMaps)
+        foreach (var classMapType in builder.ClassMaps)
         {
             var classMapProvider = Activator.CreateInstance(classMapType);
             var typeInterfaces = classMapType.GetInterfaces().Where(_ =>

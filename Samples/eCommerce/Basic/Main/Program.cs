@@ -23,7 +23,7 @@ var builder = WebApplication
 
 // Todo: This should be part of the "Use application model" extension method, with overrides
 builder.Services.AddDefaultModelNameConvention();
-builder.Host.UseMongoDB();
+builder.UseMongoDB();
 
 var mongoClient = new MongoClient("mongodb://localhost:27017");
 builder.Services.AddSingleton(mongoClient);

@@ -3,7 +3,9 @@
         <AssemblyName>Cratis.Applications.MongoDB</AssemblyName>
         <RootNamespace>Cratis.Applications.MongoDB</RootNamespace>
     </PropertyGroup>
-
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
     <ItemGroup>
         <PackageReference Include="Cratis.Fundamentals" />
         <PackageReference Include="polly.core" />

@@ -4,17 +4,17 @@
 namespace Cratis.MongoDB;
 
 /// <summary>
-/// Defines the different artifacts that can be registered for MongoDB.
+/// Defines the builder for MongoDB.
 /// </summary>
-public interface IMongoDBArtifacts
+public interface IMongoDBBuilder
 {
     /// <summary>
     /// Gets the class maps to register.
     /// </summary>
-    IEnumerable<Type> ClassMaps { get; }
+    IList<Type> ClassMaps { get; }
 
     /// <summary>
     /// Gets the convention pack filters to register.
     /// </summary>
-    IEnumerable<Type> ConventionPackFilters { get; }
+    IList<Type> ConventionPackFilters { get; }
 }
