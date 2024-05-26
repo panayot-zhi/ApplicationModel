@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
                 options
                     .AddValidation(types)
                     .AddCorrelationId()
+                    .AddTenancy()
                     .AddCQRS();
             })
             .AddJsonOptions(_ =>

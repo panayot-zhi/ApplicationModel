@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Applications.Execution;
+using Cratis.Applications.Tenancy;
 
 namespace Cratis.Applications;
 
@@ -14,4 +15,9 @@ public class ApplicationModelOptions
     /// Gets or sets the options for the correlation ID.
     /// </summary>
     public CorrelationIdOptions CorrelationId { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the options for the tenancy.
+    /// </summary>
+    public TenancyOptions Tenancy { get; set; } = new();
 }

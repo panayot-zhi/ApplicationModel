@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 /// <summary>
 /// Extension methods for working with <see cref="MvcOptions"/>.
 /// </summary>
-public static class MvcOptionsExtensions
+public static class ExecutionMvcOptionsExtensions
 {
     /// <summary>
     /// Add CQRS setup.

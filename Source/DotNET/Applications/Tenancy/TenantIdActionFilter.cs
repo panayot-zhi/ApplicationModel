@@ -4,26 +4,23 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 
-namespace Cratis.Applications.Execution;
+namespace Cratis.Applications.Tenancy;
 
 /// <summary>
 /// Represents an implementation of <see cref="IAsyncActionFilter"/> that sets the correlation ID for the request.
 /// </summary>
 /// <param name="options">The options for the correlation ID.</param>
-public class CorrelationIdActionFilter(IOptions<ApplicationModelOptions> options) : IAsyncActionFilter
+public class TenantIdActionFilter(IOptions<ApplicationModelOptions> options) : IAsyncActionFilter
 {
     /// <inheritdoc/>
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var correlationId = context.HttpContext.Request.Headers[options.Value.CorrelationId.HttpHeader].ToString() ?? string.Empty;
-        if (string.IsNullOrEmpty(correlationId))
+        var tenantId = context.HttpContext.Request.Headers[options.Value.Tenancy.HttpHeader].ToString() ?? string.Empty;
+        if (!string.IsNullOrEmpty(tenantId))
         {
-            correlationId = Guid.NewGuid().ToString();
-            context.HttpContext.Request.Headers[Constants.DefaultCorrelationIdHeader] = correlationId;
+            context.HttpContext.Items[Constants.TenantIdItemKey] = tenantId;
+            TenantIdAccessor.SetCurrent(tenantId);
         }
-
-        context.HttpContext.Items[Constants.CorrelationIdItemKey] = correlationId;
-        CorrelationIdAccessor.SetCurrent(correlationId);
 
         await next();
     }
