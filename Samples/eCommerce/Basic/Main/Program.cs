@@ -12,15 +12,24 @@ using MongoDB.Driver;
 using Orleans.Serialization;
 using Orleans.Serialization.Cloning;
 using Orleans.Serialization.Serializers;
+using Serilog;
+using Serilog.Exceptions;
 
 // Force invariant culture for the Backend
 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
-var builder = WebApplication
-    .CreateBuilder(args)
-    .UseApplicationModel();
+var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .Enrich.WithExceptionDetails()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(Log.Logger);
+Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+builder.UseApplicationModel();
 
 // Todo: This should be part of the "Use application model" extension method, with overrides
 builder.Services
