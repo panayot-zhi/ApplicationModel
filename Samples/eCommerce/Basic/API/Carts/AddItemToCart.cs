@@ -6,4 +6,9 @@ using Concepts.Carts;
 
 namespace API.Carts;
 
+/// <summary>
+/// The command for adding an item to the cart.
+/// </summary>
+/// <param name="Sku">The <see cref="SKU"/> for the item.</param>
+/// <param name="Quantity"><see cref="Quantity"/> to add.</param>
 public record AddItemToCart(SKU Sku, Quantity Quantity);
