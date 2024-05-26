@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Applications.Validation;
+using Cratis.Execution;
 
 namespace Cratis.Applications.Queries;
 
@@ -15,6 +16,11 @@ public class QueryResult<T>
     /// Represents a successful command result.
     /// </summary>
     public static readonly QueryResult<T> Success = new();
+
+    /// <summary>
+    /// Gets the <see cref="CorrelationId"/> associated with the command.
+    /// </summary>
+    public CorrelationId CorrelationId { get; init; } = new(Guid.Empty.ToString());
 
     /// <summary>
     /// The data returned.

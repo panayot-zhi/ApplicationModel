@@ -78,6 +78,7 @@ public class QueryActionFilter(
                 logger.NonClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
                 var queryResult = new QueryResult<object>
                 {
+                    CorrelationId = context.HttpContext.GetCorrelationId(),
                     ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase()))),
                     ExceptionMessages = callResult.ExceptionMessages,
                     ExceptionStackTrace = callResult.ExceptionStackTrace ?? string.Empty,
