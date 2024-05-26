@@ -27,7 +27,7 @@ public class and_there_is_one_provider : Specification
 
     void Because() => services.Object.AddIdentityProvider(types.Object);
 
-    [Fact] void should_not_add_service_registration() => services.Verify(_ => _.Add(IsAny<ServiceDescriptor>()), Once);
+    [Fact] void should_add_one_service_registration() => services.Verify(_ => _.Add(IsAny<ServiceDescriptor>()), Once);
     [Fact] void should_register_as_identity_details_provider() => _serviceDescriptor.ServiceType.ShouldEqual(typeof(IProvideIdentityDetails));
     [Fact] void should_register_expected_provider() => _serviceDescriptor.ImplementationType.ShouldEqual(typeof(MyIdentityProvider));
     [Fact] void should_register_as_singleton() => _serviceDescriptor.Lifetime.ShouldEqual(ServiceLifetime.Singleton);

@@ -10,14 +10,17 @@ public class and_there_are_no_providers : Specification
 {
     Mock<IServiceCollection> services;
     Mock<ITypes> types;
+    ServiceDescriptor service_descriptor;
 
     void Establish()
     {
         services = new();
         types = new();
+        services.Setup(_ => _.Add(IsAny<ServiceDescriptor>())).Callback((ServiceDescriptor _) => service_descriptor = _);
     }
 
     void Because() => services.Object.AddIdentityProvider(types.Object);
 
-    [Fact] void should_not_add_service_registration() => services.Verify(_ => _.Add(IsAny<ServiceDescriptor>()), Never);
+    [Fact] void should_add_one_service_registration() => services.Verify(_ => _.Add(IsAny<ServiceDescriptor>()), Once);
+    [Fact] void should_add_default_identity_details_provider() => service_descriptor.ImplementationType.ShouldEqual(typeof(DefaultIdentityDetailsProvider));
 }
