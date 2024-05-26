@@ -52,18 +52,21 @@ public class IdentityProviderEndpoint
 
                 var context = new IdentityProviderContext(identityId, identityName, tokenAsJson!, claims);
                 var result = await _identityProvider.Provide(context);
+                IdentityProviderResult identityResult;
 
                 if (result.IsUserAuthorized)
                 {
                     response.StatusCode = 200;
+                    identityResult = new IdentityProviderResult(context.Id, context.Name, context.Claims, result.Details);
                 }
                 else
                 {
                     response.StatusCode = 403;
+                    identityResult = new IdentityProviderResult(string.Empty, string.Empty, [], new { });
                 }
 
                 response.ContentType = "application/json; charset=utf-8";
-                await response.WriteAsJsonAsync(result.Details, _serializerOptions);
+                await response.WriteAsJsonAsync(identityResult, _serializerOptions);
             }
         }
     }

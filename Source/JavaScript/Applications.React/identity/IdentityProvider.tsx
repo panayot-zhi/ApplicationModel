@@ -6,10 +6,20 @@ import { IIdentityContext } from './IIdentityContext';
 import { useState, useEffect } from 'react';
 
 const defaultIdentityContext: IIdentityContext = {
+    id: '',
+    name: '',
+    claims: {},
     details: {},
     isSet: false,
     refresh() { }
 };
+
+export type IdentityProviderResult = {
+    id: string;
+    name: string;
+    claims: { [key: string]: string };
+    details: any;
+}
 
 export const IdentityProviderContext = React.createContext<IIdentityContext>(defaultIdentityContext);
 
@@ -39,9 +49,13 @@ export const IdentityProvider = (props: IdentityProviderProps) => {
     const refresh = () => {
         clearCookie(cookieName);
         fetch('/.cratis/me').then(async response => {
-            const json = await response.json();
+            const result = await response.json() as IdentityProviderResult;
+
             setContext({
-                details: json,
+                id: result.id,
+                name: result.name,
+                claims: result.claims,
+                details: result.details,
                 isSet: true,
                 refresh
             });
@@ -51,8 +65,12 @@ export const IdentityProvider = (props: IdentityProviderProps) => {
     useEffect(() => {
         if (identityCookie.length == 2) {
             const json = atob(identityCookie[1]);
+            const result = JSON.parse(json) as IdentityProviderResult;
             setContext({
-                details: JSON.parse(json.toString()),
+                id: result.id,
+                name: result.name,
+                claims: result.claims,
+                details: result.details,
                 isSet: true,
                 refresh
             });

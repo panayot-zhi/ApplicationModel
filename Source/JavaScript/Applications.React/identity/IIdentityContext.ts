@@ -5,6 +5,22 @@
  * Defines the context for identity.
  */
 export interface IIdentityContext<TDetails = {}> {
+
+    /**
+     * The id of the identity.
+     */
+    id: string;
+
+    /**
+     * The name of the identity.
+     */
+    name: string;
+
+    /**
+     * The claims for the identity.
+     */
+    claims: { [key: string]: string };
+
     /**
      * The application specific details for the identity.
      */
