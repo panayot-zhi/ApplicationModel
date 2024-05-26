@@ -3,6 +3,7 @@
 
 using System.Net;
 using Cratis.Applications.Validation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -51,8 +52,7 @@ public class CommandActionFilter : IAsyncActionFilter
 
             var commandResult = new CommandResult<object>
             {
-                // TODO: Set correlation ID to the actual correlation ID
-                // CorrelationId = context.HttpContext.GetCorrelationId(),
+                CorrelationId = context.HttpContext.GetCorrelationId(),
                 ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(e => e.ToValidationResult(_.Key))),
                 ExceptionMessages = [.. exceptionMessages],
                 ExceptionStackTrace = exceptionStackTrace ?? string.Empty,
