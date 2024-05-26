@@ -29,6 +29,9 @@ export default defineConfig({
             },
             '/swagger': {
                 target: 'http://localhost:5500'
+            },
+            '/.cratis': {
+                target: 'http://localhost:5500'
             }
         }
     },
