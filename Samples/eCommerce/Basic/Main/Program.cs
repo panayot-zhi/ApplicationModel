@@ -53,12 +53,9 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddMvc();
 
-builder.UseMongoDB();
-
-var mongoClient = new MongoClient("mongodb://localhost:27017");
-builder.Services.AddSingleton(mongoClient);
-builder.Services.AddSingleton(mongoClient.GetDatabase("eCommerce"));
-builder.Services.AddTransient(typeof(IMongoCollection<>), typeof(MongoCollectionAdapter<>));
+builder.UseMongoDB(_ => _
+    .WithStaticServer("mongodb://localhost:27017")
+    .WithStaticDatabaseName("eCommerce"));
 
 builder.UseOrleans(_ => _
     .ConfigureServices(services =>
@@ -72,11 +69,7 @@ builder.UseOrleans(_ => _
             Globals.JsonSerializerOptions));
     })
     .UseLocalhostClustering()
-    .AddMongoDBStorageAsDefault(options =>
-    {
-        options.ConnectionString = "mongodb://localhost:27017";
-        options.Database = "eCommerce";
-    })
+    .AddMongoDBStorageAsDefault()
     .UseDashboard(options =>
     {
         options.Host = "*";
@@ -97,13 +90,9 @@ if (RuntimeEnvironment.IsDevelopment)
 }
 
 app.UseWebSockets();
-app.UseRouting();
-
 app.MapControllers();
-
 app.UseApplicationModel();
-app.MapIdentityProvider();
-
+app.UseMicrosoftIdentityPlatformIdentityResolver();
 app.MapFallbackToFile("/index.html");
 
 await app.RunAsync();
