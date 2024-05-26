@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Applications.Identity;
+using Microsoft.AspNetCore.Routing;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -17,6 +18,13 @@ public static class MicrosoftIdentityPlatformIdentityApplicationBuilderExtension
     /// <returns><see cref="IApplicationBuilder"/> for continuation.</returns>
     public static IApplicationBuilder UseMicrosoftIdentityPlatformIdentityResolver(this IApplicationBuilder app)
     {
-        return app.UseMiddleware<MicrosoftIdentityPlatformIdentityResolverMiddleware>();
+        var applicationBuilder = app.UseMiddleware<MicrosoftIdentityPlatformIdentityResolverMiddleware>();
+
+        if (app is IEndpointRouteBuilder endpoints)
+        {
+            endpoints.MapIdentityProvider(app);
+        }
+
+        return applicationBuilder;
     }
 }

@@ -18,8 +18,6 @@ public static class ApplicationBuilderExtensions
     public static IApplicationBuilder UseApplicationModel(this IApplicationBuilder app)
     {
         Internals.ServiceProvider = app.ApplicationServices;
-        app.UseMicrosoftIdentityPlatformIdentityResolver();
-
         return app;
     }
 }
