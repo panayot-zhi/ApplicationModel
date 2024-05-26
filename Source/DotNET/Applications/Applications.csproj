@@ -8,7 +8,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="../CQRS/CQRS.csproj" />
-		<ProjectReference Include="../CQRS.MongoDB/CQRS.MongoDB.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="FluentValidation" />
