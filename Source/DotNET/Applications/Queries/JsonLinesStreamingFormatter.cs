@@ -23,6 +23,9 @@ public class JsonLinesStreamingFormatter : TextOutputFormatter
     }
 
     /// <inheritdoc/>
+    public override bool CanWriteResult(OutputFormatterCanWriteContext context) => context.Object is IAsyncEnumerable<object>;
+
+    /// <inheritdoc/>
     public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
     {
         var response = context.HttpContext.Response;
