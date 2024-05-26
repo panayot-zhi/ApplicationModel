@@ -6,7 +6,6 @@ using System.Security.Principal;
 using Concepts.Carts;
 using Cratis.Applications.ModelBinding;
 using Cratis.Applications.Queries;
-using Cratis.Applications.Queries.MongoDB;
 using Domain.Carts;
 using Domain.Products;
 using MongoDB.Driver;

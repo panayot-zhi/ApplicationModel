@@ -8,7 +8,6 @@
         <ProjectReference Include="../Concepts/Concepts.csproj" />
         <ProjectReference Include="../Domain.Interfaces/Domain.Interfaces.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/Applications/Applications.csproj" />
-        <ProjectReference Include="../../../../Source\DotNET/CQRS/CQRS.csproj" />
     </ItemGroup>
 
     <ItemGroup>
