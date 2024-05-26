@@ -6,9 +6,8 @@ using System.Reactive.Subjects;
 using System.Reflection;
 using Cratis.Concepts;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
-namespace Cratis.Applications.Queries.MongoDB;
+namespace MongoDB.Driver;
 
 /// <summary>
 /// Extension methods for <see cref="IMongoCollection{T}"/>.

@@ -20,7 +20,6 @@
         <ProjectReference Include="../../../../Source\DotNET/Tools/ProxyGenerator.Build/ProxyGenerator.Build.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/Serilog/Serilog.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/CQRS/CQRS.csproj" />
-        <ProjectReference Include="../../../../Source\DotNET/CQRS.MongoDB/CQRS.MongoDB.csproj" />
     </ItemGroup>
 
     <ItemGroup>
