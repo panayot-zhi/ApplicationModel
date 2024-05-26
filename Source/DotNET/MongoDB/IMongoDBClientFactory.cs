@@ -11,6 +11,12 @@ namespace Cratis.MongoDB;
 public interface IMongoDBClientFactory
 {
     /// <summary>
+    /// Create a new <see cref="IMongoClient"/> based on <see cref="IMongoServerResolver"/>.
+    /// </summary>
+    /// <returns>A new <see cref="IMongoClient"/>.</returns>
+    IMongoClient Create();
+
+    /// <summary>
     /// Create a new <see cref="IMongoClient"/> from <see cref="MongoClientSettings"/>.
     /// </summary>
     /// <param name="settings"><see cref="MongoClientSettings"/> to use.</param>

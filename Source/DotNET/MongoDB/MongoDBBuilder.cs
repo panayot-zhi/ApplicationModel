@@ -1,6 +1,8 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using MongoDB.Driver;
+
 namespace Cratis.MongoDB;
 
 /// <summary>
@@ -23,4 +25,17 @@ public class MongoDBBuilder : IMongoDBBuilder
 
     /// <inheritdoc/>
     public IList<Type> ConventionPackFilters { get; }
+
+    /// <inheritdoc/>
+    public IMongoServerResolver? ServerResolver { get; set; }
+
+    /// <inheritdoc/>
+    public IMongoDatabaseNameResolver? DatabaseNameResolver { get; set; }
+
+    /// <inheritdoc/>
+    public void Validate()
+    {
+        MongoServerResolverNotConfigured.ThrowIfNotConfigured(ServerResolver);
+        MongoDatabaseNameResolverNotConfigured.ThrowIfNotConfigured(DatabaseNameResolver);
+    }
 }

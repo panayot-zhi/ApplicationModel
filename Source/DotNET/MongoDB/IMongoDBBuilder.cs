@@ -17,4 +17,19 @@ public interface IMongoDBBuilder
     /// Gets the convention pack filters to register.
     /// </summary>
     IList<Type> ConventionPackFilters { get; }
+
+    /// <summary>
+    /// Gets or sets the URL resolver.
+    /// </summary>
+    IMongoServerResolver? ServerResolver { get; set; }
+
+    /// <summary>
+    /// Gets or sets the database name resolver.
+    /// </summary>
+    IMongoDatabaseNameResolver? DatabaseNameResolver { get; set; }
+
+    /// <summary>
+    /// Validate the builder.
+    /// </summary>
+    void Validate();
 }

@@ -20,11 +20,15 @@ namespace Cratis.MongoDB;
 /// <remarks>
 /// Initializes a new instance of the <see cref="MongoDBClientFactory"/> class.
 /// </remarks>
+/// <param name="serverResolver"><see cref="IMongoServerResolver"/> for resolving the server.</param>
 /// <param name="logger"><see cref="ILogger"/> for logging.</param>
 [Singleton]
-public class MongoDBClientFactory(ILogger<MongoDBClientFactory> logger) : IMongoDBClientFactory
+public class MongoDBClientFactory(IMongoServerResolver serverResolver, ILogger<MongoDBClientFactory> logger) : IMongoDBClientFactory
 {
     readonly ConcurrentDictionary<string, IMongoClient> _clients = new();
+
+    /// <inheritdoc/>
+    public IMongoClient Create() => Create(serverResolver.Resolve());
 
     /// <inheritdoc/>
     public IMongoClient Create(MongoClientSettings settings) => _clients.GetOrAdd(settings.Server.ToString(), (_, v) => v, CreateImplementation(settings));

@@ -3,7 +3,6 @@
 
 using Cratis.MongoDB;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Orleans.Storage;
 
 namespace Cratis.Applications.Orleans.MongoDB;
@@ -19,11 +18,13 @@ internal static class MongoDBGrainStorageFactory
     /// <param name="services"><see cref="IServiceProvider"/> to use for creation.</param>
     /// <param name="name">Name of the storage.</param>
     /// <returns>A new instance of the storage.</returns>
+#pragma warning disable IDE0060 // Remove unused parameter - see MongoDBGrainStorageExtensions for usage
     internal static IGrainStorage Create(IServiceProvider services, string name)
+#pragma warning restore IDE0060 // Remove unused parameter
     {
         return ActivatorUtilities.CreateInstance<MongoDBGrainStorage>(
             services,
             services.GetRequiredService<IMongoDBClientFactory>(),
-            services.GetRequiredService<IOptionsMonitor<MongoDBGrainStorageOptions>>().Get(name));
+            services.GetRequiredService<IMongoDatabaseNameResolver>());
     }
 }

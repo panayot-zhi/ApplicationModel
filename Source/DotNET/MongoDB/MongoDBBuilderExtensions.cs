@@ -31,4 +31,28 @@ public static class MongoDBBuilderExtensions
         builder.ConventionPackFilters.Add(typeof(T));
         return builder;
     }
+
+    /// <summary>
+    /// Configures the MongoDB builder with a static URL.
+    /// </summary>
+    /// <param name="builder">The MongoDB builder.</param>
+    /// <param name="connectionString">Connection string to the server to configure it with.</param>
+    /// <returns>The updated MongoDB builder.</returns>
+    public static IMongoDBBuilder WithStaticServer(this IMongoDBBuilder builder, string connectionString)
+    {
+        builder.ServerResolver = new StaticMongoServerResolver(connectionString);
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures the MongoDB builder with a static database name.
+    /// </summary>
+    /// <param name="builder">The MongoDB builder.</param>
+    /// <param name="databaseName">Name of database.</param>
+    /// <returns>The updated MongoDB builder.</returns>
+    public static IMongoDBBuilder WithStaticDatabaseName(this IMongoDBBuilder builder, string databaseName)
+    {
+        builder.DatabaseNameResolver = new StaticMongoDatabaseNameResolver(databaseName);
+        return builder;
+    }
 }

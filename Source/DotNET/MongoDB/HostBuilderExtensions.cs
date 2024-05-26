@@ -1,8 +1,10 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Applications.MongoDB;
 using Cratis.MongoDB;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -11,6 +13,10 @@ namespace Microsoft.Extensions.Hosting;
 /// </summary>
 public static class HostBuilderExtensions
 {
+    static readonly IDictionary<string, IMongoClient> _clients = new Dictionary<string, IMongoClient>();
+    static IMongoDBClientFactory? _clientFactory;
+    static IMongoServerResolver? _serverResolver;
+
     /// <summary>
     /// Use MongoDB in the solution. Configures default settings for the MongoDB Driver.
     /// </summary>
@@ -27,7 +33,36 @@ public static class HostBuilderExtensions
         mongoDBBuilderCallback?.Invoke(mongoDBBuilder);
 
         MongoDBDefaults.Initialize(mongoDBBuilder);
-        builder.ConfigureServices((context, services) => services.AddHostedService<MongoDBInitializer>());
+
+        mongoDBBuilder.Validate();
+
+        builder.ConfigureServices((context, services) =>
+        {
+            services.AddHostedService<MongoDBInitializer>();
+            services.AddSingleton(mongoDBBuilder.ServerResolver!);
+            services.AddSingleton(mongoDBBuilder.DatabaseNameResolver!);
+            services.AddTransient(sp =>
+            {
+                _clientFactory ??= sp.GetRequiredService<IMongoDBClientFactory>();
+                _serverResolver ??= sp.GetRequiredService<IMongoServerResolver>();
+                var server = _serverResolver.Resolve();
+                if (_clients.TryGetValue(server.ToString(), out var client))
+                {
+                    return client;
+                }
+
+                client = _clientFactory.Create();
+                return _clients[server.ToString()] = client;
+            });
+
+            services.AddTransient(sp =>
+            {
+                var client = sp.GetRequiredService<IMongoClient>();
+                return client.GetDatabase(mongoDBBuilder.DatabaseNameResolver!.Resolve());
+            });
+
+            services.AddTransient(typeof(IMongoCollection<>), typeof(MongoCollectionAdapter<>));
+        });
         return builder;
     }
 }

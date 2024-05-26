@@ -20,11 +20,13 @@ public class MongoDBGrainStorage : IGrainStorage
     /// Initializes a new instance of <see cref="MongoDBGrainStorage"/>.
     /// </summary>
     /// <param name="clientFactory"><see cref="IMongoDBClientFactory"/> for accessing MongoDB.</param>
-    /// <param name="options"><see cref="MongoDBGrainStorageOptions"/>.</param>
-    public MongoDBGrainStorage(IMongoDBClientFactory clientFactory, MongoDBGrainStorageOptions options)
+    /// <param name="databaseNameResolver"><see cref="IMongoDatabaseNameResolver"/> for resolving the database name.</param>
+    public MongoDBGrainStorage(
+        IMongoDBClientFactory clientFactory,
+        IMongoDatabaseNameResolver databaseNameResolver)
     {
-        var client = clientFactory.Create(options.ConnectionString);
-        _database = client.GetDatabase(options.Database);
+        var client = clientFactory.Create();
+        _database = client.GetDatabase(databaseNameResolver.Resolve());
     }
 
     /// <inheritdoc/>
