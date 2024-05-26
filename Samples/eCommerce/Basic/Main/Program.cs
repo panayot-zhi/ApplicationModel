@@ -100,10 +100,10 @@ app.UseWebSockets();
 app.UseRouting();
 
 app.MapControllers();
-app.MapIdentityProvider();
 
 app.UseApplicationModel();
+app.MapIdentityProvider();
 
-app.RunAsSinglePageApplication();
+app.MapFallbackToFile("/index.html");
 
 await app.RunAsync();

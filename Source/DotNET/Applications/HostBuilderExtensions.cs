@@ -7,27 +7,20 @@ using Cratis.DependencyInjection;
 using Cratis.Json;
 using Cratis.Serialization;
 using Cratis.Types;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Extensions.Hosting;
 
 /// <summary>
-/// Provides extension methods for <see cref="IHostBuilder"/>.
+/// Provides extension methods for <see cref="IHostBuilder"/> for configuring the application model services.
 /// </summary>
 public static class HostBuilderExtensions
 {
     /// <summary>
-    /// Use Cratis ApplicationModel with the <see cref="WebApplicationBuilder"/>.
+    /// Gets the default section name for the application model configuration.
     /// </summary>
-    /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
-    /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static WebApplicationBuilder UseApplicationModel(
-        this WebApplicationBuilder builder)
-    {
-        builder.Host.UseApplicationModel();
-        return builder;
-    }
+    public const string DefaultApplicationModelSection = "Cratis.ApplicationModel";
 
     /// <summary>
     /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
@@ -35,6 +28,57 @@ public static class HostBuilderExtensions
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
     public static IHostBuilder UseApplicationModel(this IHostBuilder builder)
+    {
+        builder.ConfigureServices(_ => _
+            .AddOptions<ApplicationModelOptions>()
+            .BindConfiguration(DefaultApplicationModelSection)
+            .Configure(options =>
+            {
+            })
+            .ValidateDataAnnotations()
+            .ValidateOnStart());
+
+        return builder.UseApplicationModelImplementation();
+    }
+
+    /// <summary>
+    /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
+    /// </summary>
+    /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
+    /// <param name="options">An <see cref="ApplicationModelOptions"/> instance.</param>
+    /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
+    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, ApplicationModelOptions options)
+    {
+        builder.ConfigureServices(_ => _.ConfigureOptions(options));
+        return builder.UseApplicationModelImplementation();
+    }
+
+    /// <summary>
+    /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
+    /// </summary>
+    /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
+    /// <param name="configureOptions">Action to configure the <see cref="ApplicationModelOptions"/>.</param>
+    /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
+    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, Action<ApplicationModelOptions> configureOptions)
+    {
+        builder.ConfigureServices(_ => _.Configure(configureOptions));
+        return builder.UseApplicationModelImplementation();
+    }
+
+    /// <summary>
+    /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
+    /// </summary>
+    /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
+    /// <param name="configuration"><see cref="IConfiguration"/> to use for configuration.</param>
+    /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
+    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, IConfiguration configuration)
+    {
+        builder.ConfigureServices(_ => _
+            .Configure<ApplicationModelOptions>(configuration));
+        return builder.UseApplicationModelImplementation();
+    }
+
+    static IHostBuilder UseApplicationModelImplementation(this IHostBuilder builder)
     {
         Internals.Types = Types.Instance;
         Internals.Types.RegisterTypeConvertersForConcepts();
