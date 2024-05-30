@@ -3,7 +3,7 @@
 
 using HandlebarsDotNet;
 
-namespace Cratis.Applications.Roslyn.Extensions.Templates;
+namespace Cratis.Applications.Roslyn.Templates;
 
 /// <summary>
 /// Represents the template types.
