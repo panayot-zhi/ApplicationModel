@@ -1,7 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.Applications.Roslyn.Extensions.Metrics;
+namespace Cratis.Applications.Roslyn.Metrics;
 
 /// <summary>
 /// Represents the template for counters.
