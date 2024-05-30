@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Roslyn.Extensions.Metrics;
+namespace Cratis.Applications.Roslyn.Extensions.Metrics;
 
 /// <summary>
 /// Represents the syntax receiver for metrics.

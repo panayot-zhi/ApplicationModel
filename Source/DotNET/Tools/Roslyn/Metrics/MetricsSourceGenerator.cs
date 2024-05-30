@@ -2,11 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Immutable;
+using Cratis.Applications.Roslyn.Extensions.Templates;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Roslyn.Extensions.Templates;
 
-namespace Roslyn.Extensions.Metrics;
+namespace Cratis.Applications.Roslyn.Extensions.Metrics;
 
 /// <summary>
 /// Represents the source generator for metrics.
