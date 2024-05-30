@@ -8,7 +8,6 @@ namespace Cratis.Applications.Orleans.StateMachines;
 /// </summary>
 /// <typeparam name="TStoredState">Type of stored state.</typeparam>
 public class NoOpState<TStoredState> : State<TStoredState>
-    where TStoredState : StateMachineState
 {
     /// <inheritdoc/>
     public override Task<bool> CanTransitionTo<TTargetState>(TStoredState state) => Task.FromResult(true);

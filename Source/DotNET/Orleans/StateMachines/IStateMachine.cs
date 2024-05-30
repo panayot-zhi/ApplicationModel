@@ -10,7 +10,6 @@ namespace Cratis.Applications.Orleans.StateMachines;
 /// </summary>
 /// <typeparam name="TStoredState">Type of stored state.</typeparam>
 public interface IStateMachine<TStoredState>
-    where TStoredState : StateMachineState
 {
     /// <summary>
     /// Gets the current state.

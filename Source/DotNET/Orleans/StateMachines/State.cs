@@ -10,7 +10,6 @@ namespace Cratis.Applications.Orleans.StateMachines;
 /// </summary>
 /// <typeparam name="TStoredState">Type of state object associated.</typeparam>
 public class State<TStoredState> : IState<TStoredState>
-    where TStoredState : StateMachineState
 {
     /// <summary>
     /// Internal field for <see cref="StateMachine"/>.

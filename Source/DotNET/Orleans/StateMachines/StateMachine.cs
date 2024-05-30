@@ -14,7 +14,6 @@ namespace Cratis.Applications.Orleans.StateMachines;
 /// </summary>
 /// <typeparam name="TStoredState">Type of stored state.</typeparam>
 public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMachine<TStoredState>
-    where TStoredState : StateMachineState
 {
     static readonly NoOpState<TStoredState> _noOpState = new();
 
@@ -49,9 +48,9 @@ public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMa
 
         var initialState = InitialState;
 
-        if (!string.IsNullOrEmpty(State.CurrentState))
+        if (State is StateMachineState stateMachineState && !string.IsNullOrEmpty(stateMachineState.CurrentState))
         {
-            var state = _states.Values.FirstOrDefault(_ => _.GetType().FullName == State.CurrentState) ?? throw new UnknownCurrentState(State.CurrentState, GetType());
+            var state = _states.Values.FirstOrDefault(_ => _.GetType().FullName == stateMachineState.CurrentState) ?? throw new UnknownCurrentState(stateMachineState.CurrentState, GetType());
             initialState = state.GetType();
         }
 
@@ -155,7 +154,11 @@ public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMa
         State = await _currentState.OnEnter(State);
         await OnAfterEnteringState(_currentState);
 
-        State.CurrentState = _currentState.GetType().FullName!;
+        if (State is StateMachineState stateMachineState)
+        {
+            stateMachineState.CurrentState = _currentState.GetType().FullName!;
+        }
+
         await WriteStateAsync();
 
         _isTransitioning = false;
