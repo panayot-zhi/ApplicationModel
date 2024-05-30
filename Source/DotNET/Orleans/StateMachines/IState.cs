@@ -8,7 +8,6 @@ namespace Cratis.Applications.Orleans.StateMachines;
 /// </summary>
 /// <typeparam name="TStoredState">Type of state object associated.</typeparam>
 public interface IState<TStoredState>
-    where TStoredState : StateMachineState
 {
     /// <summary>
     /// Gets the state machine.
