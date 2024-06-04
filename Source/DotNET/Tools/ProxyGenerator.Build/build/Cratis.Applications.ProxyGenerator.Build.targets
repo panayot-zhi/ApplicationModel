@@ -1,6 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <CratisProxyDevAssembly>$(MSBuildThisFileDirectory)../bin/$(Configuration)/net8.0/Cratis.Applications.ProxyGenerator.dll</CratisProxyDevAssembly>
+        <CratisProxyDevAssembly>$(MSBuildThisFileDirectory)../../ProxyGenerator/bin/$(Configuration)/net8.0/Cratis.Applications.ProxyGenerator.dll</CratisProxyDevAssembly>
         <CratisProxyPackedAssembly>$(MSBuildThisFileDirectory)../tasks/net8.0/Cratis.Applications.ProxyGenerator.dll</CratisProxyPackedAssembly>
 
         <CratisProxyGeneratorAssembly Condition="Exists($(CratisProxyPackedAssembly)) == true">$(CratisProxyPackedAssembly)</CratisProxyGeneratorAssembly>
