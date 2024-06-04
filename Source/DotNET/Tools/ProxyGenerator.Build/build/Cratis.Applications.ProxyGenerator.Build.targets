@@ -1,13 +1,14 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <CratisProxyDevAssembly>$(MSBuildThisFileDirectory)../../ProxyGenerator/bin/$(Configuration)/net8.0/Cratis.Applications.ProxyGenerator.dll</CratisProxyDevAssembly>
-        <CratisProxyPackedAssembly>$(MSBuildThisFileDirectory)../tasks/net8.0/Cratis.Applications.ProxyGenerator.dll</CratisProxyPackedAssembly>
+        <CratisProxyDevAssemblyDirectory>$(MSBuildThisFileDirectory)../../ProxyGenerator/bin/$(Configuration)/net8.0</CratisProxyDevAssemblyDirectory>
+        <CratisProxyPackedAssemblyDirectory>$(MSBuildThisFileDirectory)../tasks/net8.0</CratisProxyPackedAssemblyDirectory>
 
-        <CratisProxyGeneratorAssembly Condition="Exists($(CratisProxyPackedAssembly)) == true">$(CratisProxyPackedAssembly)</CratisProxyGeneratorAssembly>
-        <CratisProxyGeneratorAssembly Condition="Exists($(CratisProxyPackedAssembly)) == false">$(CratisProxyDevAssembly)</CratisProxyGeneratorAssembly>
+        <CratisProxyGeneratorAssemblyDirectory Condition="Exists($(CratisProxyPackedAssemblyDirectory)) == true">$(CratisProxyPackedAssemblyDirectory)</CratisProxyGeneratorAssemblyDirectory>
+        <CratisProxyGeneratorAssemblyDirectory Condition="Exists($(CratisProxyPackedAssemblyDirectory)) == false">$(CratisProxyDevAssemblyDirectory)</CratisProxyGeneratorAssemblyDirectory>
+        <CratisProxyGeneratorAssembly>Cratis.Applications.ProxyGenerator.dll</CratisProxyGeneratorAssembly>
     </PropertyGroup>
 
     <Target Name="CratisProxyGenerator" AfterTargets="AfterBuild">
-        <Exec Command="dotnet $(CratisProxyGeneratorAssembly) $(OutputPath)/$(AssemblyName).dll $(CratisProxiesOutputPath) $(CratisProxiesSegmentsToSkip)" />
+        <Exec Command="dotnet $(CratisProxyGeneratorAssembly) $(MSBuildProjectDirectory)/$(OutputPath)/$(AssemblyName).dll $(CratisProxiesOutputPath) $(CratisProxiesSegmentsToSkip)" WorkingDirectory="$(CratisProxyGeneratorAssemblyDirectory)" />
     </Target>
 </Project>
