@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="../ProxyGenerator/ProxyGenerator.csproj" PrivateAssets="All" />
+        <PackageReference Include="handlebars.net" GeneratePathProperty="true" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,5 +27,6 @@
     <!-- Include output from the ProxyGenerator -->
     <ItemGroup>
         <Content Include="../ProxyGenerator/bin/$(Configuration)/net8.0/publish/*.*" PackagePath="tasks/net8.0/" />
+        <Content Include="$(PKGHandlebars_Net)\lib\netstandard2.0\Handlebars.dll" PackagePath="tasks/net8.0/" />
     </ItemGroup>
 </Project>
