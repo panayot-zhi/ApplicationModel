@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <NoPackageAnalysis>true</NoPackageAnalysis>
         <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+        <NoWarn>$(NoWarn);NU5118</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,12 +24,12 @@
     </ItemGroup>
 
     <Target Name="PublishBuildCLI" BeforeTargets="GenerateNuspec">
-        <Exec Command="dotnet publish -c $(Configuration)" WorkingDirectory="../ProxyGenerator"/>
+        <Exec Command="dotnet build -c $(Configuration)" WorkingDirectory="../ProxyGenerator"/>
     </Target>
 
     <!-- Include output from the ProxyGenerator -->
     <ItemGroup>
-        <Content Include="../ProxyGenerator/bin/$(Configuration)/net8.0/publish/*.*" PackagePath="tasks/net8.0/" />
+        <Content Include="$(OutputPath)/*.*" PackagePath="tasks/net8.0/" />
         <Content Include="$(PKGHandlebars_Net)\lib\netstandard2.0\Handlebars.dll" PackagePath="tasks/net8.0/" />
         <Content Include="$(PKGMicrosoft_Extensions_DependencyModel)\lib\net8.0\Microsoft.Extensions.DependencyModel.dll" PackagePath="tasks/net8.0/" />
         <Content Include="$(PKGSystem_Reflection_MetadataLoadContext)\lib\net8.0\System.Reflection.MetadataLoadContext.dll" PackagePath="tasks/net8.0/" />
