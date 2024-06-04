@@ -19,10 +19,12 @@
         <PackageReference Include="Microsoft.Build.Utilities.Core" />
     </ItemGroup>
 
+    <Target Name="PublishBuildCLI" BeforeTargets="GenerateNuspec">
+        <Exec Command="dotnet publish -c $(Configuration)" WorkingDirectory="../ProxyGenerator"/>
+    </Target>
+
     <!-- Include output from the ProxyGenerator -->
     <ItemGroup>
-        <Content Include="../ProxyGenerator/bin/$(Configuration)/net8.0/*.dll" PackagePath="tasks/net8.0/" />
-        <Content Include="../ProxyGenerator/bin/$(Configuration)/net8.0/*.pdb" PackagePath="tasks/net8.0/" />
-        <Content Include="../ProxyGenerator/bin/$(Configuration)/net8.0/*.xml" PackagePath="tasks/net8.0/" />
+        <Content Include="../ProxyGenerator/bin/$(Configuration)/net8.0/publish/*.*" PackagePath="tasks/net8.0/" />
     </ItemGroup>
 </Project>
