@@ -27,7 +27,7 @@ public abstract class StateMachine<TStoredState> : Grain<TStoredState>, IStateMa
     /// <summary>
     /// Gets whether or not the state machine is in a state.
     /// </summary>
-    public bool IsInState => _currentState.GetType() != _noOpState.GetType();
+    public bool IsInActiveState => _currentState.GetType() != _noOpState.GetType();
 
     /// <summary>
     /// Gets the initial state of the state machine.
