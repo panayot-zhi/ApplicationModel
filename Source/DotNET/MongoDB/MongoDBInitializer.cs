@@ -22,7 +22,7 @@ internal class MongoDBInitializer(IServiceProvider serviceProvider) : IHostedSer
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        DatabaseExtensions.ModelNameResolver = _serviceProvider.GetService<IModelNameResolver>() ?? new ModelNameResolver(new DefaultModelNameConvention());
+        DatabaseExtensions.ModelNameResolver = _serviceProvider.GetRequiredService<IModelNameResolver>();
         return Task.CompletedTask;
     }
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Applications.MongoDB;
+using Cratis.Models;
 using Cratis.MongoDB;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -38,6 +39,7 @@ public static class HostBuilderExtensions
 
         builder.ConfigureServices((context, services) =>
         {
+            services.AddSingleton(mongoDBBuilder.ModelNameResolver ?? new ModelNameResolver(new DefaultModelNameConvention()));
             services.AddHostedService<MongoDBInitializer>();
             services.AddSingleton(mongoDBBuilder.ServerResolver!);
             services.AddSingleton(mongoDBBuilder.DatabaseNameResolver!);
