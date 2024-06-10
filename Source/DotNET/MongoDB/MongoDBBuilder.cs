@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Models;
 using MongoDB.Driver;
 
 namespace Cratis.MongoDB;
@@ -31,6 +32,9 @@ public class MongoDBBuilder : IMongoDBBuilder
 
     /// <inheritdoc/>
     public IMongoDatabaseNameResolver? DatabaseNameResolver { get; set; }
+
+    /// <inheritdoc/>
+    public IModelNameResolver? ModelNameResolver { get; set; }
 
     /// <inheritdoc/>
     public void Validate()

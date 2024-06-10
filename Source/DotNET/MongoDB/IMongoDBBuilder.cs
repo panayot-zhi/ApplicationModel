@@ -1,6 +1,8 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Models;
+
 namespace Cratis.MongoDB;
 
 /// <summary>
@@ -27,6 +29,11 @@ public interface IMongoDBBuilder
     /// Gets or sets the database name resolver.
     /// </summary>
     IMongoDatabaseNameResolver? DatabaseNameResolver { get; set; }
+
+    /// <summary>
+    /// Gets or sets the model name resolver. Not specifying this will revert to the default.
+    /// </summary>
+    IModelNameResolver? ModelNameResolver { get; set; }
 
     /// <summary>
     /// Validate the builder.
