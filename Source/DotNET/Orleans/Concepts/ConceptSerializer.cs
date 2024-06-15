@@ -10,7 +10,7 @@ using Orleans.Serialization.Codecs;
 using Orleans.Serialization.Serializers;
 using Orleans.Serialization.WireProtocol;
 
-namespace Main;
+namespace Cratis.Applications.Orleans.Concepts;
 
 /// <summary>
 /// Represents a serializer for working with concepts for Orleans.
