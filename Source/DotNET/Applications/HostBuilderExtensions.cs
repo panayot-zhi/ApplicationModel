@@ -90,16 +90,13 @@ public static class HostBuilderExtensions
         builder.UseDefaultServiceProvider(_ => _.ValidateOnBuild = false);
 
         builder
-            .ConfigureServices(_ =>
-            {
-                _
-                .AddSingleton(Internals.Types)
+            .ConfigureServices(_ => _
+                .AddTypeDiscovery()
                 .AddSingleton<IDerivedTypes>(derivedTypes)
                 .AddIdentityProvider(Internals.Types)
                 .AddControllersFromProjectReferencedAssembles(Internals.Types, derivedTypes)
                 .AddBindingsByConvention()
-                .AddSelfBindings();
-            });
+                .AddSelfBindings());
 
         return builder;
     }
