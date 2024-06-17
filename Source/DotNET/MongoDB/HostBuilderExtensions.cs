@@ -43,6 +43,7 @@ public static class HostBuilderExtensions
             services.AddHostedService<MongoDBInitializer>();
             services.AddSingleton(mongoDBBuilder.ServerResolver!);
             services.AddSingleton(mongoDBBuilder.DatabaseNameResolver!);
+            services.AddSingleton<IMongoDBClientFactory, MongoDBClientFactory>();
             services.AddTransient(sp =>
             {
                 _clientFactory ??= sp.GetRequiredService<IMongoDBClientFactory>();
