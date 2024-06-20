@@ -24,10 +24,7 @@ public class AcronymFriendlyCamelCaseElementNameConvention : ConventionBase, IMe
     /// <param name="memberMap">The member map.</param>
     public void Apply(BsonMemberMap memberMap)
     {
-        var name = memberMap.MemberName;
-        name = GetElementName(name);
-        memberMap.SetElementName(name);
+        var name = memberMap.ElementName;
+        memberMap.SetElementName(name.ToCamelCase());
     }
-
-    string GetElementName(string memberName) => memberName.ToCamelCase();
 }
