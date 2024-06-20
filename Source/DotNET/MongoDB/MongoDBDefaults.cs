@@ -100,7 +100,9 @@ public static class MongoDBDefaults
         {
             return;
         }
-        BsonClassMap.RegisterClassMap<T>(classMapProvider.Configure);
+
+        var classMap = BsonClassMap.RegisterClassMap<T>(classMapProvider.Configure);
+        classMap.ApplyConventions();
     }
 
     static void RegisterConventionAsPack(IEnumerable<ICanFilterMongoDBConventionPacksForType> conventionPackFilters, string name, IConvention convention)
