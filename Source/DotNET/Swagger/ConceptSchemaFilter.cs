@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Cratis.Applications.Swagger;
+namespace Cratis.Swagger;
 
 /// <summary>
 /// Represents an implementation of <see cref="ISchemaFilter"/> that correctly provides the schema for <see cref="ConceptAs{T}"/>.
