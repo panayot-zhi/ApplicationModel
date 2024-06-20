@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <AssemblyName>Cratis.Swagger</AssemblyName>
-        <RootNamespace>Cratis.Swagger</RootNamespace>
+        <AssemblyName>Cratis.Applications.Swagger</AssemblyName>
+        <RootNamespace>Cratis.Applications.Swagger</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Cratis.Fundamentals"/>
