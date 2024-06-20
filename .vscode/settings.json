@@ -11,7 +11,10 @@
         "primeicons",
         "primereact",
         "Swashbuckle",
-        "tsyringe"
+        "tsyringe",
+        "Unmap",
+        "unmapping",
+        "Unmaps"
     ],
     "dotnet.defaultSolution": "ApplicationModel.sln",
     "typescript.tsdk": "node_modules/typescript/lib"
