@@ -41,11 +41,6 @@ public static class HostBuilderExtensions
         return builder.UseApplicationModelImplementation();
     }
 
-    public static IHostApplicationBuilder UseApplicationModel(this IHostApplicationBuilder builder)
-    {
-        builder.Services.AddApplicationModel();
-    }
-
     /// <summary>
     /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
     /// </summary>
@@ -57,19 +52,6 @@ public static class HostBuilderExtensions
         builder.ConfigureServices(_ => _.ConfigureOptions(options));
         return builder.UseApplicationModelImplementation();
     }
-    
-    /// <summary>
-    /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
-    /// </summary>
-    /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
-    /// <param name="options">An <see cref="ApplicationModelOptions"/> instance.</param>
-    /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, ApplicationModelOptions options)
-    {
-        builder.ConfigureServices(_ => _.ConfigureOptions(options));
-        return builder.UseApplicationModelImplementation();
-    }
-    
 
     /// <summary>
     /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
