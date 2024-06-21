@@ -15,12 +15,13 @@ namespace Cratis.Applications.MongoDB;
 /// Initializes a new instance of <see cref="MongoDBInitializer"/>.
 /// </remarks>
 /// <param name="serviceProvider"><see cref="IServiceProvider"/> for getting services.</param>
-class MongoDBInitializer(IServiceProvider serviceProvider) : IHostedService
+/// <param name="mongoDbBuilder">The <see cref="IMongoDBBuilder"/>.</param>
+class MongoDBInitializer(IServiceProvider serviceProvider, IMongoDBBuilder mongoDbBuilder) : IHostedService
 {
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        DatabaseExtensions.ModelNameResolver = serviceProvider.GetRequiredService<IModelNameResolver>();
+        DatabaseExtensions.ModelNameResolver = new ModelNameResolver((IModelNameConvention)serviceProvider.GetRequiredService(mongoDbBuilder.ModelNameConventionType));
         return Task.CompletedTask;
     }
 

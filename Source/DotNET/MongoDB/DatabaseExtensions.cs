@@ -10,10 +10,12 @@ namespace MongoDB.Driver;
 /// </summary>
 public static class DatabaseExtensions
 {
+    // TODO: Some icky stuff setting this thing...
+
     /// <summary>
     /// The <see cref="IModelNameResolver"/> to use.
     /// </summary>
-    internal static IModelNameResolver ModelNameResolver = new ModelNameResolver(new DefaultModelNameConvention());
+    internal static IModelNameResolver ModelNameResolver;
 
     /// <summary>
     /// Get a collection - with name of collection as convention (camelCase of typename).

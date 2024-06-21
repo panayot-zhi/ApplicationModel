@@ -1,8 +1,6 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Cratis.Models;
-
 namespace Cratis.Applications.MongoDB;
 
 /// <summary>
@@ -21,19 +19,19 @@ public interface IMongoDBBuilder
     IList<Type> ConventionPackFilters { get; }
 
     /// <summary>
-    /// Gets or sets the URL resolver.
+    /// Gets or sets the URL resolver type.
     /// </summary>
-    Type? ServerResolverType { get; set; }
+    Type ServerResolverType { get; set; }
 
     /// <summary>
-    /// Gets or sets the database name resolver.
+    /// Gets or sets the database name resolver type.
     /// </summary>
-    Type? DatabaseNameResolverType { get; set; }
+    Type DatabaseNameResolverType { get; set; }
 
     /// <summary>
-    /// Gets or sets the model name resolver. Not specifying this will revert to the default.
+    /// Gets or sets the model name resolver type.
     /// </summary>
-    IModelNameResolver? ModelNameResolver { get; set; }
+    Type ModelNameConventionType { get; set; }
 
     /// <summary>
     /// Validate the builder.

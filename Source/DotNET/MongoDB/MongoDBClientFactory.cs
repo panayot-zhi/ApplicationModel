@@ -3,6 +3,7 @@
 
 using System.Collections.Concurrent;
 using Castle.DynamicProxy;
+using Cratis.Applications.MongoDB.Resilience;
 using Cratis.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;

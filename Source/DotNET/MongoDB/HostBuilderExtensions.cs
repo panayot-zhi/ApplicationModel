@@ -2,8 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Applications.MongoDB;
-using Cratis.Models;
-using Cratis.MongoDB;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -44,20 +42,17 @@ public static class HostBuilderExtensions
         mongoDBBuilderCallback?.Invoke(mongoDBBuilder);
         mongoDBBuilder.Validate();
         MongoDBDefaults.Initialize(mongoDBBuilder);
-        builder.ConfigureServices((context, services) =>
+        builder.ConfigureServices((_, services) =>
         {
-            services.AddOptions<MongoDBOptions>().BindConfiguration(mongoDBConfigSectionPath);
-            if (configureMongoDB is not null)
-            {
-                services.Configure(configureMongoDB);
-            }
-            services.AddSingleton(mongoDBBuilder.ModelNameResolver ?? new ModelNameResolver(new DefaultModelNameConvention()));
-            services.AddHostedService<MongoDBInitializer>();
+            AddOptions(services, configureMongoDB)
+                .BindConfiguration(mongoDBConfigSectionPath);
+            services.AddHostedService<MongoDBInitializer>(provider => new MongoDBInitializer(provider, mongoDBBuilder));
             services.AddSingleton(typeof(IMongoServerResolver), mongoDBBuilder.ServerResolverType);
             services.AddSingleton(typeof(IMongoDatabaseNameResolver), mongoDBBuilder.DatabaseNameResolverType);
             services.AddSingleton<IMongoDBClientFactory, MongoDBClientFactory>();
             services.AddTransient(sp =>
             {
+                // TODO: This will not work when multi tenant.
                 _clientFactory ??= sp.GetRequiredService<IMongoDBClientFactory>();
                 _serverResolver ??= sp.GetRequiredService<IMongoServerResolver>();
                 var server = _serverResolver.Resolve();
@@ -73,7 +68,8 @@ public static class HostBuilderExtensions
             services.AddTransient(sp =>
             {
                 var client = sp.GetRequiredService<IMongoClient>();
-                return client.GetDatabase(mongoDBBuilder.DatabaseNameResolverType!.Resolve());
+                var databaseNameResolver = sp.GetRequiredService<IMongoDatabaseNameResolver>();
+                return client.GetDatabase(databaseNameResolver.Resolve());
             });
 
             services.AddTransient(typeof(IMongoCollection<>), typeof(MongoCollectionAdapter<>));
@@ -81,8 +77,18 @@ public static class HostBuilderExtensions
         return builder;
     }
 
-    static OptionsBuilder<MongoDBOptions> AddOptions(IServiceCollection services, )
+    static OptionsBuilder<MongoDBOptions> AddOptions(IServiceCollection services, Action<MongoDBOptions>? configureOptions = default)
     {
-        
+        var builder = services
+            .AddOptions<MongoDBOptions>()
+            .ValidateOnStart()
+            .ValidateDataAnnotations();
+
+        if (configureOptions is not null)
+        {
+            builder.Configure(configureOptions);
+        }
+
+        return builder;
     }
 }

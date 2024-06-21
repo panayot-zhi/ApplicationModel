@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Models;
-using MongoDB.Driver;
 
 namespace Cratis.Applications.MongoDB;
 
@@ -34,12 +33,13 @@ public class MongoDBBuilder : IMongoDBBuilder
     public Type DatabaseNameResolverType { get; set; } = typeof(DefaultMongoDatabaseNameResolver);
 
     /// <inheritdoc/>
-    public IModelNameResolver? ModelNameResolver { get; set; }
+    public Type ModelNameConventionType { get; set; } = typeof(DefaultModelNameConvention);
 
     /// <inheritdoc/>
     public void Validate()
     {
         MongoServerResolverNotConfigured.ThrowIfNotConfigured(ServerResolverType);
         MongoDatabaseNameResolverNotConfigured.ThrowIfNotConfigured(DatabaseNameResolverType);
+        ModelNameConventionNotConfigured.ThrowIfNotConfigured(ModelNameConventionType);
     }
 }

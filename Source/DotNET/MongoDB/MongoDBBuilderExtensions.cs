@@ -1,6 +1,8 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Models;
+
 namespace Cratis.Applications.MongoDB;
 
 /// <summary>
@@ -33,7 +35,7 @@ public static class MongoDBBuilderExtensions
     }
 
     /// <summary>
-    /// Configures the MongoDB builder with a static URL.
+    /// Configures the MongoDB builder with a <see cref="IMongoServerResolver"/>.
     /// </summary>
     /// <typeparam name="TResolver">The <see cref="IMongoServerResolver"/> type.</typeparam>
     /// <param name="builder">The MongoDB builder.</param>
@@ -46,7 +48,7 @@ public static class MongoDBBuilderExtensions
     }
 
     /// <summary>
-    /// Configures the MongoDB builder with a static database name.
+    /// Configures the MongoDB builder with a <see cref="IMongoDatabaseNameResolver"/>.
     /// </summary>
     /// <typeparam name="TResolver">The <see cref="IMongoDatabaseNameResolver"/> type.</typeparam>
     /// <param name="builder">The MongoDB builder.</param>
@@ -55,6 +57,19 @@ public static class MongoDBBuilderExtensions
         where TResolver : IMongoDatabaseNameResolver
     {
         builder.DatabaseNameResolverType = typeof(TResolver);
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures the MongoDB builder with a <see cref="IModelNameConvention"/>.
+    /// </summary>
+    /// <typeparam name="TConvention">The <see cref="IModelNameConvention"/> type.</typeparam>
+    /// <param name="builder">The MongoDB builder.</param>
+    /// <returns>The updated MongoDB builder.</returns>
+    public static IMongoDBBuilder WithModelNameConvention<TConvention>(this IMongoDBBuilder builder)
+        where TConvention : IModelNameConvention
+    {
+        builder.ModelNameConventionType = typeof(TConvention);
         return builder;
     }
 }

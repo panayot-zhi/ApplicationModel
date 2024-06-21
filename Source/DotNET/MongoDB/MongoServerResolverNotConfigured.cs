@@ -6,7 +6,9 @@ namespace Cratis.Applications.MongoDB;
 /// <summary>
 /// The exception that is thrown when the <see cref="IMongoServerResolver"/> is missing.
 /// </summary>
-public class MongoServerResolverNotConfigured() : Exception("A resolver for MongoDB server has not been configured. Please configure it using the UseMongoDB extension method.")
+/// <param name="message">The additional message of the error.</param>
+public class MongoServerResolverNotConfigured(string message)
+    : Exception($"A resolver for MongoDB server has not been configured. {message}.")
 {
     /// <summary>
     /// Throw if not configured.
@@ -17,7 +19,12 @@ public class MongoServerResolverNotConfigured() : Exception("A resolver for Mong
     {
         if (resolver is null)
         {
-            throw new MongoServerResolverNotConfigured();
+            throw new MongoServerResolverNotConfigured("Please configure it using the UseMongoDB extension method");
+        }
+
+        if (!resolver.IsAssignableTo(typeof(IMongoServerResolver)))
+        {
+            throw new MongoServerResolverNotConfigured($"The type is not assignable to {typeof(IMongoServerResolver)}");
         }
     }
 }
