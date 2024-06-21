@@ -32,7 +32,7 @@ public static class HostBuilderExtensions
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
     /// <param name="configSectionPath">The optional configuration section path.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, string? configSectionPath = null)
+    public static IHostBuilder UseCratisApplicationModel(this IHostBuilder builder, string? configSectionPath = null)
     {
         builder.ConfigureServices(_ => AddOptions(_)
                 .BindConfiguration(configSectionPath ?? ConfigurationPath.Combine(DefaultApplicationModelSectionPaths)));
@@ -46,7 +46,7 @@ public static class HostBuilderExtensions
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
     /// <param name="configureOptions">Action to configure the <see cref="ApplicationModelOptions"/>.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, Action<ApplicationModelOptions> configureOptions)
+    public static IHostBuilder UseCratisApplicationModel(this IHostBuilder builder, Action<ApplicationModelOptions> configureOptions)
     {
         builder.ConfigureServices(_ => AddOptions(_, configureOptions));
         return builder.UseApplicationModelImplementation();

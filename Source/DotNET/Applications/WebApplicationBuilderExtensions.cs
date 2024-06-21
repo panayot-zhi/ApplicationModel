@@ -21,9 +21,9 @@ public static class WebApplicationBuilderExtensions
     /// <param name="builder"><see cref="WebApplicationBuilder"/> to extend.</param>
     /// <param name="configSectionPath">The optional configuration section path.</param>
     /// <returns><see cref="WebApplicationBuilder"/> for building continuation.</returns>
-    public static WebApplicationBuilder UseApplicationModel(this WebApplicationBuilder builder, string? configSectionPath = null)
+    public static WebApplicationBuilder UseCratisApplicationModel(this WebApplicationBuilder builder, string? configSectionPath = null)
     {
-        builder.Host.UseApplicationModel(configSectionPath);
+        builder.Host.UseCratisApplicationModel(configSectionPath);
         return builder;
     }
 
@@ -33,9 +33,9 @@ public static class WebApplicationBuilderExtensions
     /// <param name="builder"><see cref="WebApplicationBuilder"/> to extend.</param>
     /// <param name="configureOptions">Action to configure the <see cref="ApplicationModelOptions"/>.</param>
     /// <returns><see cref="WebApplicationBuilder"/> for building continuation.</returns>
-    public static WebApplicationBuilder UseApplicationModel(this WebApplicationBuilder builder, Action<ApplicationModelOptions> configureOptions)
+    public static WebApplicationBuilder UseCratisApplicationModel(this WebApplicationBuilder builder, Action<ApplicationModelOptions> configureOptions)
     {
-        builder.Host.UseApplicationModel(configureOptions);
+        builder.Host.UseCratisApplicationModel(configureOptions);
         return builder;
     }
 }
