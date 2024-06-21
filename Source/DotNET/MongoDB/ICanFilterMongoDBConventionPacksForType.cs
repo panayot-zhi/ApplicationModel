@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Conventions;
 namespace Cratis.Applications.MongoDB;
 
 /// <summary>
-/// Defines a system that can tell whether or not a specific <see cref="Type"/> should be affected by a <see cref="IConventionPack"/>.
+/// Defines a system that can tell whether a specific <see cref="Type"/> should be affected by a <see cref="IConventionPack"/>.
 /// </summary>
 public interface ICanFilterMongoDBConventionPacksForType
 {
