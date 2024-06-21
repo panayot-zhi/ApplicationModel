@@ -3,7 +3,7 @@
 
 using MongoDB.Driver;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Defines a system that can resolve a <see cref="MongoUrl"/>.

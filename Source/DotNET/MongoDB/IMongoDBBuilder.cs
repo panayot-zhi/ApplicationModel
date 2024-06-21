@@ -3,7 +3,7 @@
 
 using Cratis.Models;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Defines the builder for MongoDB.
@@ -23,12 +23,12 @@ public interface IMongoDBBuilder
     /// <summary>
     /// Gets or sets the URL resolver.
     /// </summary>
-    IMongoServerResolver? ServerResolver { get; set; }
+    Type? ServerResolverType { get; set; }
 
     /// <summary>
     /// Gets or sets the database name resolver.
     /// </summary>
-    IMongoDatabaseNameResolver? DatabaseNameResolver { get; set; }
+    Type? DatabaseNameResolverType { get; set; }
 
     /// <summary>
     /// Gets or sets the model name resolver. Not specifying this will revert to the default.

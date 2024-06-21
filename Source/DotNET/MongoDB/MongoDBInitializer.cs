@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Represents a hosted service that initializes MongoDB when the application is ready.
@@ -15,14 +15,12 @@ namespace Cratis.MongoDB;
 /// Initializes a new instance of <see cref="MongoDBInitializer"/>.
 /// </remarks>
 /// <param name="serviceProvider"><see cref="IServiceProvider"/> for getting services.</param>
-internal class MongoDBInitializer(IServiceProvider serviceProvider) : IHostedService
+class MongoDBInitializer(IServiceProvider serviceProvider) : IHostedService
 {
-    readonly IServiceProvider _serviceProvider = serviceProvider;
-
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        DatabaseExtensions.ModelNameResolver = _serviceProvider.GetRequiredService<IModelNameResolver>();
+        DatabaseExtensions.ModelNameResolver = serviceProvider.GetRequiredService<IModelNameResolver>();
         return Task.CompletedTask;
     }
 

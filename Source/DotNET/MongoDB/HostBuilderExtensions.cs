@@ -4,7 +4,9 @@
 using Cratis.Applications.MongoDB;
 using Cratis.Models;
 using Cratis.MongoDB;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace Microsoft.Extensions.Hosting;
@@ -23,26 +25,36 @@ public static class HostBuilderExtensions
     /// </summary>
     /// <param name="builder"><see cref="IHostBuilder"/> to use MongoDB with.</param>
     /// <param name="mongoDBBuilderCallback">Optional builder callback for configuring MongoDB.</param>
+    /// <param name="configureMongoDB">Optional callback for configuring <see cref="MongoDBOptions"/>.</param>
+    /// <param name="mongoDBConfigSectionPath">Optional string for the <see cref="MongoDBOptions"/> config section path.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
     /// <remarks>
     /// It will automatically hook up any implementations of <see cref="IBsonClassMapFor{T}"/>
     /// and <see cref="ICanFilterMongoDBConventionPacksForType"/>.
     /// </remarks>
-    public static IHostBuilder UseMongoDB(this IHostBuilder builder, Action<IMongoDBBuilder>? mongoDBBuilderCallback = default)
+    public static IHostBuilder UseMongoDB(
+        this IHostBuilder builder,
+        Action<IMongoDBBuilder>? mongoDBBuilderCallback = default,
+        Action<MongoDBOptions>? configureMongoDB = default,
+        string? mongoDBConfigSectionPath = null)
     {
+        mongoDBConfigSectionPath ??= ConfigurationPath.Combine("Cratis", "MongoDB");
+
         var mongoDBBuilder = new MongoDBBuilder();
         mongoDBBuilderCallback?.Invoke(mongoDBBuilder);
-
-        MongoDBDefaults.Initialize(mongoDBBuilder);
-
         mongoDBBuilder.Validate();
-
+        MongoDBDefaults.Initialize(mongoDBBuilder);
         builder.ConfigureServices((context, services) =>
         {
+            services.AddOptions<MongoDBOptions>().BindConfiguration(mongoDBConfigSectionPath);
+            if (configureMongoDB is not null)
+            {
+                services.Configure(configureMongoDB);
+            }
             services.AddSingleton(mongoDBBuilder.ModelNameResolver ?? new ModelNameResolver(new DefaultModelNameConvention()));
             services.AddHostedService<MongoDBInitializer>();
-            services.AddSingleton(mongoDBBuilder.ServerResolver!);
-            services.AddSingleton(mongoDBBuilder.DatabaseNameResolver!);
+            services.AddSingleton(typeof(IMongoServerResolver), mongoDBBuilder.ServerResolverType);
+            services.AddSingleton(typeof(IMongoDatabaseNameResolver), mongoDBBuilder.DatabaseNameResolverType);
             services.AddSingleton<IMongoDBClientFactory, MongoDBClientFactory>();
             services.AddTransient(sp =>
             {
@@ -61,11 +73,16 @@ public static class HostBuilderExtensions
             services.AddTransient(sp =>
             {
                 var client = sp.GetRequiredService<IMongoClient>();
-                return client.GetDatabase(mongoDBBuilder.DatabaseNameResolver!.Resolve());
+                return client.GetDatabase(mongoDBBuilder.DatabaseNameResolverType!.Resolve());
             });
 
             services.AddTransient(typeof(IMongoCollection<>), typeof(MongoCollectionAdapter<>));
         });
         return builder;
+    }
+
+    static OptionsBuilder<MongoDBOptions> AddOptions(IServiceCollection services, )
+    {
+        
     }
 }

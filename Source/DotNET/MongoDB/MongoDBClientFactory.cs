@@ -12,7 +12,7 @@ using MongoDB.Driver.Core.Events;
 using Polly;
 using Polly.Retry;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Represents an implementation of <see cref="IMongoDBClientFactory"/>.

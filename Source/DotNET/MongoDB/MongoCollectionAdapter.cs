@@ -19,7 +19,7 @@ namespace Cratis.Applications.MongoDB;
 /// With the default registrations in ServiceCollection, it is not possible to register an open generic service with a factory that resolves the type arguments from a context.
 /// The factory is represented as a <see cref="Func{TServiceProvider, TResult}"/> giving you the <see cref="IServiceProvider"/> and not the context with the service being resolved which would enable us
 /// to get the generic argument and resolve the correct <see cref="IMongoCollection{T}"/> type from the <see cref="IMongoDatabase"/>.
-/// However it is supported to do a service registration with open generics without a factory. So instead we put this in between and just forward the calls to the actual <see cref="IMongoCollection{T}"/>
+/// However, it is supported to do a service registration with open generics without a factory. So instead we put this in between and just forward the calls to the actual <see cref="IMongoCollection{T}"/>
 /// which we resolve from the <see cref="IMongoDatabase"/> coming as a dependency.
 /// </remarks>
 public class MongoCollectionAdapter<T> : IMongoCollection<T>

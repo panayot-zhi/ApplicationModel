@@ -4,7 +4,7 @@
 using Cratis.Models;
 using MongoDB.Driver;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Represents an implementation of <see cref="IMongoDBBuilder"/>.
@@ -28,10 +28,10 @@ public class MongoDBBuilder : IMongoDBBuilder
     public IList<Type> ConventionPackFilters { get; }
 
     /// <inheritdoc/>
-    public IMongoServerResolver? ServerResolver { get; set; }
+    public Type ServerResolverType { get; set; } = typeof(DefaultMongoServerResolver);
 
     /// <inheritdoc/>
-    public IMongoDatabaseNameResolver? DatabaseNameResolver { get; set; }
+    public Type DatabaseNameResolverType { get; set; } = typeof(DefaultMongoDatabaseNameResolver);
 
     /// <inheritdoc/>
     public IModelNameResolver? ModelNameResolver { get; set; }
@@ -39,7 +39,7 @@ public class MongoDBBuilder : IMongoDBBuilder
     /// <inheritdoc/>
     public void Validate()
     {
-        MongoServerResolverNotConfigured.ThrowIfNotConfigured(ServerResolver);
-        MongoDatabaseNameResolverNotConfigured.ThrowIfNotConfigured(DatabaseNameResolver);
+        MongoServerResolverNotConfigured.ThrowIfNotConfigured(ServerResolverType);
+        MongoDatabaseNameResolverNotConfigured.ThrowIfNotConfigured(DatabaseNameResolverType);
     }
 }

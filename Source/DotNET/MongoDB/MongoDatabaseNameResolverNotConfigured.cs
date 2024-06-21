@@ -1,7 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// The exception that is thrown when the <see cref="IMongoServerResolver"/> is missing.
@@ -13,7 +13,7 @@ public class MongoDatabaseNameResolverNotConfigured() : Exception("A resolver fo
     /// </summary>
     /// <param name="resolver">The resolver value to check.</param>
     /// <exception cref="MongoDatabaseNameResolverNotConfigured">Thrown if the resolver is not configured.</exception>
-    public static void ThrowIfNotConfigured(IMongoDatabaseNameResolver? resolver)
+    public static void ThrowIfNotConfigured(Type? resolver)
     {
         if (resolver is null)
         {

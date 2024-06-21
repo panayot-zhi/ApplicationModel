@@ -3,7 +3,7 @@
 
 using MongoDB.Driver;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Defines a factory that is capable of creating <see cref="IMongoClient"/> instances.

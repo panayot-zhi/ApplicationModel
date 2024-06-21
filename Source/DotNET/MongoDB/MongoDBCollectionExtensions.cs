@@ -7,7 +7,7 @@ using System.Reflection;
 using Cratis.Concepts;
 using MongoDB.Bson;
 
-namespace MongoDB.Driver;
+namespace MongoDB.Applications.Driver;
 
 /// <summary>
 /// Extension methods for <see cref="IMongoCollection{T}"/>.

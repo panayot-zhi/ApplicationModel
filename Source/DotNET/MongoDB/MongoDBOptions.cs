@@ -4,13 +4,17 @@
 namespace Cratis.Applications.MongoDB;
 
 /// <summary>
-/// Defines a system that can resolve the name of a MongoDB database.
+/// Represents the configuration for MongoDB.
 /// </summary>
-public interface IMongoDatabaseNameResolver
+public class MongoDBOptions
 {
     /// <summary>
-    /// Resolve the name of the MongoDB database.
+    /// The server url.
     /// </summary>
-    /// <returns>Name of the database.</returns>
-    string Resolve();
+    public string Server { get; set; }
+
+    /// <summary>
+    /// The database name.
+    /// </summary>
+    public string Database { get; set; }
 }

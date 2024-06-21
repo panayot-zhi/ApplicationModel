@@ -1,7 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Provides extension methods for the <see cref="IMongoDBBuilder"/>.
@@ -35,24 +35,26 @@ public static class MongoDBBuilderExtensions
     /// <summary>
     /// Configures the MongoDB builder with a static URL.
     /// </summary>
+    /// <typeparam name="TResolver">The <see cref="IMongoServerResolver"/> type.</typeparam>
     /// <param name="builder">The MongoDB builder.</param>
-    /// <param name="connectionString">Connection string to the server to configure it with.</param>
     /// <returns>The updated MongoDB builder.</returns>
-    public static IMongoDBBuilder WithStaticServer(this IMongoDBBuilder builder, string connectionString)
+    public static IMongoDBBuilder WithServerResolver<TResolver>(this IMongoDBBuilder builder)
+        where TResolver : IMongoServerResolver
     {
-        builder.ServerResolver = new StaticMongoServerResolver(connectionString);
+        builder.ServerResolverType = typeof(TResolver);
         return builder;
     }
 
     /// <summary>
     /// Configures the MongoDB builder with a static database name.
     /// </summary>
+    /// <typeparam name="TResolver">The <see cref="IMongoDatabaseNameResolver"/> type.</typeparam>
     /// <param name="builder">The MongoDB builder.</param>
-    /// <param name="databaseName">Name of database.</param>
     /// <returns>The updated MongoDB builder.</returns>
-    public static IMongoDBBuilder WithStaticDatabaseName(this IMongoDBBuilder builder, string databaseName)
+    public static IMongoDBBuilder WithDatabaseResolver<TResolver>(this IMongoDBBuilder builder)
+        where TResolver : IMongoDatabaseNameResolver
     {
-        builder.DatabaseNameResolver = new StaticMongoDatabaseNameResolver(databaseName);
+        builder.DatabaseNameResolverType = typeof(TResolver);
         return builder;
     }
 }
