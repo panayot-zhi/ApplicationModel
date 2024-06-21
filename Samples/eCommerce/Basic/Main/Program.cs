@@ -3,15 +3,13 @@
 
 using System.Globalization;
 using System.Text.Json.Nodes;
+using Cratis.Applications;
 using Cratis.Applications.MongoDB;
 using Cratis.Applications.Orleans.Concepts;
 using Cratis.Execution;
 using Cratis.Json;
-using Cratis.MongoDB;
-using MongoDB.Driver;
+using Microsoft.Extensions.Options;
 using Orleans.Serialization;
-using Orleans.Serialization.Cloning;
-using Orleans.Serialization.Serializers;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -30,11 +28,11 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-builder.UseApplicationModel();
+builder.UseCratisApplicationModel();
+builder.UseCratisMongoDB();
 
 // Todo: This should be part of the "Use application model" extension method, with overrides
 builder.Services
-    .AddDefaultModelNameConvention()
     .AddSwaggerGen(options =>
     {
         var files = Directory.GetFiles(AppContext.BaseDirectory).Where(file => Path.GetExtension(file) == ".xml");
@@ -50,13 +48,10 @@ builder.Services
         {
             options.IncludeXmlComments(file);
         }
+        // options.AddConcepts();
     })
     .AddEndpointsApiExplorer()
     .AddMvc();
-
-builder.UseMongoDB(_ => _
-    .WithStaticServer("mongodb://localhost:27017")
-    .WithStaticDatabaseName("eCommerce"));
 
 builder.UseOrleans(_ => _
     .ConfigureServices(services =>
@@ -70,7 +65,7 @@ builder.UseOrleans(_ => _
             Globals.JsonSerializerOptions));
     })
     .UseLocalhostClustering()
-    .AddMongoDBStorageAsDefault()
+    .AddCratisMongoDBStorageAsDefault()
     .UseDashboard(options =>
     {
         options.Host = "*";
@@ -79,7 +74,7 @@ builder.UseOrleans(_ => _
     }));
 
 var app = builder.Build();
-app.UseApplicationModel();
+app.UseCratisApplicationModel();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -92,7 +87,6 @@ if (RuntimeEnvironment.IsDevelopment)
 
 app.UseWebSockets();
 app.MapControllers();
-app.UseApplicationModel();
 app.UseMicrosoftIdentityPlatformIdentityResolver();
 app.MapFallbackToFile("/index.html");
 
