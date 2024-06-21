@@ -3,12 +3,10 @@
 
 using System.Globalization;
 using System.Text.Json.Nodes;
-using Cratis.Applications;
-using Cratis.Applications.MongoDB;
 using Cratis.Applications.Orleans.Concepts;
+using Cratis.Applications.Swagger;
 using Cratis.Execution;
 using Cratis.Json;
-using Microsoft.Extensions.Options;
 using Orleans.Serialization;
 using Serilog;
 using Serilog.Exceptions;
@@ -48,7 +46,7 @@ builder.Services
         {
             options.IncludeXmlComments(file);
         }
-        // options.AddConcepts();
+        options.AddConcepts();
     })
     .AddEndpointsApiExplorer()
     .AddMvc();
