@@ -49,7 +49,6 @@ public static class HostBuilderExtensions
     /// <param name="builder"><see cref="IHostBuilder"/> to use MongoDB with.</param>
     /// <param name="configureOptions">Optional callback for configuring <see cref="MongoDBOptions"/>.</param>
     /// <param name="configureMongoDB">The optional callback for configuring <see cref="IMongoDBBuilder"/>.</param>
-    /// <param name="mongoDBConfigSectionPath">Optional string for the <see cref="MongoDBOptions"/> config section path.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
     /// <remarks>
     /// It will automatically hook up any implementations of <see cref="IBsonClassMapFor{T}"/>

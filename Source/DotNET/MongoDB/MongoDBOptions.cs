@@ -14,11 +14,11 @@ public class MongoDBOptions
     /// The server url.
     /// </summary>
     [Required]
-    public string Server { get; set; }
+    public string Server { get; set; } = null!;
 
     /// <summary>
     /// The database name.
     /// </summary>
     [Required]
-    public string Database { get; set; }
+    public string Database { get; set; } = null!;
 }

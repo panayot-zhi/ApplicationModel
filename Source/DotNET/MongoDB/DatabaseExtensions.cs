@@ -15,7 +15,7 @@ public static class DatabaseExtensions
     /// <summary>
     /// The <see cref="IModelNameResolver"/> to use.
     /// </summary>
-    internal static IModelNameResolver ModelNameResolver;
+    internal static IModelNameResolver? ModelNameResolver;
 
     /// <summary>
     /// Get a collection - with name of collection as convention (camelCase of typename).
@@ -26,6 +26,6 @@ public static class DatabaseExtensions
     /// <returns>The collection for your type.</returns>
     public static IMongoCollection<T> GetCollection<T>(this IMongoDatabase database, MongoCollectionSettings? settings = default)
     {
-        return database.GetCollection<T>(ModelNameResolver.GetNameFor(typeof(T)), settings);
+        return database.GetCollection<T>(ModelNameResolver!.GetNameFor(typeof(T)), settings);
     }
 }
