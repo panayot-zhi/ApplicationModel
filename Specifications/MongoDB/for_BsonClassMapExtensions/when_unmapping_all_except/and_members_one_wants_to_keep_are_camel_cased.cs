@@ -1,3 +1,4 @@
+using Cratis.Applications.MongoDB;
 using Cratis.Strings;
 using MongoDB.Bson.Serialization;
 

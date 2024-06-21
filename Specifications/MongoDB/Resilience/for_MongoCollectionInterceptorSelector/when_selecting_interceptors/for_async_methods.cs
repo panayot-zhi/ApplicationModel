@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
+using Cratis.Applications.MongoDB.Resilience;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
