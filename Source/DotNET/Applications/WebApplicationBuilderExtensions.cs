@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Applications;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.AspNetCore.Builder;
@@ -15,23 +14,16 @@ public static class WebApplicationBuilderExtensions
     /// <summary>
     /// Use Cratis ApplicationModel with the <see cref="WebApplicationBuilder"/>.
     /// </summary>
+    /// <remarks>
+    /// Binds the <see cref="ApplicationModelOptions"/> configuration to the given config section path or the default
+    /// Cratis:ApplicationModel section path.
+    /// </remarks>
     /// <param name="builder"><see cref="WebApplicationBuilder"/> to extend.</param>
+    /// <param name="configSectionPath">The optional configuration section path.</param>
     /// <returns><see cref="WebApplicationBuilder"/> for building continuation.</returns>
-    public static WebApplicationBuilder UseApplicationModel(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder UseApplicationModel(this WebApplicationBuilder builder, string? configSectionPath = null)
     {
-        builder.Host.UseApplicationModel();
-        return builder;
-    }
-
-    /// <summary>
-    /// Use Cratis ApplicationModel with the <see cref="WebApplicationBuilder"/>.
-    /// </summary>
-    /// <param name="builder"><see cref="WebApplicationBuilder"/> to extend.</param>
-    /// <param name="options">An instance of <see cref="ApplicationModelOptions"/>.</param>
-    /// <returns><see cref="WebApplicationBuilder"/> for building continuation.</returns>
-    public static WebApplicationBuilder UseApplicationModel(this WebApplicationBuilder builder, ApplicationModelOptions options)
-    {
-        builder.Host.UseApplicationModel(options);
+        builder.Host.UseApplicationModel(configSectionPath);
         return builder;
     }
 
@@ -44,18 +36,6 @@ public static class WebApplicationBuilderExtensions
     public static WebApplicationBuilder UseApplicationModel(this WebApplicationBuilder builder, Action<ApplicationModelOptions> configureOptions)
     {
         builder.Host.UseApplicationModel(configureOptions);
-        return builder;
-    }
-
-    /// <summary>
-    /// Use Cratis ApplicationModel with the <see cref="WebApplicationBuilder"/>.
-    /// </summary>
-    /// <param name="builder"><see cref="WebApplicationBuilder"/> to extend.</param>
-    /// <param name="configuration"><see cref="IConfiguration"/> to use for configuration.</param>
-    /// <returns><see cref="WebApplicationBuilder"/> for building continuation.</returns>
-    public static WebApplicationBuilder UseApplicationModel(this WebApplicationBuilder builder, IConfiguration configuration)
-    {
-        builder.Host.UseApplicationModel(configuration);
         return builder;
     }
 }
