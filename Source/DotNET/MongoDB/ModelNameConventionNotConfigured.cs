@@ -15,16 +15,22 @@ public class ModelNameConventionNotConfigured(string message)
     /// <summary>
     /// Throw if not configured.
     /// </summary>
-    /// <param name="resolver">The resolver value to check.</param>
+    /// <param name="convention">The <see cref="IModelNameConvention"/>.</param>
+    /// <param name="conventionType">The type of the model name convention.</param>
     /// <exception cref="ModelNameConventionNotConfigured">Thrown if the resolver is not configured.</exception>
-    public static void ThrowIfNotConfigured(Type? resolver)
+    public static void ThrowIfNotConfigured(IModelNameConvention? convention, Type? conventionType)
     {
-        if (resolver is null)
+        if (convention is not null)
+        {
+            return;
+        }
+
+        if (conventionType is null)
         {
             throw new ModelNameConventionNotConfigured("Please configure it using the UseMongoDB extension method");
         }
 
-        if (!resolver.IsAssignableTo(typeof(IModelNameResolver)))
+        if (!conventionType.IsAssignableTo(typeof(IModelNameResolver)))
         {
             throw new ModelNameConventionNotConfigured($"The type is not assignable to {typeof(IModelNameResolver)}");
         }

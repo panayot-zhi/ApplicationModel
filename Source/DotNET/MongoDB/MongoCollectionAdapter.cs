@@ -24,7 +24,6 @@ namespace Cratis.Applications.MongoDB;
 /// </remarks>
 public class MongoCollectionAdapter<T> : IMongoCollection<T>
 {
-    readonly IMongoDatabase _database;
     readonly IModelNameResolver _modelNameResolver;
     readonly IMongoCollection<T> _collection;
 
@@ -35,9 +34,8 @@ public class MongoCollectionAdapter<T> : IMongoCollection<T>
     /// <param name="modelNameResolver">The <see cref="IModelNameResolver"/> to use.</param>
     public MongoCollectionAdapter(IMongoDatabase database, IModelNameResolver modelNameResolver)
     {
-        _database = database;
         _modelNameResolver = modelNameResolver;
-        _collection = _database.GetCollection<T>(GetReadModelName(typeof(T)));
+        _collection = database.GetCollection<T>(GetReadModelName(typeof(T)));
     }
 
 #pragma warning disable CS0618, CS8625, SA1600, SA1127
@@ -145,12 +143,8 @@ public class MongoCollectionAdapter<T> : IMongoCollection<T>
 
     string GetReadModelName(Type readModelType)
     {
-        if (readModelType.HasAttribute<ModelNameAttribute>())
-        {
-            var modelNameAttribute = readModelType.GetCustomAttribute<ModelNameAttribute>()!;
-            return modelNameAttribute.Name;
-        }
-
-        return _modelNameResolver.GetNameFor(readModelType);
+        if (!readModelType.HasAttribute<ModelNameAttribute>()) return _modelNameResolver.GetNameFor(readModelType);
+        var modelNameAttribute = readModelType.GetCustomAttribute<ModelNameAttribute>()!;
+        return modelNameAttribute.Name;
     }
 }

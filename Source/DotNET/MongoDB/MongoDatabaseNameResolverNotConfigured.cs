@@ -22,7 +22,7 @@ public class MongoDatabaseNameResolverNotConfigured(string message)
             throw new MongoDatabaseNameResolverNotConfigured("Please configure it using the UseMongoDB extension method");
         }
 
-        if (!resolver.IsAssignableTo(typeof(IMongoServerResolver)))
+        if (!resolver.IsAssignableTo(typeof(IMongoDatabaseNameResolver)))
         {
             throw new MongoDatabaseNameResolverNotConfigured($"The type is not assignable to {typeof(IMongoServerResolver)}");
         }

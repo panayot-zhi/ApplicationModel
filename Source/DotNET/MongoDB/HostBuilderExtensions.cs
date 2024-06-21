@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Applications.MongoDB;
+using Cratis.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -79,7 +80,13 @@ public static class HostBuilderExtensions
             optionsBuilder.BindConfiguration(mongoDBConfigSectionPath);
         }
 
-        services.AddHostedService<MongoDBInitializer>(provider => new MongoDBInitializer(provider, mongoDBBuilder));
+        services.AddHostedService<MongoDBInitializer>();
+
+        // TODO: This model name hookup stuff is a bit nasty, maybe we can think out something better?
+        services.AddSingleton<IModelNameConvention>(provider =>
+            mongoDBBuilder.ModelNameConvention ??
+            (IModelNameConvention)ActivatorUtilities.CreateInstance(provider, mongoDBBuilder.ModelNameConventionType));
+        services.AddSingleton<IModelNameResolver, ModelNameResolver>();
         services.AddSingleton(typeof(IMongoServerResolver), mongoDBBuilder.ServerResolverType);
         services.AddSingleton(typeof(IMongoDatabaseNameResolver), mongoDBBuilder.DatabaseNameResolverType);
         services.AddSingleton<IMongoDBClientFactory, MongoDBClientFactory>();

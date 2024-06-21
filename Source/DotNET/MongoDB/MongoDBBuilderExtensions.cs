@@ -69,6 +69,22 @@ public static class MongoDBBuilderExtensions
     public static IMongoDBBuilder WithModelNameConvention<TConvention>(this IMongoDBBuilder builder)
         where TConvention : IModelNameConvention
     {
+        builder.ModelNameConvention = null;
+        builder.ModelNameConventionType = typeof(TConvention);
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures the MongoDB builder with a <see cref="IModelNameConvention"/>.
+    /// </summary>
+    /// <typeparam name="TConvention">The <see cref="IModelNameConvention"/> type.</typeparam>
+    /// <param name="builder">The MongoDB builder.</param>
+    /// <param name="convention">The <see cref="IModelNameConvention"/>.</param>
+    /// <returns>The updated MongoDB builder.</returns>
+    public static IMongoDBBuilder WithModelNameConvention<TConvention>(this IMongoDBBuilder builder, TConvention convention)
+        where TConvention : IModelNameConvention
+    {
+        builder.ModelNameConvention = convention;
         builder.ModelNameConventionType = typeof(TConvention);
         return builder;
     }
