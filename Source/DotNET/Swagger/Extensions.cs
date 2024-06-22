@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Cratis.Swagger;
+namespace Cratis.Applications.Swagger;
 
 /// <summary>
 /// Extension methods for setting up Swagger for a Cratis application.
