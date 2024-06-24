@@ -1,8 +1,7 @@
-using Cratis.Applications.MongoDB;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 
-namespace Cratis.MongoDB.for_BsonClassMapExtensions;
+namespace Cratis.Applications.MongoDB.for_BsonClassMapExtensions;
 
 public class when_applying_conventions : Specification
 {

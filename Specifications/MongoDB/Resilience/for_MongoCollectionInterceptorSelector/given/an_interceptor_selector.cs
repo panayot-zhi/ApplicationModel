@@ -1,12 +1,10 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Reflection;
-using Cratis.Applications.MongoDB.Resilience;
 using MongoDB.Driver;
 using Polly;
 
-namespace Cratis.MongoDB.Resilience.for_MongoCollectionInterceptorSelector.given;
+namespace Cratis.Applications.MongoDB.Resilience.for_MongoCollectionInterceptorSelector.given;
 
 public class an_interceptor_selector : Specification
 {

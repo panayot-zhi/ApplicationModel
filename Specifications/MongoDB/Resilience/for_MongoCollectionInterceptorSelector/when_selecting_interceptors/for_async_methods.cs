@@ -2,11 +2,10 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Reflection;
-using Cratis.Applications.MongoDB.Resilience;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Cratis.MongoDB.Resilience.for_MongoCollectionInterceptorSelector.when_selecting_interceptors;
+namespace Cratis.Applications.MongoDB.Resilience.for_MongoCollectionInterceptorSelector.when_selecting_interceptors;
 
 public class for_async_methods : given.an_interceptor_selector
 {

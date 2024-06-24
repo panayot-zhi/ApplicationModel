@@ -1,8 +1,7 @@
-using Cratis.Applications.MongoDB;
 using Cratis.Collections;
 using MongoDB.Bson.Serialization;
 
-namespace Cratis.MongoDB.for_AcronymFriendlyCamelCaseElementNameConvention;
+namespace Cratis.Applications.MongoDB.for_AcronymFriendlyCamelCaseElementNameConvention;
 
 public class when_applying_convention : Specification
 {

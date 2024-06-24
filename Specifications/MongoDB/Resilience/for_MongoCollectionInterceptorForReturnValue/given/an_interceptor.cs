@@ -1,11 +1,10 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Cratis.Applications.MongoDB.Resilience;
 using MongoDB.Driver;
 using Polly;
 
-namespace Cratis.MongoDB.Resilience.for_MongoCollectionInterceptorForReturnValue.given;
+namespace Cratis.Applications.MongoDB.Resilience.for_MongoCollectionInterceptorForReturnValue.given;
 
 public abstract class an_interceptor : Specification
 {
@@ -15,7 +14,7 @@ public abstract class an_interceptor : Specification
     protected MongoCollectionInterceptorForReturnValues interceptor;
     protected Mock<Castle.DynamicProxy.IInvocation> invocation;
     protected Task<string> return_value;
-    protected InvocationTarget target;
+    protected for_MongoCollectionInterceptor.InvocationTarget target;
     protected SemaphoreSlim semaphore;
 
     protected abstract string GetInvocationTargetMethod();
@@ -28,7 +27,7 @@ public abstract class an_interceptor : Specification
         interceptor = new(resilience_pipeline, semaphore);
 
         invocation = new();
-        invocation.SetupGet(_ => _.Method).Returns(typeof(InvocationTarget).GetMethod(GetInvocationTargetMethod())!);
+        invocation.SetupGet(_ => _.Method).Returns(typeof(for_MongoCollectionInterceptor.InvocationTarget).GetMethod(GetInvocationTargetMethod())!);
         target = new();
         invocation.SetupGet(_ => _.InvocationTarget).Returns(target);
         invocation.SetupSet(_ => _.ReturnValue = It.IsAny<Task<string>>()).Callback((object? value) => return_value = value as Task<string>);
