@@ -83,8 +83,9 @@ public static class HostBuilderExtensions
 
         // TODO: This model name hookup stuff is a bit nasty, maybe we can think out something better?
         services.AddSingleton<IModelNameConvention>(provider =>
-            mongoDBBuilder.ModelNameConvention ??
-            (IModelNameConvention)ActivatorUtilities.CreateInstance(provider, mongoDBBuilder.ModelNameConventionType));
+            mongoDBBuilder.ModelNameConventionInstance ?? (IModelNameConvention)ActivatorUtilities.CreateInstance(
+                provider,
+                mongoDBBuilder.ModelNameConventionType ?? typeof(DefaultModelNameConvention)));
         services.AddSingleton<IModelNameResolver, ModelNameResolver>();
         services.AddSingleton(typeof(IMongoServerResolver), mongoDBBuilder.ServerResolverType);
         services.AddSingleton(typeof(IMongoDatabaseNameResolver), mongoDBBuilder.DatabaseNameResolverType);
@@ -122,6 +123,7 @@ public static class HostBuilderExtensions
         builder.Validate();
         return builder;
     }
+
     static OptionsBuilder<MongoDBOptions> AddOptions(IServiceCollection services, Action<MongoDBOptions>? configureOptions = default)
     {
         var builder = services

@@ -19,7 +19,7 @@ class MongoDBInitializer(IModelNameResolver modelNameResolver) : IHostedService
     /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        DatabaseExtensions.ModelNameResolver = modelNameResolver;
+        DatabaseExtensions.SetModelNameResolver(modelNameResolver);
         return Task.CompletedTask;
     }
 

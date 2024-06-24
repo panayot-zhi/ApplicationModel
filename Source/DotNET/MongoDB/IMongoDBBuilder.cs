@@ -31,14 +31,14 @@ public interface IMongoDBBuilder
     Type DatabaseNameResolverType { get; set; }
 
     /// <summary>
-    /// Gets or sets the model name resolver.
+    /// Gets or sets the <see cref="IModelNameConvention"/> instance.
     /// </summary>
-    IModelNameConvention? ModelNameConvention { get; set; }
+    IModelNameConvention? ModelNameConventionInstance { get; set; }
 
     /// <summary>
-    /// Gets or sets the model name resolver type.
+    /// Gets or sets the <see cref="IModelNameConvention"/> type.
     /// </summary>
-    Type ModelNameConventionType { get; set; }
+    Type? ModelNameConventionType { get; set; }
 
     /// <summary>
     /// Validate the builder.

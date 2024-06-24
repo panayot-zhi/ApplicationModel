@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Applications.MongoDB;
 using Cratis.Models;
 
 namespace MongoDB.Driver;
@@ -10,12 +11,14 @@ namespace MongoDB.Driver;
 /// </summary>
 public static class DatabaseExtensions
 {
-    // TODO: Some icky stuff setting this thing...
+    static IModelNameResolver? _modelNameResolver;
 
     /// <summary>
     /// The <see cref="IModelNameResolver"/> to use.
     /// </summary>
-    internal static IModelNameResolver? ModelNameResolver;
+    /// <exception cref="ModelNameResolverNotConfigured">Thrown when the resolver is not configured.</exception>
+    static IModelNameResolver ModelNameResolver =>
+        _modelNameResolver ?? throw new ModelNameResolverNotConfigured($"Cannot use {nameof(IMongoDatabase)}.{nameof(GetCollection)}() before it has been configured. Please configure it using {nameof(MongoDBBuilderExtensions.WithModelNameConvention)}");
 
     /// <summary>
     /// Get a collection - with name of collection as convention (camelCase of typename).
@@ -28,4 +31,10 @@ public static class DatabaseExtensions
     {
         return database.GetCollection<T>(ModelNameResolver!.GetNameFor(typeof(T)), settings);
     }
+
+    /// <summary>
+    /// Sets the <see cref="ModelNameResolver"/>.
+    /// </summary>
+    /// <param name="resolver">The <see cref="IModelNameResolver"/>.</param>
+    internal static void SetModelNameResolver(IModelNameResolver resolver) => _modelNameResolver = resolver;
 }

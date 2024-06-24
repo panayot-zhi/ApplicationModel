@@ -9,7 +9,7 @@ namespace Cratis.Applications.MongoDB;
 /// The exception that is thrown when the <see cref="IMongoServerResolver"/> is missing.
 /// </summary>
 /// <param name="message">The additional message of the error.</param>
-public class ModelNameConventionNotConfigured(string message)
+public class ModelNameResolverNotConfigured(string message)
     : Exception($"A model name convention for MongoDB has not been configured. {message}")
 {
     /// <summary>
@@ -17,22 +17,27 @@ public class ModelNameConventionNotConfigured(string message)
     /// </summary>
     /// <param name="convention">The <see cref="IModelNameConvention"/>.</param>
     /// <param name="conventionType">The type of the model name convention.</param>
-    /// <exception cref="ModelNameConventionNotConfigured">Thrown if the resolver is not configured.</exception>
+    /// <exception cref="Cratis.Applications.MongoDB.ModelNameResolverNotConfigured">Thrown if the resolver is not configured.</exception>
     public static void ThrowIfNotConfigured(IModelNameConvention? convention, Type? conventionType)
     {
         if (convention is not null)
         {
+            if (conventionType is not null)
+            {
+                throw new ModelNameResolverNotConfigured($"Two model name conventions are configured. Use {nameof(MongoDBBuilderExtensions.WithModelNameConvention)} to configure a model name convention");
+            }
+
             return;
         }
 
         if (conventionType is null)
         {
-            throw new ModelNameConventionNotConfigured("Please configure it using the UseMongoDB extension method");
+            throw new ModelNameResolverNotConfigured($"Please configure it using the {nameof(MongoDBBuilderExtensions.WithModelNameConvention)} method");
         }
 
         if (!conventionType.IsAssignableTo(typeof(IModelNameResolver)))
         {
-            throw new ModelNameConventionNotConfigured($"The type is not assignable to {typeof(IModelNameResolver)}");
+            throw new ModelNameResolverNotConfigured($"The given type {conventionType} is not assignable to {typeof(IModelNameConvention)}");
         }
     }
 }

@@ -33,16 +33,16 @@ public class MongoDBBuilder : IMongoDBBuilder
     public Type DatabaseNameResolverType { get; set; } = typeof(DefaultMongoDatabaseNameResolver);
 
     /// <inheritdoc/>
-    public IModelNameConvention? ModelNameConvention { get; set; } = new DefaultModelNameConvention();
+    public IModelNameConvention? ModelNameConventionInstance { get; set; }
 
     /// <inheritdoc/>
-    public Type ModelNameConventionType { get; set; } = typeof(DefaultModelNameConvention);
+    public Type? ModelNameConventionType { get; set; } = typeof(DefaultModelNameConvention);
 
     /// <inheritdoc/>
     public void Validate()
     {
         MongoServerResolverNotConfigured.ThrowIfNotConfigured(ServerResolverType);
         MongoDatabaseNameResolverNotConfigured.ThrowIfNotConfigured(DatabaseNameResolverType);
-        ModelNameConventionNotConfigured.ThrowIfNotConfigured(ModelNameConvention, ModelNameConventionType);
+        ModelNameResolverNotConfigured.ThrowIfNotConfigured(ModelNameConventionInstance, ModelNameConventionType);
     }
 }
