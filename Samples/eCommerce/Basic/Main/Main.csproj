@@ -19,6 +19,7 @@
         <ProjectReference Include="../../../../Source\DotNET/Orleans.MongoDB/Orleans.MongoDB.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/Tools/ProxyGenerator.Build/ProxyGenerator.Build.csproj" />
         <ProjectReference Include="../../../../Source\DotNET/Serilog/Serilog.csproj" />
+        <ProjectReference Include="../../../../Source\DotNET/Swagger/Swagger.csproj" />
     </ItemGroup>
 
     <ItemGroup>

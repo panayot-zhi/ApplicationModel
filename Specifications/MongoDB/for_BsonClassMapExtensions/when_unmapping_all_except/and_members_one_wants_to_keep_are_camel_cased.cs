@@ -1,7 +1,7 @@
 using Cratis.Strings;
 using MongoDB.Bson.Serialization;
 
-namespace Cratis.MongoDB.for_BsonClassMapExtensions.when_unmapping_all_except;
+namespace Cratis.Applications.MongoDB.for_BsonClassMapExtensions.when_unmapping_all_except;
 
 public class and_members_one_wants_to_keep_are_camel_cased : Specification
 {

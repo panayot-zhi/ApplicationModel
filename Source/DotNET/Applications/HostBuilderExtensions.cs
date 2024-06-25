@@ -4,11 +4,11 @@
 using Cratis.Applications;
 using Cratis.Conversion;
 using Cratis.DependencyInjection;
-using Cratis.Json;
 using Cratis.Serialization;
 using Cratis.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.Hosting;
 
@@ -20,36 +20,23 @@ public static class HostBuilderExtensions
     /// <summary>
     /// Gets the default section name for the application model configuration.
     /// </summary>
-    public const string DefaultApplicationModelSection = "Cratis.ApplicationModel";
+    public static readonly string[] DefaultApplicationModelSectionPaths = ["Cratis", "ApplicationModel"];
 
     /// <summary>
     /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
     /// </summary>
+    /// <remarks>
+    /// Binds the <see cref="ApplicationModelOptions"/> configuration to the given config section path or the default
+    /// Cratis:ApplicationModel section path.
+    /// </remarks>
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
+    /// <param name="configSectionPath">The optional configuration section path.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseApplicationModel(this IHostBuilder builder)
+    public static IHostBuilder UseCratisApplicationModel(this IHostBuilder builder, string? configSectionPath = null)
     {
-        builder.ConfigureServices(_ => _
-            .AddOptions<ApplicationModelOptions>()
-            .BindConfiguration(DefaultApplicationModelSection)
-            .Configure(options =>
-            {
-            })
-            .ValidateDataAnnotations()
-            .ValidateOnStart());
+        builder.ConfigureServices(_ => AddOptions(_)
+                .BindConfiguration(configSectionPath ?? ConfigurationPath.Combine(DefaultApplicationModelSectionPaths)));
 
-        return builder.UseApplicationModelImplementation();
-    }
-
-    /// <summary>
-    /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
-    /// </summary>
-    /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
-    /// <param name="options">An <see cref="ApplicationModelOptions"/> instance.</param>
-    /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, ApplicationModelOptions options)
-    {
-        builder.ConfigureServices(_ => _.ConfigureOptions(options));
         return builder.UseApplicationModelImplementation();
     }
 
@@ -59,23 +46,24 @@ public static class HostBuilderExtensions
     /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
     /// <param name="configureOptions">Action to configure the <see cref="ApplicationModelOptions"/>.</param>
     /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, Action<ApplicationModelOptions> configureOptions)
+    public static IHostBuilder UseCratisApplicationModel(this IHostBuilder builder, Action<ApplicationModelOptions> configureOptions)
     {
-        builder.ConfigureServices(_ => _.Configure(configureOptions));
+        builder.ConfigureServices(_ => AddOptions(_, configureOptions));
         return builder.UseApplicationModelImplementation();
     }
 
-    /// <summary>
-    /// Use Cratis ApplicationModel with the <see cref="IHostBuilder"/>.
-    /// </summary>
-    /// <param name="builder"><see cref="IHostBuilder"/> to extend.</param>
-    /// <param name="configuration"><see cref="IConfiguration"/> to use for configuration.</param>
-    /// <returns><see cref="IHostBuilder"/> for building continuation.</returns>
-    public static IHostBuilder UseApplicationModel(this IHostBuilder builder, IConfiguration configuration)
+    static OptionsBuilder<ApplicationModelOptions> AddOptions(IServiceCollection services, Action<ApplicationModelOptions>? configureOptions = default)
     {
-        builder.ConfigureServices(_ => _
-            .Configure<ApplicationModelOptions>(configuration));
-        return builder.UseApplicationModelImplementation();
+        var builder = services
+            .AddOptions<ApplicationModelOptions>()
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        if (configureOptions is not null)
+        {
+            builder.Configure(configureOptions);
+        }
+
+        return builder;
     }
 
     static IHostBuilder UseApplicationModelImplementation(this IHostBuilder builder)
@@ -84,8 +72,6 @@ public static class HostBuilderExtensions
         Internals.Types.RegisterTypeConvertersForConcepts();
         TypeConverters.Register();
         var derivedTypes = DerivedTypes.Instance;
-
-        Globals.Configure(derivedTypes);
 
         builder.UseDefaultServiceProvider(_ => _.ValidateOnBuild = false);
 

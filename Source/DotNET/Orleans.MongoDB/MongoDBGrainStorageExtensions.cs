@@ -17,8 +17,8 @@ public static class MongoDBGrainStorageExtensions
     /// </summary>
     /// <param name="builder"><see cref="ISiloBuilder"/> to add to.</param>
     /// <returns><see cref="ISiloBuilder"/> for continuation.</returns>
-    public static ISiloBuilder AddMongoDBStorageAsDefault(this ISiloBuilder builder) =>
-        AddMongoDBStorage(builder, ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME);
+    public static ISiloBuilder AddCratisMongoDBStorageAsDefault(this ISiloBuilder builder) =>
+        AddCratisMongoDBStorage(builder, ProviderConstants.DEFAULT_STORAGE_PROVIDER_NAME);
 
     /// <summary>
     /// Adds MongoDB grain storage.
@@ -26,10 +26,9 @@ public static class MongoDBGrainStorageExtensions
     /// <param name="builder"><see cref="ISiloBuilder"/> to add to.</param>
     /// <param name="providerName">Name of the provider.</param>
     /// <returns><see cref="ISiloBuilder"/> for continuation.</returns>
-    public static ISiloBuilder AddMongoDBStorage(this ISiloBuilder builder, string providerName)
+    public static ISiloBuilder AddCratisMongoDBStorage(this ISiloBuilder builder, string providerName)
     {
         builder.ConfigureServices(services => services.AddGrainStorage(providerName, MongoDBGrainStorageFactory.Create));
-
         return builder;
     }
 }

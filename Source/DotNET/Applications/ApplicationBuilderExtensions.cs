@@ -15,7 +15,7 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     /// <param name="app"><see cref="IApplicationBuilder"/> to extend.</param>
     /// <returns><see cref="IApplicationBuilder"/> for continuation.</returns>
-    public static IApplicationBuilder UseApplicationModel(this IApplicationBuilder app)
+    public static IApplicationBuilder UseCratisApplicationModel(this IApplicationBuilder app)
     {
         Internals.ServiceProvider = app.ApplicationServices;
         return app;

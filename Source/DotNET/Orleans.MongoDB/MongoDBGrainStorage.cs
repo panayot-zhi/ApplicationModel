@@ -1,8 +1,8 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Applications.MongoDB;
 using Cratis.Concepts;
-using Cratis.MongoDB;
 using MongoDB.Driver;
 using Orleans.Runtime;
 using Orleans.Storage;
@@ -21,9 +21,7 @@ public class MongoDBGrainStorage : IGrainStorage
     /// </summary>
     /// <param name="clientFactory"><see cref="IMongoDBClientFactory"/> for accessing MongoDB.</param>
     /// <param name="databaseNameResolver"><see cref="IMongoDatabaseNameResolver"/> for resolving the database name.</param>
-    public MongoDBGrainStorage(
-        IMongoDBClientFactory clientFactory,
-        IMongoDatabaseNameResolver databaseNameResolver)
+    public MongoDBGrainStorage(IMongoDBClientFactory clientFactory, IMongoDatabaseNameResolver databaseNameResolver)
     {
         var client = clientFactory.Create();
         _database = client.GetDatabase(databaseNameResolver.Resolve());

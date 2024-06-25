@@ -5,7 +5,7 @@ using Castle.DynamicProxy;
 using MongoDB.Driver;
 using Polly;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB.Resilience;
 
 /// <summary>
 /// Represents an interceptor for <see cref="IMongoCollection{TDocument}"/>.
