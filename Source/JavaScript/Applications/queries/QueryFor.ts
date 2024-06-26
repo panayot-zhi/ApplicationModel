@@ -6,6 +6,7 @@ import { QueryResult } from "./QueryResult";
 import Handlebars from 'handlebars';
 import { ValidateRequestArguments } from './ValidateRequestArguments';
 import { Constructor } from '@cratis/fundamentals';
+import { Paging } from './Paging';
 
 /**
  * Represents an implementation of {@link IQueryFor}.
@@ -29,6 +30,11 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
 
     /** @inheritdoc */
     async perform(args?: TArguments): Promise<QueryResult<TDataType>> {
+        return this.performWithPaging({ page: 0, pageSize: 0 }, args);
+    }
+
+    /** @inheritdoc */
+    async performWithPaging(paging: Paging, args?: TArguments): Promise<QueryResult<TDataType>> {
         const noSuccess = { ...QueryResult.noSuccess, ...{ data: this.defaultValue } } as QueryResult<TDataType>;
 
         let actualRoute = this.route;

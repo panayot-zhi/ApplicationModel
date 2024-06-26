@@ -4,7 +4,12 @@
 
 // eslint-disable-next-line header/header
 import { QueryFor, QueryResultWithState } from '@cratis/applications/queries';
+
+{{#if IsEnumerable}}
+import { useQuery, useQueryWithPaging, Paging, PerformQuery } from '@cratis/applications.react/queries';
+{{else}}
 import { useQuery, PerformQuery } from '@cratis/applications.react/queries';
+{{/if}}
 {{#Imports}}
 import { {{Type}} } from '{{Module}}';
 {{/Imports}}
@@ -68,6 +73,10 @@ export class {{Name}} extends QueryFor<{{Model}}> {
 {{#if IsEnumerable}}
     static use(): [QueryResultWithState<{{Model}}[]>, PerformQuery] {
         return useQuery<{{Model}}[], {{Name}}>({{Name}});
+    }
+
+    static useWithPaging(paging: Paging) [QueryResultWithState<{{Model}}[]>, PerformQuery] {
+        return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}});
     }
 {{else}}
     static use(): [QueryResultWithState<{{Model}}>, PerformQuery] {
