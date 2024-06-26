@@ -193,7 +193,7 @@ public class QueryActionFilter(
         object? response = null;
         ActionExecutedContext? result = null;
 
-        if (context.ModelState.IsValid)
+        if (context.ModelState.IsValid || context.ShouldIgnoreValidation())
         {
             result = await next();
 
