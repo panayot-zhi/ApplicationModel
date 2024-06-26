@@ -3,5 +3,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
+export * from './SetStockForProduct';
 export * from './SetPrice';
 export * from './AddProduct';
