@@ -7,6 +7,7 @@ import Handlebars from 'handlebars';
 import { ValidateRequestArguments } from './ValidateRequestArguments';
 import { Constructor } from '@cratis/fundamentals';
 import { Paging } from './Paging';
+import { Globals } from '../Globals';
 
 /**
  * Represents an implementation of {@link IQueryFor}.
@@ -51,12 +52,18 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
         this.abortController = new AbortController();
 
         actualRoute = this.routeTemplate(args);
+
+        const headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
+        if (Globals.microservice?.length > 0) {
+            headers[Globals.microserviceHttpHeader] = Globals.microservice;
+        }
+
         const response = await fetch(actualRoute, {
             method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
+            headers,
             signal: this.abortController.signal
         });
 
