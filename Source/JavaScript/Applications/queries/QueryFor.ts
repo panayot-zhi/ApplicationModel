@@ -61,6 +61,11 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
             headers[Globals.microserviceHttpHeader] = Globals.microservice;
         }
 
+        if (paging.pageSize > 0) {
+            actualRoute += (actualRoute.indexOf('?') > 0) ? '&' : '?';
+            actualRoute += `page=${paging.page}&pageSize=${paging.pageSize}`;
+        }
+
         const response = await fetch(actualRoute, {
             method: 'GET',
             headers,
