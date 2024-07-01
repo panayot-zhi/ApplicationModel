@@ -3,6 +3,7 @@
 
 using System.Collections.Concurrent;
 using Castle.DynamicProxy;
+using Cratis.Applications.MongoDB.Resilience;
 using Cratis.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -12,7 +13,7 @@ using MongoDB.Driver.Core.Events;
 using Polly;
 using Polly.Retry;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Represents an implementation of <see cref="IMongoDBClientFactory"/>.

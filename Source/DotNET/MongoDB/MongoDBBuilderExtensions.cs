@@ -1,7 +1,9 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.MongoDB;
+using Cratis.Models;
+
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Provides extension methods for the <see cref="IMongoDBBuilder"/>.
@@ -33,26 +35,55 @@ public static class MongoDBBuilderExtensions
     }
 
     /// <summary>
-    /// Configures the MongoDB builder with a static URL.
+    /// Configures the MongoDB builder with a <see cref="IMongoServerResolver"/>.
     /// </summary>
+    /// <typeparam name="TResolver">The <see cref="IMongoServerResolver"/> type.</typeparam>
     /// <param name="builder">The MongoDB builder.</param>
-    /// <param name="connectionString">Connection string to the server to configure it with.</param>
     /// <returns>The updated MongoDB builder.</returns>
-    public static IMongoDBBuilder WithStaticServer(this IMongoDBBuilder builder, string connectionString)
+    public static IMongoDBBuilder WithServerResolver<TResolver>(this IMongoDBBuilder builder)
+        where TResolver : IMongoServerResolver
     {
-        builder.ServerResolver = new StaticMongoServerResolver(connectionString);
+        builder.ServerResolverType = typeof(TResolver);
         return builder;
     }
 
     /// <summary>
-    /// Configures the MongoDB builder with a static database name.
+    /// Configures the MongoDB builder with a <see cref="IMongoDatabaseNameResolver"/>.
+    /// </summary>
+    /// <typeparam name="TResolver">The <see cref="IMongoDatabaseNameResolver"/> type.</typeparam>
+    /// <param name="builder">The MongoDB builder.</param>
+    /// <returns>The updated MongoDB builder.</returns>
+    public static IMongoDBBuilder WithDatabaseResolver<TResolver>(this IMongoDBBuilder builder)
+        where TResolver : IMongoDatabaseNameResolver
+    {
+        builder.DatabaseNameResolverType = typeof(TResolver);
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures the MongoDB builder with a <see cref="IModelNameConvention"/>.
+    /// </summary>
+    /// <typeparam name="TConvention">The <see cref="IModelNameConvention"/> type.</typeparam>
+    /// <param name="builder">The MongoDB builder.</param>
+    /// <returns>The updated MongoDB builder.</returns>
+    public static IMongoDBBuilder WithModelNameConvention<TConvention>(this IMongoDBBuilder builder)
+        where TConvention : IModelNameConvention
+    {
+        builder.ModelNameConventionInstance = null;
+        builder.ModelNameConventionType = typeof(TConvention);
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures the MongoDB builder with a <see cref="IModelNameConvention"/>.
     /// </summary>
     /// <param name="builder">The MongoDB builder.</param>
-    /// <param name="databaseName">Name of database.</param>
+    /// <param name="convention">The <see cref="IModelNameConvention"/>.</param>
     /// <returns>The updated MongoDB builder.</returns>
-    public static IMongoDBBuilder WithStaticDatabaseName(this IMongoDBBuilder builder, string databaseName)
+    public static IMongoDBBuilder WithModelNameConvention(this IMongoDBBuilder builder, IModelNameConvention convention)
     {
-        builder.DatabaseNameResolver = new StaticMongoDatabaseNameResolver(databaseName);
+        builder.ModelNameConventionInstance = convention;
+        builder.ModelNameConventionType = null;
         return builder;
     }
 }

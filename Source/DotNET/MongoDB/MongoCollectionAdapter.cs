@@ -1,9 +1,6 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Reflection;
-using Cratis.Models;
-using Cratis.Reflection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -19,26 +16,16 @@ namespace Cratis.Applications.MongoDB;
 /// With the default registrations in ServiceCollection, it is not possible to register an open generic service with a factory that resolves the type arguments from a context.
 /// The factory is represented as a <see cref="Func{TServiceProvider, TResult}"/> giving you the <see cref="IServiceProvider"/> and not the context with the service being resolved which would enable us
 /// to get the generic argument and resolve the correct <see cref="IMongoCollection{T}"/> type from the <see cref="IMongoDatabase"/>.
-/// However it is supported to do a service registration with open generics without a factory. So instead we put this in between and just forward the calls to the actual <see cref="IMongoCollection{T}"/>
+/// However, it is supported to do a service registration with open generics without a factory. So instead we put this in between and just forward the calls to the actual <see cref="IMongoCollection{T}"/>
 /// which we resolve from the <see cref="IMongoDatabase"/> coming as a dependency.
 /// </remarks>
-public class MongoCollectionAdapter<T> : IMongoCollection<T>
+/// <remarks>
+/// Initializes a new instance of the <see cref="MongoCollectionAdapter{T}"/> class.
+/// </remarks>
+/// <param name="database"><see cref="IMongoDatabase"/> to use.</param>
+public class MongoCollectionAdapter<T>(IMongoDatabase database) : IMongoCollection<T>
 {
-    readonly IMongoDatabase _database;
-    readonly IModelNameResolver _modelNameResolver;
-    readonly IMongoCollection<T> _collection;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MongoCollectionAdapter{T}"/> class.
-    /// </summary>
-    /// <param name="database"><see cref="IMongoDatabase"/> to use.</param>
-    /// <param name="modelNameResolver">The <see cref="IModelNameResolver"/> to use.</param>
-    public MongoCollectionAdapter(IMongoDatabase database, IModelNameResolver modelNameResolver)
-    {
-        _database = database;
-        _modelNameResolver = modelNameResolver;
-        _collection = _database.GetCollection<T>(GetReadModelName(typeof(T)));
-    }
+    readonly IMongoCollection<T> _collection = database.GetCollection<T>();
 
 #pragma warning disable CS0618, CS8625, SA1600, SA1127
     public CollectionNamespace CollectionNamespace => _collection.CollectionNamespace;
@@ -142,15 +129,4 @@ public class MongoCollectionAdapter<T> : IMongoCollection<T>
     public IMongoCollection<T> WithReadConcern(ReadConcern readConcern) => _collection.WithReadConcern(readConcern);
     public IMongoCollection<T> WithReadPreference(ReadPreference readPreference) => _collection.WithReadPreference(readPreference);
     public IMongoCollection<T> WithWriteConcern(WriteConcern writeConcern) => _collection.WithWriteConcern(writeConcern);
-
-    string GetReadModelName(Type readModelType)
-    {
-        if (readModelType.HasAttribute<ModelNameAttribute>())
-        {
-            var modelNameAttribute = readModelType.GetCustomAttribute<ModelNameAttribute>()!;
-            return modelNameAttribute.Name;
-        }
-
-        return _modelNameResolver.GetNameFor(readModelType);
-    }
 }

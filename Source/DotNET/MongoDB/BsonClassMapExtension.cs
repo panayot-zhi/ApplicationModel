@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Extension methods for working with <see cref="BsonClassMap{T}"/>.

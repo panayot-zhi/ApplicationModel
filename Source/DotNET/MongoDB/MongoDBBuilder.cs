@@ -2,9 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Cratis.Models;
-using MongoDB.Driver;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Represents an implementation of <see cref="IMongoDBBuilder"/>.
@@ -28,18 +27,22 @@ public class MongoDBBuilder : IMongoDBBuilder
     public IList<Type> ConventionPackFilters { get; }
 
     /// <inheritdoc/>
-    public IMongoServerResolver? ServerResolver { get; set; }
+    public Type ServerResolverType { get; set; } = typeof(DefaultMongoServerResolver);
 
     /// <inheritdoc/>
-    public IMongoDatabaseNameResolver? DatabaseNameResolver { get; set; }
+    public Type DatabaseNameResolverType { get; set; } = typeof(DefaultMongoDatabaseNameResolver);
 
     /// <inheritdoc/>
-    public IModelNameResolver? ModelNameResolver { get; set; }
+    public IModelNameConvention? ModelNameConventionInstance { get; set; }
+
+    /// <inheritdoc/>
+    public Type? ModelNameConventionType { get; set; } = typeof(DefaultModelNameConvention);
 
     /// <inheritdoc/>
     public void Validate()
     {
-        MongoServerResolverNotConfigured.ThrowIfNotConfigured(ServerResolver);
-        MongoDatabaseNameResolverNotConfigured.ThrowIfNotConfigured(DatabaseNameResolver);
+        MongoServerResolverNotConfigured.ThrowIfNotConfigured(ServerResolverType);
+        MongoDatabaseNameResolverNotConfigured.ThrowIfNotConfigured(DatabaseNameResolverType);
+        ModelNameResolverNotConfigured.ThrowIfNotConfigured(ModelNameConventionInstance, ModelNameConventionType);
     }
 }

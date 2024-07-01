@@ -4,9 +4,8 @@
 using System.Reflection;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Polly;
 
-namespace Cratis.MongoDB.Resilience.for_MongoCollectionInterceptorSelector.when_selecting_interceptors;
+namespace Cratis.Applications.MongoDB.Resilience.for_MongoCollectionInterceptorSelector.when_selecting_interceptors;
 
 public class for_sync_methods : given.an_interceptor_selector
 {

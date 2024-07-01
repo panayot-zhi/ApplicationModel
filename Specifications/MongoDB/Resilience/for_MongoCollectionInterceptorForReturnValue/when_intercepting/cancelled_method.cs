@@ -1,11 +1,11 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-namespace Cratis.MongoDB.Resilience.for_MongoCollectionInterceptorForReturnValue.when_intercepting;
+namespace Cratis.Applications.MongoDB.Resilience.for_MongoCollectionInterceptorForReturnValue.when_intercepting;
 
 public class cancelled_method : given.an_interceptor
 {
-    protected override string GetInvocationTargetMethod() => nameof(InvocationTarget.CancelledMethod);
+    protected override string GetInvocationTargetMethod() => nameof(for_MongoCollectionInterceptor.InvocationTarget.CancelledMethod);
     Exception exception;
 
     async Task Because()

@@ -3,7 +3,7 @@
 
 using MongoDB.Bson.Serialization.Conventions;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Represents an implementation of <see cref="ICanFilterMongoDBConventionPacksForType"/> for filtering based on <see cref="IgnoreConventionsAttribute"/>.

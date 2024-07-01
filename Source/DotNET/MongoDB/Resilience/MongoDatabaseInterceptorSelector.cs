@@ -6,7 +6,7 @@ using Castle.DynamicProxy;
 using MongoDB.Driver;
 using Polly;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB.Resilience;
 
 /// <summary>
 /// Represents a selector for <see cref="MongoDatabaseInterceptor"/>.

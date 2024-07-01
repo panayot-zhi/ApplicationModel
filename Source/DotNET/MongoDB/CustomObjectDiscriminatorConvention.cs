@@ -7,7 +7,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// Represents a custom <see cref="IDiscriminatorConvention"/> for handling object properties.

@@ -5,7 +5,7 @@ using Cratis.Strings;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 
-namespace Cratis.MongoDB;
+namespace Cratis.Applications.MongoDB;
 
 /// <summary>
 /// <para>A convention that sets the element name the same as the member name with the first character lower cased unless it starts with an acronym.</para>
