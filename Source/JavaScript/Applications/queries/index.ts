@@ -3,6 +3,9 @@
 
 export * from './IQueryFor';
 export * from './Paging';
+export * from './Sorting';
+export * from './SortDirection';
+export * from './SortingForQuery';
 export * from './QueryFor';
 export * from './QueryResult';
 export * from './QueryResultWithState';

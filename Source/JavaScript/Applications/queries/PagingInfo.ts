@@ -6,7 +6,10 @@
  */
 export class PagingInfo {
 
-    static readonly NoPaging = new PagingInfo();
+    /**
+     * No paging paging info.
+     */
+    static readonly noPaging = new PagingInfo();
 
     /**
      * Initializes a new instance of the {@link PagingInfo} class.

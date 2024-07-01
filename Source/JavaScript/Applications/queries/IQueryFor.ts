@@ -4,6 +4,7 @@
 import { Paging } from './Paging';
 import { QueryResult } from './QueryResult';
 import Handlebars from 'handlebars';
+import { Sorting } from './Sorting';
 
 /**
  * Defines the base of a query.
@@ -17,17 +18,29 @@ export interface IQueryFor<TDataType, TArguments = {}> {
     readonly defaultValue: TDataType;
 
     /**
+     * Gets the sorting for the query.
+     */
+    get sorting(): Sorting;
+
+    /**
+     * Sets the sorting for the query.
+     */
+    set sorting(value: Sorting);
+
+    /**
+     * Gets the paging for the query.
+     */
+    get paging(): Paging | undefined;
+
+    /**
+     * Sets the paging for the query.
+     */ 
+    set paging(value: Paging | undefined);
+
+    /**
      * Perform the query.
      * @param [args] Optional arguments for the query - depends on whether or not the query needs arguments.
      * @returns {QueryResult} for the model
      */
     perform(args?: TArguments): Promise<QueryResult<TDataType>>;
-
-    /**
-     * Perform the query with paging.
-     * @param [args] Optional arguments for the query - depends on whether or not the query needs arguments.
-     * @param {Paging} paging The paging information to use.
-     * @returns {QueryResult} for the model
-     */
-    performWithPaging(paging: Paging, args?: TArguments): Promise<QueryResult<TDataType>>;
 }

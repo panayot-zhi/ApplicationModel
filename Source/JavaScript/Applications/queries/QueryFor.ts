@@ -8,6 +8,8 @@ import { ValidateRequestArguments } from './ValidateRequestArguments';
 import { Constructor } from '@cratis/fundamentals';
 import { Paging } from './Paging';
 import { Globals } from '../Globals';
+import { Sorting } from './Sorting';
+import { SortDirection } from './SortDirection';
 
 /**
  * Represents an implementation of {@link IQueryFor}.
@@ -19,7 +21,8 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
     abstract get requestArguments(): string[];
     abstract defaultValue: TDataType;
     abortController?: AbortController;
-
+    _sorting: Sorting;
+    _paging: Paging | undefined;
 
     /**
      * Initializes a new instance of the {@link ObservableQueryFor<,>}} class.
@@ -27,15 +30,31 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
      * @param enumerable Whether or not it is an enumerable.
      */
     constructor(readonly modelType: Constructor, readonly enumerable: boolean) {
+        this._sorting = Sorting.none;
+    }
+
+    /** @inheritdoc */
+    get sorting(): Sorting {
+        return this._sorting;
+    }
+
+    /** @inheritdoc */
+    set sorting(value: Sorting) {
+        this._sorting = value;
+    }
+
+    /** @inheritdoc */
+    get paging(): Paging | undefined {
+        return this._paging;
+    }
+
+    /** @inheritdoc */
+    set paging(value: Paging | undefined) {
+        this._paging = value;
     }
 
     /** @inheritdoc */
     async perform(args?: TArguments): Promise<QueryResult<TDataType>> {
-        return this.performWithPaging({ page: 0, pageSize: 0 }, args);
-    }
-
-    /** @inheritdoc */
-    async performWithPaging(paging: Paging, args?: TArguments): Promise<QueryResult<TDataType>> {
         const noSuccess = { ...QueryResult.noSuccess, ...{ data: this.defaultValue } } as QueryResult<TDataType>;
 
         let actualRoute = this.route;
@@ -61,9 +80,14 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
             headers[Globals.microserviceHttpHeader] = Globals.microservice;
         }
 
-        if (paging.pageSize > 0) {
-            actualRoute += (actualRoute.indexOf('?') > 0) ? '&' : '?';
-            actualRoute += `page=${paging.page}&pageSize=${paging.pageSize}`;
+        if (this._paging && this._paging.pageSize > 0) {
+            actualRoute = this.addQueryParameters(actualRoute, 'page', this._paging.page);
+            actualRoute = this.addQueryParameters(actualRoute, 'pageSize', this._paging.pageSize);
+        }
+
+        if (this.sorting.hasSorting) {
+            actualRoute = this.addQueryParameters(actualRoute, 'sortBy', this.sorting.field);
+            actualRoute = this.addQueryParameters(actualRoute, 'sortDirection', (this.sorting.direction === SortDirection.descending) ? 'desc' : 'asc');
         }
 
         const response = await fetch(actualRoute, {
@@ -78,5 +102,11 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
         } catch (ex) {
             return noSuccess;
         }
+    }
+
+    private addQueryParameters(route: string, key: string, value: any): string {
+        route += (route.indexOf('?') > 0) ? '&' : '?';
+        route += `${key}=${value}`;
+        return route;
     }
 }
