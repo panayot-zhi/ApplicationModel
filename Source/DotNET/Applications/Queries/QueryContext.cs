@@ -8,6 +8,7 @@ namespace Cratis.Applications.Queries;
 /// <summary>
 /// Defines the context for a query.
 /// </summary>
-/// <param name="Paging">The <see cref="Paging"/> information.</param>
 /// <param name="CorrelationId">The <see cref="CorrelationId"/> for the query.</param>
-public record QueryContext(Paging Paging, CorrelationId CorrelationId);
+/// <param name="Paging">The <see cref="Paging"/> information.</param>
+/// <param name="Sorting">The <see cref="Sorting"/> information.</param>
+public record QueryContext(CorrelationId CorrelationId, Paging Paging, Sorting Sorting);

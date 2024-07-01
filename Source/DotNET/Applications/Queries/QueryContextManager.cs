@@ -15,7 +15,7 @@ public class QueryContextManager : IQueryContextManager
     static readonly AsyncLocal<QueryContext> _context = new();
 
     /// <inheritdoc/>
-    public QueryContext Current => _context.Value ?? new QueryContext(Paging.NotPaged, CorrelationId.New());
+    public QueryContext Current => _context.Value ?? new QueryContext(CorrelationId.New(), Paging.NotPaged, Sorting.None);
 
     /// <inheritdoc/>
     public void Set(QueryContext context) => _context.Value = context;

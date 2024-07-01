@@ -19,6 +19,11 @@ public class QueryableQueryProvider : IQueryProviderFor<IQueryable>
         {
             query = query.Skip(queryContext.Paging.Page * queryContext.Paging.Size)
                          .Take(queryContext.Paging.Size);
+
+            if (queryContext.Sorting != Sorting.None)
+            {
+                query = query.OrderBy(queryContext.Sorting.Field, queryContext.Sorting.Direction);
+            }
         }
 
         return new(totalItems, query);

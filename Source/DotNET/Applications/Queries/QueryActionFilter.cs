@@ -30,6 +30,8 @@ public class QueryActionFilter(
     IQueryProviders queryProviders,
     ILogger<QueryActionFilter> logger) : IAsyncActionFilter
 {
+    const string SortByQueryStringKey = "sortby";
+    const string SortDirectionQueryStringKey = "sortDirection";
     const string PageQueryStringKey = "page";
     const string PageSizeQueryStringKey = "pageSize";
 
@@ -128,12 +130,21 @@ public class QueryActionFilter(
 
     void EstablishQueryContext(ActionExecutingContext context)
     {
+        var sorting = Sorting.None;
+        if (context.HttpContext.Request.Query.ContainsKey(SortByQueryStringKey) &&
+            context.HttpContext.Request.Query.ContainsKey(SortDirectionQueryStringKey))
+        {
+            sorting = new Sorting(
+                context.HttpContext.Request.Query[SortByQueryStringKey].ToString()!,
+                context.HttpContext.Request.Query[SortDirectionQueryStringKey].ToString()! == "desc" ? SortDirection.Descending : SortDirection.Ascending);
+        }
+
         if (context.HttpContext.Request.Query.ContainsKey(PageQueryStringKey) &&
             context.HttpContext.Request.Query.ContainsKey(PageSizeQueryStringKey))
         {
             var page = int.Parse(context.HttpContext.Request.Query[PageQueryStringKey].ToString()!);
             var pageSize = int.Parse(context.HttpContext.Request.Query[PageSizeQueryStringKey].ToString()!);
-            queryContextManager.Set(new(new(page, pageSize, true), context.HttpContext.GetCorrelationId()));
+            queryContextManager.Set(new(context.HttpContext.GetCorrelationId(), new(page, pageSize, true), sorting));
         }
     }
 
