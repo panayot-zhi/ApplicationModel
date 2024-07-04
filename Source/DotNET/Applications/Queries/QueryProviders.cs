@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections;
-using Cratis.Reflection;
 using Cratis.Types;
 
 namespace Cratis.Applications.Queries;
@@ -24,7 +23,7 @@ public class QueryProviders(
     public QueryProviderResult Execute(object query)
     {
         var queryType = query.GetType();
-        var queryProviderType = _queryProviders.FirstOrDefault(_ => _.Implements(queryType));
+        var queryProviderType = _queryProviders.FirstOrDefault(_ => queryType.IsAssignableTo(_.GetInterface(typeof(IQueryProviderFor<>).Name)!.GetGenericArguments()[0]));
         if (queryProviderType == null)
         {
             return new(0, (query as IEnumerable)!);
