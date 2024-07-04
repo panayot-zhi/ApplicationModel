@@ -3,10 +3,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
-import { QueryFor, QueryResultWithState } from '@cratis/applications/queries';
 {{#if IsEnumerable}}
-import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SortingForQuery, Paging, SetPage } from '@cratis/applications.react/queries';
+import { QueryFor, QueryResultWithState, SortingForQuery, Paging } from '@cratis/applications/queries';
+import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SetPage } from '@cratis/applications.react/queries';
 {{else}}
+import { QueryFor, QueryResultWithState } from '@cratis/applications/queries';
 import { useQuery, PerformQuery, SetSorting} from '@cratis/applications.react/queries';
 {{/if}}
 {{#Imports}}
