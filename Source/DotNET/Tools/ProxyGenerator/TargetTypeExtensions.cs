@@ -2,7 +2,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata.Ecma335;
 using Cratis.Applications.ProxyGenerator.Templates;
 
 namespace Cratis.Applications.ProxyGenerator;
