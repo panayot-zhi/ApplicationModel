@@ -8,7 +8,6 @@ import { Sorting } from './Sorting';
 /**
  * Represents sorting for a query.
  */
-
 export class SortingForQuery<TDataType, TArguments = {}> {
 
     /**
