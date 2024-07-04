@@ -17,14 +17,14 @@ public class ModelNameResolverNotConfigured(string message)
     /// </summary>
     /// <param name="convention">The <see cref="IModelNameConvention"/>.</param>
     /// <param name="conventionType">The type of the model name convention.</param>
-    /// <exception cref="Cratis.Applications.MongoDB.ModelNameResolverNotConfigured">Thrown if the resolver is not configured.</exception>
+    /// <exception cref="ModelNameResolverNotConfigured">Thrown if the resolver is not configured.</exception>
     public static void ThrowIfNotConfigured(IModelNameConvention? convention, Type? conventionType)
     {
         if (convention is not null)
         {
             if (conventionType is not null)
             {
-                throw new ModelNameResolverNotConfigured($"Two model name conventions are configured. Use {nameof(MongoDBBuilderExtensions.WithModelNameConvention)} to configure a model name convention");
+                throw new ModelNameResolverNotConfigured($"Two model name conventions are configured. Use {nameof(MongoDBBuilderExtensions.WithModelNameConvention)} to configure a specific model name convention");
             }
 
             return;
@@ -35,7 +35,7 @@ public class ModelNameResolverNotConfigured(string message)
             throw new ModelNameResolverNotConfigured($"Please configure it using the {nameof(MongoDBBuilderExtensions.WithModelNameConvention)} method");
         }
 
-        if (!conventionType.IsAssignableTo(typeof(IModelNameResolver)))
+        if (!conventionType.IsAssignableTo(typeof(IModelNameConvention)))
         {
             throw new ModelNameResolverNotConfigured($"The given type {conventionType} is not assignable to {typeof(IModelNameConvention)}");
         }
