@@ -21,8 +21,9 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
     abstract get requestArguments(): string[];
     abstract defaultValue: TDataType;
     abortController?: AbortController;
-    _sorting: Sorting;
-    _paging: Paging | undefined;
+    private _sorting: Sorting;
+    private _paging: Paging | undefined;
+    private _arguments: TArguments | undefined;
 
     /**
      * Initializes a new instance of the {@link ObservableQueryFor<,>}} class.
@@ -49,13 +50,25 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
     }
 
     /** @inheritdoc */
-    set paging(value: Paging | undefined) {
+    set paging(value: Paging) {
         this._paging = value;
+    }
+
+    /** @inheritdoc */
+    get arguments(): TArguments | undefined {
+        return this._arguments;
+    }
+
+    /** @inheritdoc */
+    set arguments(value: TArguments) {
+        this._arguments = value;
     }
 
     /** @inheritdoc */
     async perform(args?: TArguments): Promise<QueryResult<TDataType>> {
         const noSuccess = { ...QueryResult.noSuccess, ...{ data: this.defaultValue } } as QueryResult<TDataType>;
+
+        args = args || this._arguments;
 
         let actualRoute = this.route;
         if (!ValidateRequestArguments(this.constructor.name, this.requestArguments, args)) {

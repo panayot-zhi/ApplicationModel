@@ -35,10 +35,22 @@ export interface IQueryFor<TDataType, TArguments = {}> {
     /**
      * Sets the paging for the query.
      */ 
-    set paging(value: Paging | undefined);
+    set paging(value: Paging);
 
     /**
-     * Perform the query.
+     * Gets the current arguments for the query.
+     */    
+    get arguments(): TArguments | undefined;
+
+    /**
+     * Sets the current arguments for the query.
+     */    
+    set arguments(value: TArguments);
+
+    /**
+     * Perform the query, optionally giving arguments to use. If not given, it will use the arguments that has been set.
+     * By specifying the arguments, it will use these as the current arguments for the instance and subsequent calls does
+     * not need to specify arguments.
      * @param [args] Optional arguments for the query - depends on whether or not the query needs arguments.
      * @returns {QueryResult} for the model
      */
