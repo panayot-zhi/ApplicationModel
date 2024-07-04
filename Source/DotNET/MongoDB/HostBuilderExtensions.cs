@@ -105,7 +105,8 @@ public static class HostBuilderExtensions
             }
 
             client = _clientFactory.Create();
-            return _clients[server.ToString()] = client;
+            _clients[server.ToString()] = client;
+            return client;
         });
 
         services.AddTransient(sp =>
