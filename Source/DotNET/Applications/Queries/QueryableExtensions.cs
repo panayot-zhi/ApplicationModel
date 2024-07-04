@@ -80,6 +80,8 @@ public static class QueryableExtensions
     public static IQueryable OrderBy(this IQueryable queryable, string field, SortDirection direction = SortDirection.Ascending)
     {
         var orderMethod = direction == SortDirection.Ascending ? _orderByMethod : _orderByDescendingMethod;
+        var elementTypeProperty = queryable.ElementType.GetProperty(field);
+        orderMethod = orderMethod.MakeGenericMethod(queryable.ElementType, elementTypeProperty!.PropertyType);
 
         var parameter = Expression.Parameter(queryable.ElementType, "x");
         var property = Expression.Property(parameter, field);
@@ -87,4 +89,13 @@ public static class QueryableExtensions
 
         return (orderMethod.Invoke(null, [queryable, lambda]) as IQueryable)!;
     }
+
+    /// <summary>
+    /// Sorts the elements of a sequence in descending order according to a key.
+    /// </summary>
+    /// <param name="queryable">The <see cref="IQueryable"/> to adorn.</param>
+    /// <param name="field">The name of the field to order on.</param>
+    /// <returns>An <see cref="IQueryable"/> for continuation.</returns>
+    public static IQueryable OrderByDescending(this IQueryable queryable, string field) =>
+        queryable.OrderBy(field, SortDirection.Descending);
 }
