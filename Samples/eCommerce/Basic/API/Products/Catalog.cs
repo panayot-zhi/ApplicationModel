@@ -1,7 +1,9 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Applications;
 using Domain.Products;
+using MongoDB.Driver;
 using Read.Products;
 
 namespace API.Products;
@@ -11,7 +13,7 @@ namespace API.Products;
 /// </summary>
 /// <param name="grainFactory"><see cref="IGrainFactory"/> for working with grains.</param>
 [Route("/api/products/catalog")]
-public class Catalog(IGrainFactory grainFactory) : ControllerBase
+public class Catalog(IGrainFactory grainFactory, ICatalogQueries catalogQueries, IMongoCollection<Product> collection) : ControllerBase
 {
     /// <summary>
     /// Add a product to the catalog.
@@ -30,8 +32,20 @@ public class Catalog(IGrainFactory grainFactory) : ControllerBase
     /// </summary>
     /// <returns>Collection of products.</returns>
     [HttpGet]
-    public Task<IQueryable<Product>> AllProducts()
+    public IQueryable<Product> AllProducts() => catalogQueries.All();
+
+    [HttpGet("generate"), AspNetResult]
+    public async Task Generate()
     {
-        return Task.FromResult(new List<Product>().AsQueryable());
+        for (var i = 0; i < 100; i++)
+        {
+            var product = new Product
+            {
+                Id = $"Sku-{i}",
+                IsRegistered = true
+            };
+
+            await collection.InsertOneAsync(product);
+        }
     }
 }

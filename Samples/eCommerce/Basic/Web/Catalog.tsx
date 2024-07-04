@@ -4,11 +4,18 @@
 import { withViewModel } from '@cratis/applications.react.mvvm';
 import { CatalogViewModel } from './CatalogViewModel';
 import { AllProducts } from './API/Products';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
 export const Catalog = withViewModel(CatalogViewModel, ({ viewModel }) => {
     const [products] = AllProducts.useWithPaging(0, 10);
 
     return (
-        <></>
+        <div>
+            <DataTable value={products.data}>
+                <Column field="SKU" header="SKU" />
+                <Column field="name" header="Name" />
+            </DataTable>
+        </div>
     );
 });

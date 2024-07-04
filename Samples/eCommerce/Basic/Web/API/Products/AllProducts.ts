@@ -3,8 +3,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
-import { QueryFor, QueryResultWithState } from '@cratis/applications/queries';
-import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SortingForQuery, Paging, SetPage } from '@cratis/applications.react/queries';
+import { QueryFor, QueryResultWithState, SortingForQuery, Paging } from '@cratis/applications/queries';
+import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SetPage } from '@cratis/applications.react/queries';
 import { Product } from './Product';
 import Handlebars from 'handlebars';
 
