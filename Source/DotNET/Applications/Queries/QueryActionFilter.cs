@@ -46,6 +46,8 @@ public class QueryActionFilter(
             EstablishQueryContext(context);
 
             var callResult = await CallNextAndHandleValidationAndExceptions(context, next);
+            if (context.IsAspNetResult()) return;
+
             if (callResult.Result?.Result is ObjectResult objectResult && IsStreamingResult(objectResult))
             {
                 if (IsSubjectResult(objectResult))
@@ -90,11 +92,16 @@ public class QueryActionFilter(
                 var response = queryProviders.Execute(callResult.Response!);
                 var queryResult = new QueryResult<object>
                 {
+                    Paging = new PagingInfo(
+                        queryContextManager.Current.Paging.Page,
+                        queryContextManager.Current.Paging.Size,
+                        response.TotalItems,
+                        response.TotalItems / queryContextManager.Current.Paging.Size),
                     CorrelationId = context.HttpContext.GetCorrelationId(),
                     ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase()))),
                     ExceptionMessages = callResult.ExceptionMessages,
                     ExceptionStackTrace = callResult.ExceptionStackTrace ?? string.Empty,
-                    Data = callResult.Response!
+                    Data = response.Items
                 };
 
                 if (!queryResult.IsAuthorized)
