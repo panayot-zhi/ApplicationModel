@@ -22,7 +22,7 @@ export class AddItemValidator extends CommandValidator {
     };
 }
 
-export class AddItem extends Command<IAddItem> implements IAddItem {
+export class AddItem extends Command<IAddItem, Guid> implements IAddItem {
     readonly route: string = '/api/carts/add-item';
     readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
     readonly validation: CommandValidator = new AddItemValidator();
@@ -31,7 +31,7 @@ export class AddItem extends Command<IAddItem> implements IAddItem {
     private _quantity!: number;
 
     constructor() {
-        super(Object, false);
+        super(Guid, false);
     }
 
     get requestArguments(): string[] {
