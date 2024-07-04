@@ -44,8 +44,11 @@ public static class CommandExtensions
 
         var propertiesWithComplexTypes = properties.Where(_ => !_.OriginalType.IsKnownType());
         typesInvolved.AddRange(propertiesWithComplexTypes.Select(_ => _.OriginalType));
-        var imports = typesInvolved.GetImports(targetPath, method.DeclaringType!.ResolveTargetPath(segmentsToSkip), segmentsToSkip);
-
+        var imports = typesInvolved.GetImports(targetPath, method.DeclaringType!.ResolveTargetPath(segmentsToSkip), segmentsToSkip).ToList();
+        if (responseModel.Type is not null && responseModel.Type.GetTargetType().TryGetImportStatement(out var responseTypeImportStatement))
+        {
+            imports.Add(responseTypeImportStatement);
+        }
         var additionalTypesInvolved = new List<Type>();
         foreach (var property in propertiesWithComplexTypes)
         {
