@@ -90,13 +90,14 @@ public class QueryActionFilter(
             {
                 logger.NonClientObservableReturnValue(controllerActionDescriptor.ControllerName, controllerActionDescriptor.ActionName);
                 var response = queryProviders.Execute(callResult.Response!);
+                var queryContext = queryContextManager.Current;
                 var queryResult = new QueryResult<object>
                 {
-                    Paging = new PagingInfo(
-                        queryContextManager.Current.Paging.Page,
-                        queryContextManager.Current.Paging.Size,
+                    Paging = queryContext.Paging == Paging.NotPaged ? PagingInfo.NotPaged : new PagingInfo(
+                        queryContext.Paging.Page,
+                        queryContext.Paging.Size,
                         response.TotalItems,
-                        response.TotalItems / queryContextManager.Current.Paging.Size),
+                        response.TotalItems / queryContext.Paging.Size),
                     CorrelationId = context.HttpContext.GetCorrelationId(),
                     ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase()))),
                     ExceptionMessages = callResult.ExceptionMessages,
@@ -151,6 +152,8 @@ public class QueryActionFilter(
         {
             var page = int.Parse(context.HttpContext.Request.Query[PageQueryStringKey].ToString()!);
             var pageSize = int.Parse(context.HttpContext.Request.Query[PageSizeQueryStringKey].ToString()!);
+
+            // TODO: Now it seems like query context can only be set if paging is set, but does not support only sorting.
             queryContextManager.Set(new(context.HttpContext.GetCorrelationId(), new(page, pageSize, true), sorting));
         }
     }

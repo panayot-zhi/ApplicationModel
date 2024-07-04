@@ -14,6 +14,7 @@ public class QueryableQueryProvider : IQueryProviderFor<IQueryable>
     /// <inheritdoc/>
     public QueryProviderResult Execute(IQueryable query, QueryContext queryContext)
     {
+        // TODO: Do you want to count here, possibly iterating the whole queryable?
         var totalItems = query.Count();
         if (queryContext.Paging.IsPaged)
         {
