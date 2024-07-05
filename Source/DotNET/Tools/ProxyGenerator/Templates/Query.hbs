@@ -96,8 +96,8 @@ export class {{Name}} extends QueryFor<{{Model}}> {
         return useQuery<{{Model}}[], {{Name}}, {{Name}}Arguments>({{Name}}, args);
     }
 
-    static useWithPaging(page:number, pageSize: number, args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
-        return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(page, pageSize), args);
+    static useWithPaging(pageSize: number, args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
+        return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), args);
     }
 {{else}}
     static use(args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}>, PerformQuery<{{Name}}Arguments>] {
@@ -110,8 +110,8 @@ export class {{Name}} extends QueryFor<{{Model}}> {
         return useQuery<{{Model}}[], {{Name}}>({{Name}});
     }
 
-    static useWithPaging(page:number, pageSize: number): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
-        return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(page, pageSize));
+    static useWithPaging(pageSize: number): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
+        return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize));
     }
 {{else}}
     static use(): [QueryResultWithState<{{Model}}>, PerformQuery, SetSorting] {
