@@ -20,32 +20,18 @@ export interface IQueryFor<TDataType, TArguments = {}> {
     /**
      * Gets the sorting for the query.
      */
-    get sorting(): Sorting;
-
-    /**
-     * Sets the sorting for the query.
-     */
-    set sorting(value: Sorting);
+    sorting: Sorting;
 
     /**
      * Gets the paging for the query.
      */
-    get paging(): Paging | undefined;
-
-    /**
-     * Sets the paging for the query.
-     */ 
-    set paging(value: Paging);
+    paging: Paging | undefined;
 
     /**
      * Gets the current arguments for the query.
      */    
-    get arguments(): TArguments | undefined;
+    arguments: TArguments | undefined;
 
-    /**
-     * Sets the current arguments for the query.
-     */    
-    set arguments(value: TArguments);
 
     /**
      * Perform the query, optionally giving arguments to use. If not given, it will use the arguments that has been set.

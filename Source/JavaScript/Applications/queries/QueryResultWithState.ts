@@ -7,7 +7,7 @@ import { PagingInfo } from './PagingInfo';
 import { QueryResult } from './QueryResult';
 
 /**
- * Represents a specialized {@link QueryResult<TDataType} that holds state for its execution
+ * Represents a specialized {@link QueryResult<TDataType>} that holds state for its execution
  */
 export class QueryResultWithState<TDataType> implements IQueryResult<TDataType> {
 

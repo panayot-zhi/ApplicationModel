@@ -9,12 +9,11 @@ import { Column } from 'primereact/column';
 import { useState } from 'react';
 
 export const Catalog = withViewModel(CatalogViewModel, ({ viewModel }) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [products, perform, setSorting, setPage] = AllProducts.useWithPaging(currentPage, 10);
+    const [products, currentPage, perform, setSorting, setPage] = AllProducts.useWithPaging(10);
 
     return (
         <div>
-            <div>Page {currentPage}</div>
+            <div>Page {currentPage + 1}</div>
             <DataTable value={products.data}>
                 <Column field="id" header="SKU" />
                 <Column field="name" header="Name" />
@@ -22,7 +21,6 @@ export const Catalog = withViewModel(CatalogViewModel, ({ viewModel }) => {
 
             <button onClick={() => {
                 const page = currentPage + 1;
-                setCurrentPage(page);
                 setPage(page);
             }}>Next page</button>
         </div>

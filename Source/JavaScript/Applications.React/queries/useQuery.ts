@@ -23,16 +23,22 @@ export type SetPage = (page: number) => Promise<void>;
 type QueryPerformer<TQuery extends IQueryFor<TDataType>, TDataType> = (performer: TQuery) => Promise<QueryResult<TDataType>>;
 
 function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, performer: QueryPerformer<TQuery, TDataType>, sorting?: Sorting, paging?: Paging, args?: TArguments):
-    [QueryResultWithState<TDataType>, PerformQuery<TArguments>, SetSorting, SetPage] {
-    const [queryInstance] = useState(new query() as TQuery);
-    const [currentSorting, setCurrentSorting] = useState<Sorting>(sorting ?? Sorting.none);
-    const [currentPaging, setCurrentPaging] = useState<Paging | undefined>(paging);
+    [QueryResultWithState<TDataType>, number, PerformQuery<TArguments>, SetSorting, SetPage] {
+    sorting ??= Sorting.none;
+    const initialQueryInstance = new query() as TQuery;
+    initialQueryInstance.paging = paging!;
+    initialQueryInstance.sorting = sorting;
+
+    const [queryInstance, setQueryInstance] = useState(initialQueryInstance);
     const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.initial(queryInstance.defaultValue));
+
     const queryExecutor = (async (args?: TArguments) => {
-        queryInstance.sorting = currentSorting;
-        queryInstance.paging = currentPaging!;
         const queryResult = await performer(queryInstance);
-        setResult(QueryResultWithState.fromQueryResult(queryResult, false));
+        setResult(oldResult => {
+            oldResult = QueryResultWithState.fromQueryResult(queryResult, false);
+            return oldResult;
+        });
+        
     });
 
     useEffect(() => {
@@ -41,18 +47,24 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
 
     return [
         result,
+        queryInstance.paging?.page || 0,
         async (args?: TArguments) => {
             setResult(QueryResultWithState.fromQueryResult(result, true));
             await queryExecutor(args);
         },
         async (sorting: Sorting) => {
             setResult(QueryResultWithState.fromQueryResult(result, true));
-            setCurrentSorting(sorting);
+            queryInstance.sorting = sorting;
+            setQueryInstance({
+                ...queryInstance,
+                sorting
+            });
             await queryExecutor(args);
         },
         async (page: number) => {
             setResult(QueryResultWithState.fromQueryResult(result, true));
-            setCurrentPaging({ page, pageSize: currentPaging!.pageSize });
+            queryInstance.paging = {page, pageSize: queryInstance.paging?.pageSize ?? 0};
+            setQueryInstance(queryInstance);
             await queryExecutor(args);
         }];
 }
@@ -67,7 +79,7 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
  */
 export function useQuery<TDataType, TQuery extends IQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, args?: TArguments, sorting?: Sorting):
     [QueryResultWithState<TDataType>, PerformQuery<TArguments>, SetSorting] {
-    const [result, perform, setSorting] = useQueryInternal(query, async (queryInstance: TQuery) => await queryInstance.perform(args!), sorting, undefined, args);
+    const [result, _, perform, setSorting] = useQueryInternal(query, async (queryInstance: TQuery) => await queryInstance.perform(args!), sorting, undefined, args);
     return [result, perform, setSorting];
 }
 
@@ -80,6 +92,6 @@ export function useQuery<TDataType, TQuery extends IQueryFor<TDataType>, TArgume
  * @returns Tuple of {@link QueryResult} and a {@link PerformQuery} delegate.
  */
 export function useQueryWithPaging<TDataType, TQuery extends IQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, paging: Paging, args?: TArguments, sorting?: Sorting):
-    [QueryResultWithState<TDataType>, PerformQuery<TArguments>, SetSorting, SetPage] {
+    [QueryResultWithState<TDataType>, number, PerformQuery<TArguments>, SetSorting, SetPage] {
     return useQueryInternal(query, async (queryInstance: TQuery) => await queryInstance.perform(args!), sorting, paging, args);
 }

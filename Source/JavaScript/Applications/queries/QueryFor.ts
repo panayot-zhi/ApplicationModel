@@ -21,9 +21,9 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
     abstract get requestArguments(): string[];
     abstract defaultValue: TDataType;
     abortController?: AbortController;
-    private _sorting: Sorting;
-    private _paging: Paging | undefined;
-    private _arguments: TArguments | undefined;
+    sorting: Sorting;
+    paging: Paging | undefined;
+    arguments: TArguments | undefined;
 
     /**
      * Initializes a new instance of the {@link ObservableQueryFor<,>}} class.
@@ -31,44 +31,14 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
      * @param enumerable Whether or not it is an enumerable.
      */
     constructor(readonly modelType: Constructor, readonly enumerable: boolean) {
-        this._sorting = Sorting.none;
-    }
-
-    /** @inheritdoc */
-    get sorting(): Sorting {
-        return this._sorting;
-    }
-
-    /** @inheritdoc */
-    set sorting(value: Sorting) {
-        this._sorting = value;
-    }
-
-    /** @inheritdoc */
-    get paging(): Paging | undefined {
-        return this._paging;
-    }
-
-    /** @inheritdoc */
-    set paging(value: Paging) {
-        this._paging = value;
-    }
-
-    /** @inheritdoc */
-    get arguments(): TArguments | undefined {
-        return this._arguments;
-    }
-
-    /** @inheritdoc */
-    set arguments(value: TArguments) {
-        this._arguments = value;
+        this.sorting = Sorting.none;
     }
 
     /** @inheritdoc */
     async perform(args?: TArguments): Promise<QueryResult<TDataType>> {
         const noSuccess = { ...QueryResult.noSuccess, ...{ data: this.defaultValue } } as QueryResult<TDataType>;
 
-        args = args || this._arguments;
+        args = args || this.arguments;
 
         let actualRoute = this.route;
         if (!ValidateRequestArguments(this.constructor.name, this.requestArguments, args)) {
@@ -93,9 +63,9 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
             headers[Globals.microserviceHttpHeader] = Globals.microservice;
         }
 
-        if (this._paging && this._paging.pageSize > 0) {
-            actualRoute = this.addQueryParameters(actualRoute, 'page', this._paging.page);
-            actualRoute = this.addQueryParameters(actualRoute, 'pageSize', this._paging.pageSize);
+        if (this.paging && this.paging.pageSize > 0) {
+            actualRoute = this.addQueryParameters(actualRoute, 'page', this.paging.page);
+            actualRoute = this.addQueryParameters(actualRoute, 'pageSize', this.paging.pageSize);
         }
 
         if (this.sorting.hasSorting) {
