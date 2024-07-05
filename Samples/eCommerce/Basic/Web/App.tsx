@@ -6,13 +6,15 @@ import { IdentityProvider } from '@cratis/applications.react/identity';
 import { MVVM } from '@cratis/applications.react.mvvm';
 import { BrowserRouter } from "react-router-dom";
 import { Feature } from './Feature';
+import { Catalog } from './Catalog';
 
 export const App = () => {
     return (
         <IdentityProvider>
             <MVVM>
                 <BrowserRouter>
-                    <Feature />
+                    {/* <Feature /> */}
+                    <Catalog />
                 </BrowserRouter>
             </MVVM>
         </IdentityProvider>

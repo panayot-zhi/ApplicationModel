@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization;
 
 namespace Cratis.Applications.MongoDB.for_AcronymFriendlyCamelCaseElementNameConvention;
 
-public class when_applying_convention : Specification
+public class when_applying_convention_to_all_class_map_members : Specification
 {
     class SomeType
     {

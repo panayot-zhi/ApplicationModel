@@ -1,8 +1,10 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+import { Paging } from './Paging';
 import { QueryResult } from './QueryResult';
 import Handlebars from 'handlebars';
+import { Sorting } from './Sorting';
 
 /**
  * Defines the base of a query.
@@ -16,7 +18,39 @@ export interface IQueryFor<TDataType, TArguments = {}> {
     readonly defaultValue: TDataType;
 
     /**
-     * Perform the query.
+     * Gets the sorting for the query.
+     */
+    get sorting(): Sorting;
+
+    /**
+     * Sets the sorting for the query.
+     */
+    set sorting(value: Sorting);
+
+    /**
+     * Gets the paging for the query.
+     */
+    get paging(): Paging | undefined;
+
+    /**
+     * Sets the paging for the query.
+     */ 
+    set paging(value: Paging);
+
+    /**
+     * Gets the current arguments for the query.
+     */    
+    get arguments(): TArguments | undefined;
+
+    /**
+     * Sets the current arguments for the query.
+     */    
+    set arguments(value: TArguments);
+
+    /**
+     * Perform the query, optionally giving arguments to use. If not given, it will use the arguments that has been set.
+     * By specifying the arguments, it will use these as the current arguments for the instance and subsequent calls does
+     * not need to specify arguments.
      * @param [args] Optional arguments for the query - depends on whether or not the query needs arguments.
      * @returns {QueryResult} for the model
      */

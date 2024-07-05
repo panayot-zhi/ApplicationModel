@@ -81,11 +81,14 @@ public static class HostBuilderExtensions
 
         services.AddHostedService<MongoDBInitializer>();
 
-        // TODO: This model name hookup stuff is a bit nasty, maybe we can think out something better?
-        services.AddSingleton<IModelNameConvention>(provider =>
-            mongoDBBuilder.ModelNameConventionInstance ?? (IModelNameConvention)ActivatorUtilities.CreateInstance(
-                provider,
-                mongoDBBuilder.ModelNameConventionType ?? typeof(DefaultModelNameConvention)));
+        if (mongoDBBuilder.ModelNameConventionInstance is not null)
+        {
+            services.AddSingleton(mongoDBBuilder.ModelNameConventionInstance);
+        }
+        else
+        {
+            services.AddSingleton(typeof(IModelNameConvention), mongoDBBuilder.ModelNameConventionType ?? typeof(DefaultModelNameConvention));
+        }
         services.AddSingleton<IModelNameResolver, ModelNameResolver>();
         services.AddSingleton(typeof(IMongoServerResolver), mongoDBBuilder.ServerResolverType);
         services.AddSingleton(typeof(IMongoDatabaseNameResolver), mongoDBBuilder.DatabaseNameResolverType);
@@ -102,7 +105,8 @@ public static class HostBuilderExtensions
             }
 
             client = _clientFactory.Create();
-            return _clients[server.ToString()] = client;
+            _clients[server.ToString()] = client;
+            return client;
         });
 
         services.AddTransient(sp =>
