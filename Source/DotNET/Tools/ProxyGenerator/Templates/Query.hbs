@@ -17,7 +17,7 @@ import Handlebars from 'handlebars';
 
 const routeTemplate = Handlebars.compile('{{{Route}}}');
 
-{{#if IsEnumerable}}
+{{!-- {{#if IsEnumerable}}
 class {{Name}}SortBy {
 {{#Properties}}
     private _{{camelCase Name}}: SortingForQuery<{{../Name}}>;
@@ -35,7 +35,7 @@ class {{Name}}SortBy {
     }
 {{/Properties}}
 }
-{{/if}}
+{{/if}} --}}
 
 {{#if Arguments.[0]}}
 export interface {{Name}}Arguments {
@@ -64,16 +64,16 @@ export class {{Name}} extends QueryFor<{{Model}}> {
     readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
 {{#if IsEnumerable}}
     readonly defaultValue: {{Model}}[] = [];
-    readonly _sortBy: {{Name}}SortBy;
+    {{!-- readonly _sortBy: {{Name}}SortBy; --}}
 {{else}}
     readonly defaultValue: {{Model}} = {} as any;
 {{/if}}
 
     constructor() {
         super({{Constructor}}, {{lowercase IsEnumerable}});
-{{#if IsEnumerable}}        
+{{!-- {{#if IsEnumerable}}        
         this._sortBy = new {{Name}}SortBy(this);
-{{/if}}
+{{/if}} --}}
     }
 
     get requestArguments(): string[] {
@@ -84,11 +84,11 @@ export class {{Name}} extends QueryFor<{{Model}}> {
         ];
     }
 
-{{#if IsEnumerable}}
+{{!-- {{#if IsEnumerable}}
     get sortBy(): {{Name}}SortBy {
         return this._sortBy;
     }
-{{/if}}
+{{/if}} --}}
 
 {{#if Arguments.[0]}}
 {{#if IsEnumerable}}
