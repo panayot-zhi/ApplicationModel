@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using Cratis.Applications.Execution;
 using Cratis.Execution;
 
 namespace Microsoft.AspNetCore.Http;
@@ -18,5 +19,12 @@ public static class HttpContextCorrelationIdExtensions
     /// <remarks>
     /// If the correlation ID is not set, it will return an empty <see cref="CorrelationId"/>.
     /// </remarks>
-    public static CorrelationId GetCorrelationId(this HttpContext httpContext) => ((httpContext.Items["CorrelationId"] ?? string.Empty) as CorrelationId)!;
+    public static CorrelationId GetCorrelationId(this HttpContext httpContext)
+    {
+        if (httpContext.Items.TryGetValue(Constants.CorrelationIdItemKey, out var correlationId))
+        {
+            return new CorrelationId((string)correlationId!);
+        }
+        return new CorrelationId(string.Empty);
+    }
 }
