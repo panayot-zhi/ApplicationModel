@@ -34,11 +34,7 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
 
     const queryExecutor = (async (args?: TArguments) => {
         const queryResult = await performer(queryInstance);
-        setResult(oldResult => {
-            oldResult = QueryResultWithState.fromQueryResult(queryResult, false);
-            return oldResult;
-        });
-        
+        setResult(QueryResultWithState.fromQueryResult(queryResult, false));
     });
 
     useEffect(() => {
@@ -55,10 +51,7 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
         async (sorting: Sorting) => {
             setResult(QueryResultWithState.fromQueryResult(result, true));
             queryInstance.sorting = sorting;
-            setQueryInstance({
-                ...queryInstance,
-                sorting
-            });
+            setQueryInstance(queryInstance);
             await queryExecutor(args);
         },
         async (page: number) => {
