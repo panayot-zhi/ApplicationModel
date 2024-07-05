@@ -30,11 +30,12 @@ public class Cart(IGrainFactory grainFactory, ICartQueries cartQueries) : Contro
     /// <param name="addItemToCart">Payload holding the command.</param>
     /// <returns>Awaitable task.</returns>
     [HttpPost("add-item")]
-    public async Task AddItem([FromBody] AddItemToCart addItemToCart)
+    public async Task<Guid> AddItem([FromBody] AddItemToCart addItemToCart)
     {
         var cartId = (CartId)(User.Identity?.GetUserIdAsGuid() ?? Guid.Empty);
         var price = await grainFactory.GetGrain<IProductPrice>(addItemToCart.Sku).GetPrice();
         await grainFactory.GetGrain<ICart>(cartId).AddItem(addItemToCart.Sku, price, addItemToCart.Quantity);
+        return cartId;
     }
 
     /// <summary>

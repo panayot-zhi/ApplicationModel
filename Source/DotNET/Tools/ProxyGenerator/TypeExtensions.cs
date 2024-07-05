@@ -382,11 +382,15 @@ public static class TypeExtensions
     public static IEnumerable<ImportStatement> GetImports(this IEnumerable<Type> types, string targetPath, string relativePath, int segmentsToSkip) =>
          types.Select(_ =>
         {
-            var fullPath = Path.Join(targetPath, relativePath);
-            var fullPathForType = Path.Join(targetPath, _.ResolveTargetPath(segmentsToSkip));
-            var importPath = Path.GetRelativePath(fullPath, fullPathForType);
-            importPath = $"{importPath}/{_.Name}";
-            return new ImportStatement(_.GetTargetType().Type, importPath);
+            var targetType = _.GetTargetType();
+            var importPath = targetType.Module;
+            if (string.IsNullOrEmpty(importPath))
+            {
+                var fullPath = Path.Join(targetPath, relativePath);
+                var fullPathForType = Path.Join(targetPath, _.ResolveTargetPath(segmentsToSkip));
+                importPath = $"{Path.GetRelativePath(fullPath, fullPathForType)}/{_.Name}";
+            }
+            return new ImportStatement(targetType.Type, importPath);
         }).ToArray();
 
     /// <summary>

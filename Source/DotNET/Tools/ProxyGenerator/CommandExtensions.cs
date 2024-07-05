@@ -54,6 +54,10 @@ public static class CommandExtensions
             }
         }
 
+        if (responseModel.Type is not null && responseModel.Type.GetTargetType().TryGetImportStatement(out var responseTypeImportStatement))
+        {
+            imports.Add(responseTypeImportStatement);
+        }
         var additionalTypesInvolved = new List<Type>();
         foreach (var property in propertiesWithComplexTypes)
         {
