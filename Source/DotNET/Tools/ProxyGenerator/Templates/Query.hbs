@@ -96,7 +96,7 @@ export class {{Name}} extends QueryFor<{{Model}}> {
         return useQuery<{{Model}}[], {{Name}}, {{Name}}Arguments>({{Name}}, args);
     }
 
-    static useWithPaging(page:number, pageSize: number, args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}[]>, PerformQuery] {
+    static useWithPaging(page:number, pageSize: number, args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
         return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(page, pageSize), args);
     }
 {{else}}
@@ -110,7 +110,7 @@ export class {{Name}} extends QueryFor<{{Model}}> {
         return useQuery<{{Model}}[], {{Name}}>({{Name}});
     }
 
-    static useWithPaging(page:number, pageSize: number): [QueryResultWithState<{{Model}}[]>, PerformQuery, SetSorting, SetPage] {
+    static useWithPaging(page:number, pageSize: number): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
         return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(page, pageSize));
     }
 {{else}}
