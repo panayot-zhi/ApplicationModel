@@ -15,7 +15,7 @@ export class SortingForQuery<TDataType, TArguments = {}> {
      * @param {string} field The field that the sorting represents.
      * @param {IQueryFor<TDataType, TArguments>} query The query that holds the field.
      */
-    constructor(readonly field: string, readonly query: IQueryFor<TDataType, TArguments>) {
+    constructor(readonly field: string, readonly query: IQueryFor<TDataType, TArguments>) { 
     }
 
     /**
