@@ -19,5 +19,6 @@ public static class Extensions
     {
         options.SchemaFilter<ConceptSchemaFilter>();
         options.OperationFilter<CommandResultOperationFilter>();
+        options.OperationFilter<QueryResultOperationFilter>();
     }
 }
