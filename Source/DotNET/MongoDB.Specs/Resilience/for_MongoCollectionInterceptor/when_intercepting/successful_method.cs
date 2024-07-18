@@ -7,7 +7,7 @@ public class successful_method : given.an_interceptor
 {
     protected override string GetInvocationTargetMethod() => nameof(for_MongoCollectionInterceptorForReturnValue.InvocationTarget.SuccessfulMethod);
 
-    void Because() => interceptor.Intercept(invocation.Object);
+    void Because() => interceptor.Intercept(invocation);
 
     [Fact] void should_return_successful_task() => return_value.IsCompletedSuccessfully.ShouldBeTrue();
     [Fact] void should_have_freed_up_semaphore() => semaphore.CurrentCount.ShouldEqual(pool_size);

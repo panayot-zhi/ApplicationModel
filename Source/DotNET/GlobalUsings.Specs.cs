@@ -5,7 +5,6 @@
 
 global using Cratis.Specifications;
 global using Cratis.Types;
-global using Moq;
+global using NSubstitute;
+global using NSubstitute.Core;
 global using Xunit;
-global using static Moq.It;
-global using static Moq.Times;

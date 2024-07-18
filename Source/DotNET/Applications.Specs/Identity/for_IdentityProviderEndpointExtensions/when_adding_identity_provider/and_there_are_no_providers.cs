@@ -8,19 +8,21 @@ namespace Cratis.Applications.Identity.for_IdentityProviderEndpointExtensions.wh
 
 public class and_there_are_no_providers : Specification
 {
-    Mock<IServiceCollection> services;
-    Mock<ITypes> types;
+    IServiceCollection services;
+    ITypes types;
     ServiceDescriptor service_descriptor;
 
     void Establish()
     {
-        services = new();
-        types = new();
-        services.Setup(_ => _.Add(IsAny<ServiceDescriptor>())).Callback((ServiceDescriptor _) => service_descriptor = _);
+        services = Substitute.For<IServiceCollection>();
+        types = Substitute.For<ITypes>();
+        services
+            .When(_ => _.Add(Arg.Any<ServiceDescriptor>()))
+            .Do(_ => service_descriptor = _.Arg<ServiceDescriptor>());
     }
 
-    void Because() => services.Object.AddIdentityProvider(types.Object);
+    void Because() => services.AddIdentityProvider(types);
 
-    [Fact] void should_add_one_service_registration() => services.Verify(_ => _.Add(IsAny<ServiceDescriptor>()), Once);
+    [Fact] void should_add_one_service_registration() => services.Received(1).Add(Arg.Any<ServiceDescriptor>());
     [Fact] void should_add_default_identity_details_provider() => service_descriptor.ImplementationType.ShouldEqual(typeof(DefaultIdentityDetailsProvider));
 }

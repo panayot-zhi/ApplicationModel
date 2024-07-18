@@ -25,8 +25,6 @@ public class when_applying_convention_to_all_class_map_members : Specification
     void Because() => class_map.DeclaredMemberMaps.ForEach(convention.Apply);
 
     [Fact] void should_have_two_members() => class_map.DeclaredMemberMaps.Count().ShouldEqual(2);
-    [Fact] void should_convert_SomeProperty_to_camelCase() => class_map.DeclaredMemberMaps.Where(_ => _.ElementName == "someProperty")
-        .ShouldContainSingleItem();
-    [Fact] void should_convert_SomeOtherProperty_to_someOtherPropertyName() => class_map.DeclaredMemberMaps.Where(_ => _.ElementName == "someOtherPropertyName")
-        .ShouldContainSingleItem();
+    [Fact] void should_convert_SomeProperty_to_camelCase() => class_map.DeclaredMemberMaps.Where(_ => _.ElementName == "someProperty").ShouldContainSingleItem();
+    [Fact] void should_convert_SomeOtherProperty_to_someOtherPropertyName() => class_map.DeclaredMemberMaps.Where(_ => _.ElementName == "someOtherPropertyName").ShouldContainSingleItem();
 }

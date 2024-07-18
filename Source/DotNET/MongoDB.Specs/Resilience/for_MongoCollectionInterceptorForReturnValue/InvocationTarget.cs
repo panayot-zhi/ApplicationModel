@@ -7,11 +7,16 @@ public class InvocationTarget
 {
     public const string ErrorMessage = "Something went wrong";
 
-    public Task SuccessfulMethod() => Task.CompletedTask;
-    public Task CancelledMethod() => Task.FromCanceled(new CancellationToken(true));
-
-#pragma warning disable AS0008, CA2201
-    public Task FaultedMethod() => Task.Run(() => throw new(ErrorMessage));
+    public Task<string> SuccessfulMethod() => Task.FromResult("Hello");
+    public Task<string> CancelledMethod() => Task.FromCanceled<string>(new CancellationToken(true));
+    public Task<string> FaultedMethod() => Task.Run(() =>
+    {
+        #pragma warning disable AS0008, CA2201
+        throw new(ErrorMessage);
+#pragma warning disable CS0162 // Unreachable code detected
+        return "Hello";
+#pragma warning restore CS0162 // Unreachable code detected
+    });
 
     public Task<string> FaultedMethodWithoutTask() => throw new(ErrorMessage);
 }

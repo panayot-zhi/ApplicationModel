@@ -7,11 +7,11 @@ public class faulted_method_without_task : given.an_interceptor
 {
     Exception exception;
 
-    protected override string GetInvocationTargetMethod() => nameof(for_MongoCollectionInterceptor.InvocationTarget.FaultedMethodWithoutTask);
+    protected override string GetInvocationTargetMethod() => nameof(InvocationTarget.FaultedMethodWithoutTask);
 
     void Because()
     {
-        interceptor.Intercept(invocation.Object);
+        interceptor.Intercept(invocation);
         exception = return_value.Exception.InnerExceptions.Single().InnerException;
     }
 

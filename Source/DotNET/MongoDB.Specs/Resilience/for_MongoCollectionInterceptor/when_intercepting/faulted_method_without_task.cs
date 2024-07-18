@@ -11,7 +11,7 @@ public class faulted_method_without_task : given.an_interceptor
 
     void Because()
     {
-        interceptor.Intercept(invocation.Object);
+        interceptor.Intercept(invocation);
         exception = return_value.Exception.InnerExceptions.Single().InnerException;
     }
 

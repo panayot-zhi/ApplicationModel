@@ -15,7 +15,7 @@ namespace MongoDB.Driver;
 /// <summary>
 /// Extension methods for <see cref="IMongoCollection{TDocument}"/>.
 /// </summary>
-public static class MongoDBCollectionExtensions
+public static class MongoCollectionExtensions
 {
     /// <summary>
     /// Find a single document based on Id.

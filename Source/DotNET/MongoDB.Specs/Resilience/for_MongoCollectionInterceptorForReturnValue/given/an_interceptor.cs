@@ -12,9 +12,9 @@ public abstract class an_interceptor : Specification
     protected ResiliencePipeline resilience_pipeline;
     protected MongoClientSettings settings;
     protected MongoCollectionInterceptorForReturnValues interceptor;
-    protected Mock<Castle.DynamicProxy.IInvocation> invocation;
+    protected Castle.DynamicProxy.IInvocation invocation;
     protected Task<string> return_value;
-    protected for_MongoCollectionInterceptor.InvocationTarget target;
+    protected InvocationTarget target;
     protected SemaphoreSlim semaphore;
 
     protected abstract string GetInvocationTargetMethod();
@@ -26,10 +26,10 @@ public abstract class an_interceptor : Specification
 
         interceptor = new(resilience_pipeline, semaphore);
 
-        invocation = new();
-        invocation.SetupGet(_ => _.Method).Returns(typeof(for_MongoCollectionInterceptor.InvocationTarget).GetMethod(GetInvocationTargetMethod())!);
+        invocation = Substitute.For<Castle.DynamicProxy.IInvocation>();
+        invocation.Method.Returns(typeof(InvocationTarget).GetMethod(GetInvocationTargetMethod())!);
         target = new();
-        invocation.SetupGet(_ => _.InvocationTarget).Returns(target);
-        invocation.SetupSet(_ => _.ReturnValue = It.IsAny<Task<string>>()).Callback((object? value) => return_value = value as Task<string>);
+        invocation.InvocationTarget.Returns(target);
+        invocation.When(_ => _.ReturnValue = Arg.Any<Task<string>>()).Do((CallInfo? _) => return_value = _.Arg<Task<string>>());
     }
 }

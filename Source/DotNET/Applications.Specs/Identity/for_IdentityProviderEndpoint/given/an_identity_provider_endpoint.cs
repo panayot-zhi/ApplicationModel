@@ -9,29 +9,29 @@ namespace Cratis.Applications.Identity.for_IdentityProviderEndpoint.given;
 public class an_identity_provider_endpoint : Specification
 {
     protected JsonSerializerOptions serializer_options;
-    protected Mock<IProvideIdentityDetails> identity_provider;
+    protected IProvideIdentityDetails identity_provider;
     protected IdentityProviderEndpoint endpoint;
-    protected Mock<HttpRequest> request;
-    protected Mock<HttpResponse> response;
+    protected HttpRequest request;
+    protected HttpResponse response;
     protected HeaderDictionary headers;
     protected MemoryStream body_stream;
-    protected Mock<HttpContext> http_context;
+    protected HttpContext http_context;
 
     void Establish()
     {
-        http_context = new();
+        http_context = Substitute.For<HttpContext>();
         serializer_options = new JsonSerializerOptions();
-        identity_provider = new();
-        endpoint = new(serializer_options, identity_provider.Object);
+        identity_provider = Substitute.For<IProvideIdentityDetails>();
+        endpoint = new(serializer_options, identity_provider);
 
-        request = new();
-        request.SetupGet(_ => _.HttpContext).Returns(http_context.Object);
+        request = Substitute.For<HttpRequest>();
+        request.HttpContext.Returns(http_context);
         headers = [];
-        request.SetupGet(_ => _.Headers).Returns(headers);
+        request.Headers.Returns(headers);
 
-        response = new();
-        response.SetupGet(_ => _.HttpContext).Returns(http_context.Object);
-        body_stream = new();
-        response.SetupGet(_ => _.Body).Returns(body_stream);
+        response = Substitute.For<HttpResponse>();
+        response.HttpContext.Returns(http_context);
+        body_stream = Substitute.For<MemoryStream>();
+        response.Body.Returns(body_stream);
     }
 }
