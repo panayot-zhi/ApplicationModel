@@ -171,25 +171,11 @@ public static class MongoCollectionExtensions
     {
         var logger = Internals.ServiceProvider.GetService<ILogger<MongoCollection>>()!;
         var queryContext = Internals.ServiceProvider.GetService<IQueryContextManager>()!.Current;
-        var response = findCall();
-
         var invalidateFindOnAdd = queryContext.Paging.IsPaged || queryContext.Sorting != Sorting.None;
 
-        if (queryContext.Paging.IsPaged)
-        {
-            response = response
-                .Skip(queryContext.Paging.Skip)
-                .Limit(queryContext.Paging.Size);
-        }
-
-        if (queryContext.Sorting != Sorting.None)
-        {
-            var sort = queryContext.Sorting.Direction == Cratis.Applications.Queries.SortDirection.Ascending ?
-                Builders<TDocument>.Sort.Ascending(queryContext.Sorting.Field.ToCamelCase()) :
-                Builders<TDocument>.Sort.Descending(queryContext.Sorting.Field.ToCamelCase());
-            response = response.Sort(sort);
-        }
-
+        var response = findCall();
+        response = AddPaging(queryContext, response);
+        response = AddSorting(queryContext, response);
         var documents = await response.ToListAsync();
         var subject = createSubject(documents);
 
@@ -233,23 +219,21 @@ public static class MongoCollectionExtensions
                         return;
                     }
 
+                    var hasChanges = false;
                     if (changeDocument.DocumentKey.TryGetValue("_id", out var idValue))
                     {
-                        var id = BsonTypeMapper.MapToDotNetValue(idValue);
-                        if (idProperty.PropertyType.IsConcept())
-                        {
-                            id = ConceptFactory.CreateConceptInstance(idProperty.PropertyType, id);
-                        }
-
+                        var id = GetId(idProperty, idValue);
                         var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
                         if (changeDocument.OperationType == ChangeStreamOperationType.Delete && document is not null)
                         {
                             documents.Remove(document);
+                            hasChanges = true;
                         }
                         else if (document is not null)
                         {
                             var index = documents.IndexOf(document);
                             documents[index] = changeDocument.FullDocument;
+                            hasChanges = true;
                         }
                         else if (changeDocument.OperationType == ChangeStreamOperationType.Insert)
                         {
@@ -261,10 +245,14 @@ public static class MongoCollectionExtensions
                             {
                                 documents.Add(changeDocument.FullDocument);
                             }
+                            hasChanges = true;
                         }
                     }
 
-                    onNext(documents, subject);
+                    if (hasChanges)
+                    {
+                        onNext(documents, subject);
+                    }
                 },
                 cancellationToken);
         }
@@ -287,6 +275,42 @@ public static class MongoCollectionExtensions
         subject.Subscribe(_ => { }, cursor.Dispose);
 
         return subject;
+    }
+
+    static object GetId(PropertyInfo idProperty, BsonValue idValue)
+    {
+        var id = BsonTypeMapper.MapToDotNetValue(idValue);
+        if (idProperty.PropertyType.IsConcept())
+        {
+            id = ConceptFactory.CreateConceptInstance(idProperty.PropertyType, id);
+        }
+
+        return id;
+    }
+
+    static IFindFluent<TDocument, TDocument> AddPaging<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> response)
+    {
+        if (queryContext.Paging.IsPaged)
+        {
+            response = response
+                .Skip(queryContext.Paging.Skip)
+                .Limit(queryContext.Paging.Size);
+        }
+
+        return response;
+    }
+
+    static IFindFluent<TDocument, TDocument> AddSorting<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> response)
+    {
+        if (queryContext.Sorting != Sorting.None)
+        {
+            var sort = queryContext.Sorting.Direction == Cratis.Applications.Queries.SortDirection.Ascending ?
+                Builders<TDocument>.Sort.Ascending(queryContext.Sorting.Field.ToCamelCase()) :
+                Builders<TDocument>.Sort.Descending(queryContext.Sorting.Field.ToCamelCase());
+            response = response.Sort(sort);
+        }
+
+        return response;
     }
 
     static void PrefixKeys(BsonDocument document)
