@@ -7,7 +7,9 @@ using System.Reflection;
 using Cratis.Applications;
 using Cratis.Applications.Queries;
 using Cratis.Concepts;
+using Cratis.Strings;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
 namespace MongoDB.Driver;
@@ -53,11 +55,11 @@ public static class MongoCollectionExtensions
     public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= _ => true;
         return await collection.Observe(
-            () => collection.FindAsync(filter, options),
+            () => collection.Find(filter, options),
             filter,
             documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
             (cursor, observable) => observable.OnNext(cursor.ToList()));
@@ -74,10 +76,10 @@ public static class MongoCollectionExtensions
     public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= _ => true;
-        return await collection.ObserveSingle(() => collection.FindAsync(filter, options), filter);
+        return await collection.ObserveSingle(() => collection.Find(filter, options), filter);
     }
 
     /// <summary>
@@ -91,11 +93,11 @@ public static class MongoCollectionExtensions
     public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
         return await collection.Observe(
-            () => collection.FindAsync(filter, options),
+            () => collection.Find(filter, options),
             filter,
             documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
             (documents, observable) => observable.OnNext(documents));
@@ -112,10 +114,10 @@ public static class MongoCollectionExtensions
     public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.ObserveSingle(() => collection.FindAsync(filter, options), filter);
+        return await collection.ObserveSingle(() => collection.Find(filter, options), filter);
     }
 
     /// <summary>
@@ -129,12 +131,12 @@ public static class MongoCollectionExtensions
     public static async Task<ISubject<TDocument>> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
     {
         var filter = Builders<TDocument>.Filter.Eq(new StringFieldDefinition<TDocument, TId>("_id"), id);
-        return await collection.ObserveSingle(() => collection.FindAsync(filter), filter);
+        return await collection.ObserveSingle(() => collection.Find(filter), filter);
     }
 
     static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
          this IMongoCollection<TDocument> collection,
-         Func<Task<IAsyncCursor<TDocument>>> findCall,
+         Func<IFindFluent<TDocument, TDocument>> findCall,
          FilterDefinition<TDocument> filter)
     {
         return await collection.Observe<TDocument, TDocument>(
@@ -162,23 +164,36 @@ public static class MongoCollectionExtensions
 
     static async Task<ISubject<TResult>> Observe<TDocument, TResult>(
         this IMongoCollection<TDocument> collection,
-        Func<Task<IAsyncCursor<TDocument>>> findCall,
+        Func<IFindFluent<TDocument, TDocument>> findCall,
         FilterDefinition<TDocument> filter,
         Func<IEnumerable<TDocument>, ISubject<TResult>> createSubject,
         Action<IEnumerable<TDocument>, ISubject<TResult>> onNext)
     {
+        var logger = Internals.ServiceProvider.GetService<ILogger<MongoCollection>>()!;
         var queryContext = Internals.ServiceProvider.GetService<IQueryContextManager>()!.Current;
+        var response = findCall();
+
+        var invalidateFindOnAdd = queryContext.Paging.IsPaged || queryContext.Sorting != Sorting.None;
+
         if (queryContext.Paging.IsPaged)
         {
+            response = response
+                .Skip(queryContext.Paging.Skip)
+                .Limit(queryContext.Paging.Size);
         }
 
-        var response = await findCall();
-        var documents = response.ToList();
+        if (queryContext.Sorting != Sorting.None)
+        {
+            var sort = queryContext.Sorting.Direction == Cratis.Applications.Queries.SortDirection.Ascending ?
+                Builders<TDocument>.Sort.Ascending(queryContext.Sorting.Field.ToCamelCase()) :
+                Builders<TDocument>.Sort.Descending(queryContext.Sorting.Field.ToCamelCase());
+            response = response.Sort(sort);
+        }
+
+        var documents = await response.ToListAsync();
         var subject = createSubject(documents);
 
         onNext(documents, subject);
-        response.Dispose();
-        response = null!;
 
         var options = new ChangeStreamOptions
         {
@@ -236,9 +251,16 @@ public static class MongoCollectionExtensions
                             var index = documents.IndexOf(document);
                             documents[index] = changeDocument.FullDocument;
                         }
-                        else
+                        else if (changeDocument.OperationType == ChangeStreamOperationType.Insert)
                         {
-                            documents.Add(changeDocument.FullDocument);
+                            if (invalidateFindOnAdd)
+                            {
+                                documents = response.ToList();
+                            }
+                            else
+                            {
+                                documents.Add(changeDocument.FullDocument);
+                            }
                         }
                     }
 
@@ -246,9 +268,9 @@ public static class MongoCollectionExtensions
                 },
                 cancellationToken);
         }
-        catch (ObjectDisposedException)
+        catch (ObjectDisposedException ex)
         {
-            Console.WriteLine("Cursor disposed.");
+            logger.CursorDisposed(ex.ObjectName);
             cursor.Dispose();
             subject.OnCompleted();
 
@@ -295,4 +317,9 @@ public static class MongoCollectionExtensions
             }
         }
     }
+
+    /// <summary>
+    /// Internal class used as an identifying type for logging purpose.
+    /// </summary>
+    internal class MongoCollection;
 }
