@@ -23,7 +23,7 @@ public class QueryableQueryProvider : IQueryProviderFor<IQueryable>
 
         if (queryContext.Paging.IsPaged)
         {
-            query = query.Skip(queryContext.Paging.Page * queryContext.Paging.Size)
+            query = query.Skip(queryContext.Paging.Skip)
                          .Take(queryContext.Paging.Size);
         }
 
