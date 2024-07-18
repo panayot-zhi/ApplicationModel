@@ -18,7 +18,7 @@ export const MVVM = (props: MVVMProps) => {
         ...{ enforceActions: 'never' },
         ...(props.mobx || {}),
     };
-    debugger;
+
     configureMobx(options);
 
     Bindings.initialize();
