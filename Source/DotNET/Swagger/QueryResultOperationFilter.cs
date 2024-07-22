@@ -4,6 +4,7 @@
 using Cratis.Applications.Queries;
 using Cratis.Concepts;
 using Cratis.Reflection;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -21,13 +22,55 @@ public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOpe
         if (!context.MethodInfo.IsQuery()) return;
 
         var returnType = context.MethodInfo.GetActualReturnType();
-
         if (returnType.IsConcept())
         {
             returnType = returnType.GetConceptValueType();
         }
 
         var queryResultType = typeof(QueryResult<>).MakeGenericType(returnType);
+
+        if (context.MethodInfo.ReturnType.IsEnumerable())
+        {
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.SortByQueryStringKey,
+                In = ParameterLocation.Query,
+                Description = "Sort by field name",
+                Required = false,
+                Schema = new() { Type = "string" }
+            });
+
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.SortDirectionQueryStringKey,
+                In = ParameterLocation.Query,
+                Required = false,
+                Description = "Sort direction",
+                Schema = new()
+                {
+                    Type = "string",
+                    Enum = [new OpenApiString("asc"), new OpenApiString("desc")]
+                }
+            });
+
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.PageSizeQueryStringKey,
+                In = ParameterLocation.Query,
+                Description = "Number of items to limit a page to",
+                Required = false,
+                Schema = new() { Type = "integer", Format = "int32" }
+            });
+
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.PageQueryStringKey,
+                In = ParameterLocation.Query,
+                Description = "Page number to show",
+                Required = false,
+                Schema = new() { Type = "integer", Format = "int32" }
+            });
+        }
 
         var schema = schemaGenerator.GenerateSchema(queryResultType, context.SchemaRepository);
         var response = operation.Responses.First().Value;

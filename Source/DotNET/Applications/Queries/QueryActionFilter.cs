@@ -30,10 +30,25 @@ public class QueryActionFilter(
     IQueryProviders queryProviders,
     ILogger<QueryActionFilter> logger) : IAsyncActionFilter
 {
-    const string SortByQueryStringKey = "sortby";
-    const string SortDirectionQueryStringKey = "sortDirection";
-    const string PageQueryStringKey = "page";
-    const string PageSizeQueryStringKey = "pageSize";
+    /// <summary>
+    /// Gets the key for the sort by query string.
+    /// </summary>
+    public const string SortByQueryStringKey = "sortby";
+
+    /// <summary>
+    /// Gets the key for the sort direction query string.
+    /// </summary>
+    public const string SortDirectionQueryStringKey = "sortDirection";
+
+    /// <summary>
+    /// Gets the key for the page query string.
+    /// </summary>
+    public const string PageQueryStringKey = "page";
+
+    /// <summary>
+    /// Gets the key for the page size query string.
+    /// </summary>
+    public const string PageSizeQueryStringKey = "pageSize";
 
     readonly JsonOptions _options = options.Value;
 
