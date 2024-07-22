@@ -10,8 +10,9 @@ export interface IObservableQueryConnection<TDataType> {
     /**
      * Connect to a specific route.
      * @param {DataReceived<TDataType> dataReceived Callback that will receive the data.
+     * @param queryArguments Optional query arguments to pass along.
      */
-    connect(dataReceived: DataReceived<TDataType>);
+    connect(dataReceived: DataReceived<TDataType>, queryArguments?: any): void;
 
     /**
      * Disconnect the connection.

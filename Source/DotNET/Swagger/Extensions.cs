@@ -18,6 +18,7 @@ public static class Extensions
     public static void AddConcepts(this SwaggerGenOptions options)
     {
         options.SchemaFilter<ConceptSchemaFilter>();
+        options.SchemaFilter<EnumSchemaFilter>();
         options.OperationFilter<CommandResultOperationFilter>();
         options.OperationFilter<QueryResultOperationFilter>();
     }

@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Reactive.Subjects;
 using Cratis.Applications;
 using Domain.Products;
 using MongoDB.Driver;
@@ -36,6 +37,17 @@ public class Catalog(IGrainFactory grainFactory, ICatalogQueries catalogQueries,
     [HttpGet]
     public IQueryable<Product> AllProducts() => catalogQueries.All();
 
+    /// <summary>
+    /// Gets all the products in the catalog.
+    /// </summary>
+    /// <returns>Collection of products.</returns>
+    [HttpGet("observe")]
+    public ISubject<IEnumerable<Product>> ObserveAllProducts() => catalogQueries.ObserveAll();
+
+    /// <summary>
+    /// Generate some products.
+    /// </summary>
+    /// <returns>Awaitable task.</returns>
     [HttpGet("generate"), AspNetResult]
     public async Task Generate()
     {

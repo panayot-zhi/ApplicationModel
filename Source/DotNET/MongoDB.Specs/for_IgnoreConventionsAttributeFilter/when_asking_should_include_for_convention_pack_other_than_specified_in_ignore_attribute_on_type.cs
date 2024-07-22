@@ -16,7 +16,7 @@ public class when_asking_should_include_for_convention_pack_other_than_specified
 
     void Establish() => filter = new();
 
-    void Because() => result = filter.ShouldInclude("SomePack", Mock.Of<IConventionPack>(), typeof(TheType));
+    void Because() => result = filter.ShouldInclude("SomePack", Substitute.For<IConventionPack>(), typeof(TheType));
 
     [Fact] void should_include_it() => result.ShouldBeTrue();
 }

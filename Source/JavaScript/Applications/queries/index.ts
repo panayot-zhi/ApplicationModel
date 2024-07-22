@@ -7,6 +7,7 @@ export * from './Sorting';
 export * from './SortDirection';
 export * from './SortingActions';
 export * from './SortingActionsForQuery';
+export * from './SortingActionsForObservableQuery';
 export * from './QueryFor';
 export * from './QueryResult';
 export * from './QueryResultWithState';

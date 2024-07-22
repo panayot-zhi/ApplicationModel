@@ -26,14 +26,9 @@ public static class IdentityProviderServiceCollectionExtensions
             throw new MultipleIdentityDetailsProvidersFound(providerTypes);
         }
 
-        if (providerTypes.Length == 1)
-        {
-            services.AddSingleton(typeof(IProvideIdentityDetails), providerTypes[0]);
-        }
-        else
-        {
-            services.AddSingleton<IProvideIdentityDetails, DefaultIdentityDetailsProvider>();
-        }
+        services.AddSingleton(
+            typeof(IProvideIdentityDetails),
+            providerTypes.Length == 1 ? providerTypes[0] : typeof(DefaultIdentityDetailsProvider));
 
         return services;
     }

@@ -51,4 +51,9 @@ public record Paging
     /// Whether or not paging is to be used.
     /// </summary>
     public bool IsPaged { get; }
+
+    /// <summary>
+    /// Gets the number of items to skip.
+    /// </summary>
+    public int Skip => Page * Size;
 }

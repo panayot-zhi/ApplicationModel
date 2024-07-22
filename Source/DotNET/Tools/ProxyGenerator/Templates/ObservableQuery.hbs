@@ -3,14 +3,51 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
+{{#if IsEnumerable}}
+import { ObservableQueryFor, QueryResultWithState, Sorting, SortingActions, SortingActionsForObservableQuery, Paging } from '@cratis/applications/queries';
+import { useObservableQuery, useObservableQueryWithPaging, SetSorting, SetPage } from '@cratis/applications.react/queries';
+{{else}}
 import { ObservableQueryFor, QueryResultWithState } from '@cratis/applications/queries';
 import { useObservableQuery } from '@cratis/applications.react/queries';
+{{/if}}
 {{#Imports}}
 import { {{Type}} } from '{{Module}}';
 {{/Imports}}
 import Handlebars from 'handlebars';
 
 const routeTemplate = Handlebars.compile('{{{Route}}}');
+
+{{#if IsEnumerable}}
+class {{Name}}SortBy {
+{{#Properties}}
+    private _{{camelCase Name}}: SortingActionsForObservableQuery<{{../Model}}[]>;
+{{/Properties}}
+
+    constructor(readonly query: {{Name}}) {
+{{#Properties}}
+        this._{{camelCase Name}} = new SortingActionsForObservableQuery<{{../Model}}[]>('{{camelCase Name}}', query);
+{{/Properties}}
+    }
+
+{{#Properties}}
+    get {{camelCase Name}}(): SortingActionsForObservableQuery<{{../Model}}[]> {
+        return this._{{camelCase Name}};
+    }
+{{/Properties}}
+}
+
+class {{Name}}SortByWithoutQuery {
+{{#Properties}}
+    private _{{camelCase Name}}: SortingActions  = new SortingActions('{{camelCase Name}}');
+{{/Properties}}
+
+{{#Properties}}
+    get {{camelCase Name}}(): SortingActions {
+        return this._{{camelCase Name}};
+    }
+{{/Properties}}
+}
+{{/if}}
 
 {{#if Arguments.[0]}}
 export interface {{Name}}Arguments {
@@ -38,12 +75,17 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
     readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
 {{#if IsEnumerable}}
     readonly defaultValue: {{Model}}[] = [];
+    private readonly _sortBy: {{Name}}SortBy;
+    private static readonly _sortBy: {{Name}}SortByWithoutQuery = new {{Name}}SortByWithoutQuery();
 {{else}}
     readonly defaultValue: {{Model}} = {} as any;
 {{/if}}
 
     constructor() {
         super({{Model}}, {{lowercase IsEnumerable}});
+{{#if IsEnumerable}}        
+        this._sortBy = new {{Name}}SortBy(this);
+{{/if}}
     }
 
     get requestArguments(): string[] {
@@ -54,24 +96,34 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
         ];
     }
 
-{{#if Arguments.[0]}}
 {{#if IsEnumerable}}
-    static use(args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}[]>] {
-        return useObservableQuery<{{Model}}[], {{Name}}, {{Name}}Arguments>({{Name}}, args);
+    get sortBy(): {{Name}}SortBy {
+        return this._sortBy;
     }
-{{else}}
-    static use(args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}>] {
-        return useObservableQuery<{{Model}}, {{Name}}, {{Name}}Arguments>({{Name}}, args);
+
+    static get sortBy(): {{Name}}SortByWithoutQuery {
+        return this._sortBy;
     }
 {{/if}}
-{{else}}
-{{#if IsEnumerable}}
-    static use(): [QueryResultWithState<{{Model}}[]>] {
-        return useObservableQuery<{{Model}}[], {{Name}}>({{Name}});
+
+{{#if Arguments.[0]}}
+    static use(args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>] {
+        return useObservableQuery<{{Model}}[], {{Name}}, {{Name}}Arguments>({{Name}}, args, sorting);
     }
+{{#if IsEnumerable}}
+
+    static useWithPaging(pageSize: number, args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage] {
+        return useObservableQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), args, sorting);
+    }
+{{/if}}    
 {{else}}
-    static use(): [QueryResultWithState<{{Model}}>] {
-        return useObservableQuery<{{Model}}, {{Name}}>({{Name}});
+    static use(sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting] {
+        return useObservableQuery<{{Model}}[], {{Name}}>({{Name}}, undefined, sorting);
+    }
+{{#if IsEnumerable}}
+
+    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage] {
+        return useObservableQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), undefined, sorting);
     }
 {{/if}}
 {{/if}}

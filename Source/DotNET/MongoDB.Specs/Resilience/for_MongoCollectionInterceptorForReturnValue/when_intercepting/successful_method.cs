@@ -10,7 +10,7 @@ public class successful_method : given.an_interceptor
 
     async Task Because()
     {
-        interceptor.Intercept(invocation.Object);
+        interceptor.Intercept(invocation);
         result = await return_value;
     }
 

@@ -23,5 +23,5 @@ public interface ICartQueries
     /// </summary>
     /// <param name="cartId">The <see cref="CartId"/> for the cart.</param>
     /// <returns>The subject for <see cref="Cart"/>.</returns>
-    Task<ISubject<Cart>> Observe(CartId cartId);
+    ISubject<Cart> Observe(CartId cartId);
 }

@@ -8,19 +8,19 @@ namespace Cratis.Applications.Identity.for_IdentityProviderEndpointExtensions.wh
 
 public class and_there_are_multiple_providers : Specification
 {
-    Mock<IServiceCollection> services;
-    Mock<ITypes> types;
+    IServiceCollection services;
+    ITypes types;
     Exception exception;
 
     void Establish()
     {
-        services = new();
-        types = new();
-        types.Setup(_ => _.FindMultiple<IProvideIdentityDetails>()).Returns([typeof(object), typeof(object)]);
+        services = Substitute.For<IServiceCollection>();
+        types = Substitute.For<ITypes>();
+        types.FindMultiple<IProvideIdentityDetails>().Returns([typeof(object), typeof(object)]);
     }
 
-    void Because() => exception = Catch.Exception(() => services.Object.AddIdentityProvider(types.Object));
+    void Because() => exception = Catch.Exception(() => services.AddIdentityProvider(types));
 
     [Fact] void should_throw_multiple_identity_details_providers_found() => exception.ShouldBeOfExactType<MultipleIdentityDetailsProvidersFound>();
-    [Fact] void should_not_add_service_registration() => services.Verify(_ => _.Add(IsAny<ServiceDescriptor>()), Never);
+    [Fact] void should_not_add_service_registration() => services.DidNotReceive().Add(Arg.Any<ServiceDescriptor>());
 }

@@ -3,28 +3,41 @@
 
 import { withViewModel } from '@cratis/applications.react.mvvm';
 import { CatalogViewModel } from './CatalogViewModel';
-import { AllProducts } from './API/Products';
+import { AllProducts, ObserveAllProducts } from './API/Products';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { SortDirection, Sorting } from '@cratis/applications/queries';
 
 export const Catalog = withViewModel(CatalogViewModel, ({ viewModel }) => {
-    const [products, currentPage, perform, setSorting, setPage] = AllProducts.useWithPaging(10);
+    const [pageSize, setPageSize] = useState(10);
+    // // const [products, currentPage, perform, setSorting, setPage] = AllProducts.useWithPaging(pageSize);
+    const [observableProducts, setSorting, setPage] = ObserveAllProducts.useWithPaging(10);
     const [descending, setDescending] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
 
     return (
         <div>
             <div>Page {currentPage + 1}</div>
-            <DataTable value={products.data}>
+            <DataTable value={observableProducts.data}>
                 <Column field="id" header="SKU" />
                 <Column field="name" header="Name" />
             </DataTable>
 
             <button onClick={() => {
-                const page = currentPage + 1;
-                setPage(page);
+                setCurrentPage(currentPage - 1);
+                setPage(currentPage - 1);
+            }}>Previous page</button>
+
+            <button onClick={() => {
+                setCurrentPage(currentPage + 1);
+                setPage(currentPage + 1);
             }}>Next page</button>
-            <br/>
+            <br />
+
+            <button onClick={() => {
+                setPage(20);
+            }}>More stuff</button>
 
             <button onClick={() => {
                 if (descending) {

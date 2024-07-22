@@ -10,7 +10,7 @@ public class cancelled_method : given.an_interceptor
 
     async Task Because()
     {
-        interceptor.Intercept(invocation.Object);
+        interceptor.Intercept(invocation);
         exception = await Catch.Exception(async () => await return_value);
     }
 

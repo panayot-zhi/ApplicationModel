@@ -10,15 +10,15 @@ public class an_interceptor_selector : Specification
 {
     protected MongoCollectionInterceptorSelector selector;
     protected ResiliencePipeline resilience_pipeline;
-    protected Mock<IMongoClient> mongo_client;
+    protected IMongoClient mongo_client;
     protected MongoClientSettings settings;
 
     void Establish()
     {
         resilience_pipeline = new ResiliencePipelineBuilder().Build();
-        mongo_client = new();
+        mongo_client = Substitute.For<IMongoClient>();
         settings = new MongoClientSettings();
-        mongo_client.SetupGet(_ => _.Settings).Returns(settings);
-        selector = new MongoCollectionInterceptorSelector(resilience_pipeline, mongo_client.Object);
+        mongo_client.Settings.Returns(settings);
+        selector = new MongoCollectionInterceptorSelector(resilience_pipeline, mongo_client);
     }
 }

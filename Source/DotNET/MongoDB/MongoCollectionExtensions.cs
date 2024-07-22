@@ -8,14 +8,16 @@ using Cratis.Applications;
 using Cratis.Applications.Queries;
 using Cratis.Concepts;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 namespace MongoDB.Driver;
 
 /// <summary>
 /// Extension methods for <see cref="IMongoCollection{TDocument}"/>.
 /// </summary>
-public static class MongoDBCollectionExtensions
+public static class MongoCollectionExtensions
 {
     /// <summary>
     /// Find a single document based on Id.
@@ -50,14 +52,14 @@ public static class MongoDBCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
+    public static ISubject<IEnumerable<TDocument>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= _ => true;
-        return await collection.Observe(
-            () => collection.FindAsync(filter, options),
+        return collection.Observe(
+            () => collection.Find(filter, options),
             filter,
             documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
             (cursor, observable) => observable.OnNext(cursor.ToList()));
@@ -71,13 +73,13 @@ public static class MongoDBCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
+    public static ISubject<TDocument> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= _ => true;
-        return await collection.ObserveSingle(() => collection.FindAsync(filter, options), filter);
+        return collection.ObserveSingle(() => collection.Find(filter, options), filter);
     }
 
     /// <summary>
@@ -88,14 +90,14 @@ public static class MongoDBCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
+    public static ISubject<IEnumerable<TDocument>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.Observe(
-            () => collection.FindAsync(filter, options),
+        return collection.Observe(
+            () => collection.Find(filter, options),
             filter,
             documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
             (documents, observable) => observable.OnNext(documents));
@@ -109,13 +111,13 @@ public static class MongoDBCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
+    public static ISubject<TDocument> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
-        FindOptions<TDocument, TDocument>? options = null)
+        FindOptions? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.ObserveSingle(() => collection.FindAsync(filter, options), filter);
+        return collection.ObserveSingle(() => collection.Find(filter, options), filter);
     }
 
     /// <summary>
@@ -126,18 +128,18 @@ public static class MongoDBCollectionExtensions
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <typeparam name="TId">Type of id - key.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with an instance of the type.</returns>
-    public static async Task<ISubject<TDocument>> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
+    public static ISubject<TDocument> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
     {
         var filter = Builders<TDocument>.Filter.Eq(new StringFieldDefinition<TDocument, TId>("_id"), id);
-        return await collection.ObserveSingle(() => collection.FindAsync(filter), filter);
+        return collection.ObserveSingle(() => collection.Find(filter), filter);
     }
 
-    static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
+    static ISubject<TDocument> ObserveSingle<TDocument>(
          this IMongoCollection<TDocument> collection,
-         Func<Task<IAsyncCursor<TDocument>>> findCall,
+         Func<IFindFluent<TDocument, TDocument>> findCall,
          FilterDefinition<TDocument> filter)
     {
-        return await collection.Observe<TDocument, TDocument>(
+        return collection.Observe<TDocument, TDocument>(
             findCall,
             filter,
             documents =>
@@ -160,25 +162,19 @@ public static class MongoDBCollectionExtensions
             });
     }
 
-    static async Task<ISubject<TResult>> Observe<TDocument, TResult>(
+    static ISubject<TResult> Observe<TDocument, TResult>(
         this IMongoCollection<TDocument> collection,
-        Func<Task<IAsyncCursor<TDocument>>> findCall,
+        Func<IFindFluent<TDocument, TDocument>> findCall,
         FilterDefinition<TDocument> filter,
         Func<IEnumerable<TDocument>, ISubject<TResult>> createSubject,
         Action<IEnumerable<TDocument>, ISubject<TResult>> onNext)
     {
+        var documents = new List<TDocument>();
+        var subject = createSubject([]);
+
+        var logger = Internals.ServiceProvider.GetService<ILogger<MongoCollection>>()!;
         var queryContext = Internals.ServiceProvider.GetService<IQueryContextManager>()!.Current;
-        if (queryContext.Paging.IsPaged)
-        {
-        }
-
-        var response = await findCall();
-        var documents = response.ToList();
-        var subject = createSubject(documents);
-
-        onNext(documents, subject);
-        response.Dispose();
-        response = null!;
+        var invalidateFindOnAdd = queryContext.Paging.IsPaged || queryContext.Sorting != Sorting.None;
 
         var options = new ChangeStreamOptions
         {
@@ -188,11 +184,13 @@ public static class MongoDBCollectionExtensions
         var filterRendered = filter.Render(collection.DocumentSerializer, collection.Settings.SerializerRegistry);
         PrefixKeys(filterRendered);
 
-        var fullFilter = Builders<ChangeStreamDocument<TDocument>>.Filter.And(
-            filterRendered,
-            Builders<ChangeStreamDocument<TDocument>>.Filter.In(
-                new StringFieldDefinition<ChangeStreamDocument<TDocument>, string>("operationType"),
-                ["insert", "replace", "update", "delete"]));
+        var fullFilter = Builders<ChangeStreamDocument<TDocument>>.Filter.Or(
+            Builders<ChangeStreamDocument<TDocument>>.Filter.And(
+                   filterRendered,
+                   Builders<ChangeStreamDocument<TDocument>>.Filter.In(
+                       new StringFieldDefinition<ChangeStreamDocument<TDocument>, string>("operationType"),
+                       ["insert", "replace", "update", "delete"])),
+            Builders<ChangeStreamDocument<TDocument>>.Filter.Eq("fullDocument", BsonNull.Value));
 
         var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<TDocument>>().Match(fullFilter);
 
@@ -204,67 +202,146 @@ public static class MongoDBCollectionExtensions
 
         IChangeStreamCursor<ChangeStreamDocument<TDocument>> cursor = null!;
 
-        try
+        async Task Watch()
         {
-            cursor = await collection.WatchAsync(pipeline, options);
-            await cursor.ForEachAsync(
-                changeDocument =>
+            try
+            {
+                var response = findCall();
+                response = AddSorting(queryContext, response);
+                response = AddPaging(queryContext, response);
+                documents = response.ToList();
+                onNext(documents, subject);
+
+                cursor = await collection.WatchAsync(pipeline, options);
+                subject.Subscribe(_ => { }, cursor.Dispose);
+
+                await cursor.ForEachAsync(
+                    changeDocument =>
+                    {
+                        if (subject is Subject<TResult> disposableSubject && disposableSubject.IsDisposed &&
+                            subject is BehaviorSubject<TResult> disposableBehaviorSubject && disposableBehaviorSubject.IsDisposed)
+                        {
+                            cursor.Dispose();
+                            cancellationTokenSource.Dispose();
+                            return;
+                        }
+
+                        documents = HandleChange(onNext, changeDocument, invalidateFindOnAdd, response, documents, subject, idProperty);
+                    },
+                    cancellationToken);
+            }
+            catch (ObjectDisposedException ex)
+            {
+                logger.CursorDisposed(ex.ObjectName);
+                cursor.Dispose();
+                subject.OnCompleted();
+
+                if (subject is Subject<TResult> disposableSubject)
                 {
-                    if (subject is Subject<TResult> disposableSubject && disposableSubject.IsDisposed &&
-                        subject is BehaviorSubject<TResult> disposableBehaviorSubject && disposableBehaviorSubject.IsDisposed)
-                    {
-                        cursor.Dispose();
-                        cancellationTokenSource.Dispose();
-                        return;
-                    }
-
-                    if (changeDocument.DocumentKey.TryGetValue("_id", out var idValue))
-                    {
-                        var id = BsonTypeMapper.MapToDotNetValue(idValue);
-                        if (idProperty.PropertyType.IsConcept())
-                        {
-                            id = ConceptFactory.CreateConceptInstance(idProperty.PropertyType, id);
-                        }
-
-                        var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
-                        if (changeDocument.OperationType == ChangeStreamOperationType.Delete && document is not null)
-                        {
-                            documents.Remove(document);
-                        }
-                        else if (document is not null)
-                        {
-                            var index = documents.IndexOf(document);
-                            documents[index] = changeDocument.FullDocument;
-                        }
-                        else
-                        {
-                            documents.Add(changeDocument.FullDocument);
-                        }
-                    }
-
-                    onNext(documents, subject);
-                },
-                cancellationToken);
-        }
-        catch (ObjectDisposedException)
-        {
-            Console.WriteLine("Cursor disposed.");
-            cursor.Dispose();
-            subject.OnCompleted();
-
-            if (subject is Subject<TResult> disposableSubject)
-            {
-                disposableSubject.Dispose();
-            }
-            if (subject is BehaviorSubject<TResult> disposableBehaviorSubject)
-            {
-                disposableBehaviorSubject.Dispose();
+                    disposableSubject.Dispose();
+                }
+                if (subject is BehaviorSubject<TResult> disposableBehaviorSubject)
+                {
+                    disposableBehaviorSubject.Dispose();
+                }
             }
         }
 
-        subject.Subscribe(_ => { }, cursor.Dispose);
-
+        _ = Task.Run(Watch, cancellationToken);
         return subject;
+    }
+
+    static List<TDocument> HandleChange<TDocument, TResult>(
+        Action<IEnumerable<TDocument>, ISubject<TResult>> onNext,
+        ChangeStreamDocument<TDocument> changeDocument,
+        bool invalidateFindOnAdd,
+        IFindFluent<TDocument, TDocument> response,
+        List<TDocument> documents,
+        ISubject<TResult> subject,
+        PropertyInfo idProperty)
+    {
+        var hasChanges = false;
+        if (changeDocument.DocumentKey.TryGetValue("_id", out var idValue))
+        {
+            var id = GetId(idProperty, idValue);
+            var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
+            if (changeDocument.OperationType == ChangeStreamOperationType.Delete && document is not null)
+            {
+                if (invalidateFindOnAdd)
+                {
+                    documents = response.ToList();
+                }
+                else
+                {
+                    documents.Remove(document);
+                }
+                hasChanges = true;
+            }
+            else if (document is not null)
+            {
+                var index = documents.IndexOf(document);
+                documents[index] = changeDocument.FullDocument;
+                hasChanges = true;
+            }
+            else if (changeDocument.OperationType == ChangeStreamOperationType.Insert)
+            {
+                if (invalidateFindOnAdd)
+                {
+                    documents = response.ToList();
+                }
+                else
+                {
+                    documents.Add(changeDocument.FullDocument);
+                }
+                hasChanges = true;
+            }
+        }
+
+        if (hasChanges)
+        {
+            onNext(documents, subject);
+        }
+
+        return documents;
+    }
+
+    static object GetId(PropertyInfo idProperty, BsonValue idValue)
+    {
+        var id = BsonTypeMapper.MapToDotNetValue(idValue);
+        if (idProperty.PropertyType.IsConcept())
+        {
+            id = ConceptFactory.CreateConceptInstance(idProperty.PropertyType, id);
+        }
+
+        return id;
+    }
+
+    static IFindFluent<TDocument, TDocument> AddPaging<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> response)
+    {
+        if (queryContext.Paging.IsPaged)
+        {
+            response = response
+                .Skip(queryContext.Paging.Skip)
+                .Limit(queryContext.Paging.Size);
+        }
+
+        return response;
+    }
+
+    static IFindFluent<TDocument, TDocument> AddSorting<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> response)
+    {
+        if (queryContext.Sorting != Sorting.None)
+        {
+            var classMap = BsonClassMap.LookupClassMap(typeof(TDocument));
+            var memberMap = classMap.GetMemberMap(queryContext.Sorting.Field);
+
+            var sort = queryContext.Sorting.Direction == Cratis.Applications.Queries.SortDirection.Ascending ?
+                Builders<TDocument>.Sort.Ascending(memberMap.ElementName) :
+                Builders<TDocument>.Sort.Descending(memberMap.ElementName);
+            response = response.Sort(sort);
+        }
+
+        return response;
     }
 
     static void PrefixKeys(BsonDocument document)
@@ -295,4 +372,9 @@ public static class MongoDBCollectionExtensions
             }
         }
     }
+
+    /// <summary>
+    /// Internal class used as an identifying type for logging purpose.
+    /// </summary>
+    internal class MongoCollection;
 }

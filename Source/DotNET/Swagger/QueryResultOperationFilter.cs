@@ -1,9 +1,11 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Net;
 using Cratis.Applications.Queries;
 using Cratis.Concepts;
 using Cratis.Reflection;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -21,7 +23,6 @@ public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOpe
         if (!context.MethodInfo.IsQuery()) return;
 
         var returnType = context.MethodInfo.GetActualReturnType();
-
         if (returnType.IsConcept())
         {
             returnType = returnType.GetConceptValueType();
@@ -29,8 +30,51 @@ public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOpe
 
         var queryResultType = typeof(QueryResult<>).MakeGenericType(returnType);
 
+        if (context.MethodInfo.ReturnType.IsEnumerable())
+        {
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.SortByQueryStringKey,
+                In = ParameterLocation.Query,
+                Description = "Sort by field name",
+                Required = false,
+                Schema = new() { Type = "string" }
+            });
+
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.SortDirectionQueryStringKey,
+                In = ParameterLocation.Query,
+                Required = false,
+                Description = "Sort direction",
+                Schema = new()
+                {
+                    Type = "string",
+                    Enum = [new OpenApiString("asc"), new OpenApiString("desc")]
+                }
+            });
+
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.PageSizeQueryStringKey,
+                In = ParameterLocation.Query,
+                Description = "Number of items to limit a page to",
+                Required = false,
+                Schema = new() { Type = "integer", Format = "int32" }
+            });
+
+            operation.Parameters.Add(new()
+            {
+                Name = QueryActionFilter.PageQueryStringKey,
+                In = ParameterLocation.Query,
+                Description = "Page number to show",
+                Required = false,
+                Schema = new() { Type = "integer", Format = "int32" }
+            });
+        }
+
         var schema = schemaGenerator.GenerateSchema(queryResultType, context.SchemaRepository);
-        var response = operation.Responses.First().Value;
+        var response = operation.Responses.First((kvp) => kvp.Key == ((int)HttpStatusCode.OK).ToString()).Value;
         if (response.Content.ContainsKey("application/json"))
         {
             operation.Responses.First().Value.Content["application/json"].Schema = schema;
@@ -39,5 +83,23 @@ public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOpe
         {
             response.Content.Add(new("application/json", new() { Schema = schema }));
         }
+
+        operation.Responses.Add(((int)HttpStatusCode.Forbidden).ToString(), new OpenApiResponse()
+        {
+            Description = "Forbidden",
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                { "application/json", new OpenApiMediaType() { Schema = schema } }
+            }
+        });
+
+        operation.Responses.Add(((int)HttpStatusCode.BadRequest).ToString(), new OpenApiResponse()
+        {
+            Description = "Bad Request - typically a validation error",
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                { "application/json", new OpenApiMediaType() { Schema = schema } }
+            }
+        });
     }
 }
