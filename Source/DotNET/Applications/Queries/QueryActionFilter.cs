@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Net;
 using System.Reactive.Subjects;
 using Cratis.Applications.Validation;
 using Cratis.Reflection;
@@ -122,15 +123,15 @@ public class QueryActionFilter(
 
                 if (!queryResult.IsAuthorized)
                 {
-                    context.HttpContext.Response.StatusCode = 401;   // Forbidden: https://www.rfc-editor.org/rfc/rfc9110.html#name-401-unauthorized
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;         // Forbidden: https://www.rfc-editor.org/rfc/rfc9110.html#name-403-forbidden
                 }
                 else if (!queryResult.IsValid)
                 {
-                    context.HttpContext.Response.StatusCode = 409;   // Conflict: https://www.rfc-editor.org/rfc/rfc9110.html#name-409-conflict
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;           // Bad request: https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request
                 }
                 else if (queryResult.HasExceptions)
                 {
-                    context.HttpContext.Response.StatusCode = 500;  // Internal Server error: https://www.rfc-editor.org/rfc/rfc9110.html#name-500-internal-server-error
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;  // Internal Server error: https://www.rfc-editor.org/rfc/rfc9110.html#name-500-internal-server-error
                 }
 
                 var actualResult = new ObjectResult(queryResult);

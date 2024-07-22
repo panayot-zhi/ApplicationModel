@@ -61,11 +61,11 @@ public class CommandActionFilter : IAsyncActionFilter
 
             if (!commandResult.IsAuthorized)
             {
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;            // Forbidden: https://www.rfc-editor.org/rfc/rfc9110.html#name-401-unauthorized
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;            // Forbidden: https://www.rfc-editor.org/rfc/rfc9110.html#name-403-forbidden
             }
             else if (!commandResult.IsValid)
             {
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Conflict;             // Conflict: https://www.rfc-editor.org/rfc/rfc9110.html#name-409-conflict
+                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;           // Bad request: https://www.rfc-editor.org/rfc/rfc9110.html#name-400-bad-request
             }
             else if (commandResult.HasExceptions)
             {
