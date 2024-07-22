@@ -7,10 +7,10 @@ using System.Reflection;
 using Cratis.Applications;
 using Cratis.Applications.Queries;
 using Cratis.Concepts;
-using Cratis.Strings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 namespace MongoDB.Driver;
 
@@ -174,8 +174,8 @@ public static class MongoCollectionExtensions
         var invalidateFindOnAdd = queryContext.Paging.IsPaged || queryContext.Sorting != Sorting.None;
 
         var response = findCall();
-        response = AddPaging(queryContext, response);
         response = AddSorting(queryContext, response);
+        response = AddPaging(queryContext, response);
         var documents = await response.ToListAsync();
         var subject = createSubject(documents);
 
@@ -189,11 +189,13 @@ public static class MongoCollectionExtensions
         var filterRendered = filter.Render(collection.DocumentSerializer, collection.Settings.SerializerRegistry);
         PrefixKeys(filterRendered);
 
-        var fullFilter = Builders<ChangeStreamDocument<TDocument>>.Filter.And(
-            filterRendered,
-            Builders<ChangeStreamDocument<TDocument>>.Filter.In(
-                new StringFieldDefinition<ChangeStreamDocument<TDocument>, string>("operationType"),
-                ["insert", "replace", "update", "delete"]));
+        var fullFilter = Builders<ChangeStreamDocument<TDocument>>.Filter.Or(
+            Builders<ChangeStreamDocument<TDocument>>.Filter.And(
+                   filterRendered,
+                   Builders<ChangeStreamDocument<TDocument>>.Filter.In(
+                       new StringFieldDefinition<ChangeStreamDocument<TDocument>, string>("operationType"),
+                       ["insert", "replace", "update", "delete"])),
+            Builders<ChangeStreamDocument<TDocument>>.Filter.Eq("fullDocument", BsonNull.Value));
 
         var pipeline = new EmptyPipelineDefinition<ChangeStreamDocument<TDocument>>().Match(fullFilter);
 
@@ -205,76 +207,100 @@ public static class MongoCollectionExtensions
 
         IChangeStreamCursor<ChangeStreamDocument<TDocument>> cursor = null!;
 
-        try
+        async Task Watch()
         {
-            cursor = await collection.WatchAsync(pipeline, options);
-            await cursor.ForEachAsync(
-                changeDocument =>
+            try
+            {
+                await cursor.ForEachAsync(
+                    changeDocument =>
+                    {
+                        if (subject is Subject<TResult> disposableSubject && disposableSubject.IsDisposed &&
+                            subject is BehaviorSubject<TResult> disposableBehaviorSubject && disposableBehaviorSubject.IsDisposed)
+                        {
+                            cursor.Dispose();
+                            cancellationTokenSource.Dispose();
+                            return;
+                        }
+
+                        documents = HandleChange(onNext, changeDocument, invalidateFindOnAdd, response, documents, subject, idProperty);
+                    },
+                    cancellationToken);
+            }
+            catch (ObjectDisposedException ex)
+            {
+                logger.CursorDisposed(ex.ObjectName);
+                cursor.Dispose();
+                subject.OnCompleted();
+
+                if (subject is Subject<TResult> disposableSubject)
                 {
-                    if (subject is Subject<TResult> disposableSubject && disposableSubject.IsDisposed &&
-                        subject is BehaviorSubject<TResult> disposableBehaviorSubject && disposableBehaviorSubject.IsDisposed)
-                    {
-                        cursor.Dispose();
-                        cancellationTokenSource.Dispose();
-                        return;
-                    }
-
-                    var hasChanges = false;
-                    if (changeDocument.DocumentKey.TryGetValue("_id", out var idValue))
-                    {
-                        var id = GetId(idProperty, idValue);
-                        var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
-                        if (changeDocument.OperationType == ChangeStreamOperationType.Delete && document is not null)
-                        {
-                            documents.Remove(document);
-                            hasChanges = true;
-                        }
-                        else if (document is not null)
-                        {
-                            var index = documents.IndexOf(document);
-                            documents[index] = changeDocument.FullDocument;
-                            hasChanges = true;
-                        }
-                        else if (changeDocument.OperationType == ChangeStreamOperationType.Insert)
-                        {
-                            if (invalidateFindOnAdd)
-                            {
-                                documents = response.ToList();
-                            }
-                            else
-                            {
-                                documents.Add(changeDocument.FullDocument);
-                            }
-                            hasChanges = true;
-                        }
-                    }
-
-                    if (hasChanges)
-                    {
-                        onNext(documents, subject);
-                    }
-                },
-                cancellationToken);
-        }
-        catch (ObjectDisposedException ex)
-        {
-            logger.CursorDisposed(ex.ObjectName);
-            cursor.Dispose();
-            subject.OnCompleted();
-
-            if (subject is Subject<TResult> disposableSubject)
-            {
-                disposableSubject.Dispose();
-            }
-            if (subject is BehaviorSubject<TResult> disposableBehaviorSubject)
-            {
-                disposableBehaviorSubject.Dispose();
+                    disposableSubject.Dispose();
+                }
+                if (subject is BehaviorSubject<TResult> disposableBehaviorSubject)
+                {
+                    disposableBehaviorSubject.Dispose();
+                }
             }
         }
 
+        cursor = await collection.WatchAsync(pipeline, options);
+        _ = Task.Run(Watch, cancellationToken);
         subject.Subscribe(_ => { }, cursor.Dispose);
-
         return subject;
+    }
+
+    static List<TDocument> HandleChange<TDocument, TResult>(
+        Action<IEnumerable<TDocument>, ISubject<TResult>> onNext,
+        ChangeStreamDocument<TDocument> changeDocument,
+        bool invalidateFindOnAdd,
+        IFindFluent<TDocument, TDocument> response,
+        List<TDocument> documents,
+        ISubject<TResult> subject,
+        PropertyInfo idProperty)
+    {
+        var hasChanges = false;
+        if (changeDocument.DocumentKey.TryGetValue("_id", out var idValue))
+        {
+            var id = GetId(idProperty, idValue);
+            var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
+            if (changeDocument.OperationType == ChangeStreamOperationType.Delete && document is not null)
+            {
+                if (invalidateFindOnAdd)
+                {
+                    documents = response.ToList();
+                }
+                else
+                {
+                    documents.Remove(document);
+                }
+                hasChanges = true;
+            }
+            else if (document is not null)
+            {
+                var index = documents.IndexOf(document);
+                documents[index] = changeDocument.FullDocument;
+                hasChanges = true;
+            }
+            else if (changeDocument.OperationType == ChangeStreamOperationType.Insert)
+            {
+                if (invalidateFindOnAdd)
+                {
+                    documents = response.ToList();
+                }
+                else
+                {
+                    documents.Add(changeDocument.FullDocument);
+                }
+                hasChanges = true;
+            }
+        }
+
+        if (hasChanges)
+        {
+            onNext(documents, subject);
+        }
+
+        return documents;
     }
 
     static object GetId(PropertyInfo idProperty, BsonValue idValue)
@@ -304,9 +330,12 @@ public static class MongoCollectionExtensions
     {
         if (queryContext.Sorting != Sorting.None)
         {
+            var classMap = BsonClassMap.LookupClassMap(typeof(TDocument));
+            var memberMap = classMap.GetMemberMap(queryContext.Sorting.Field);
+
             var sort = queryContext.Sorting.Direction == Cratis.Applications.Queries.SortDirection.Ascending ?
-                Builders<TDocument>.Sort.Ascending(queryContext.Sorting.Field.ToCamelCase()) :
-                Builders<TDocument>.Sort.Descending(queryContext.Sorting.Field.ToCamelCase());
+                Builders<TDocument>.Sort.Ascending(memberMap.ElementName) :
+                Builders<TDocument>.Sort.Descending(memberMap.ElementName);
             response = response.Sort(sort);
         }
 

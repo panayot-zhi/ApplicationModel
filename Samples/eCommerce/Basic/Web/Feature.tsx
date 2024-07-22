@@ -7,7 +7,13 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useIdentity } from '@cratis/applications.react/identity';
 
-export const Feature = withViewModel(FeatureViewModel, ({ viewModel }) => {
+
+export interface FeatureProps {
+    blah: string;
+}
+
+export const Feature = withViewModel<FeatureViewModel, FeatureProps>(FeatureViewModel, ({ viewModel, props }) => {
+    console.log(props.blah);
 
     const identity = useIdentity();
     return (

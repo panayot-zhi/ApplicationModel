@@ -10,6 +10,10 @@ import './Styles/theme.css';
 import React from 'react';
 import { App } from './App';
 
+const Blah = () => {
+    console.log('Blah');
+    return (<></>);
+};
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>

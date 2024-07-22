@@ -3,10 +3,11 @@
 
 import { injectable } from 'tsyringe';
 import { Cart, CartForCurrentUser, ObserveCartForCurrentUser } from './API/Carts';
+import { FeatureProps } from './Feature';
 
 @injectable()
 export class FeatureViewModel {
-    constructor(readonly query: ObserveCartForCurrentUser) {
+    constructor(readonly query: ObserveCartForCurrentUser, readonly props: FeatureProps) {
         query.subscribe(result => {
             this.cart = result.data;
         });

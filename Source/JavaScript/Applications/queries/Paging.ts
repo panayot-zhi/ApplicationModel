@@ -7,6 +7,11 @@
 export class Paging {
 
     /**
+     * No paging.
+     */
+    static noPaging: Paging = new Paging(0, 0);
+
+    /**
      * Initializes a new instance of {@link Paging}.
      */
     constructor(page?: number, pageSize?: number) {

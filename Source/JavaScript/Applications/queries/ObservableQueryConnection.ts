@@ -24,12 +24,21 @@ export class ObservableQueryConnection<TDataType> implements IObservableQueryCon
     }
 
     /** @inheritdoc */
-    connect(dataReceived: DataReceived<TDataType>) {
+    connect(dataReceived: DataReceived<TDataType>, queryArguments?: any) {
         const secure = document.location.protocol.indexOf('https') === 0;
         let url = `${secure ? 'wss' : 'ws'}://${document.location.host}${this._route}`;
         if (Globals.microservice?.length > 0) {
             url = `${url}?${Globals.microserviceWSQueryArgument}=${Globals.microservice}`;
         }
+
+        if (queryArguments) {
+            if (url.indexOf('?') < 0) {
+                url = `${url}?`;
+            }
+            const query = Object.keys(queryArguments).map(key => `${key}=${queryArguments[key]}`).join('&');
+            url = `${url}${query}`;
+        }
+
         let timeToWait = 500;
         const timeExponent = 500;
         const retries = 100;
@@ -64,10 +73,15 @@ export class ObservableQueryConnection<TDataType> implements IObservableQueryCon
                 retry();
             };
             this._socket.onmessage = (ev) => {
+                if (this._disconnected) {
+                    this.disconnect();
+                    return;
+                }
                 dataReceived(JSON.parse(ev.data));
             };
         };
 
+        if (this._disconnected) return;
         connectSocket();
     }
 
@@ -76,5 +90,6 @@ export class ObservableQueryConnection<TDataType> implements IObservableQueryCon
         console.log(`Disconnecting '${this._route}'`);
         this._disconnected = true;
         this._socket?.close();
+        this._socket = undefined!;
     }
 }

@@ -26,7 +26,7 @@ export class CartForCurrentUser extends QueryFor<Cart> {
     }
 
 
-    static use(): [QueryResultWithState<Cart>, PerformQuery, SetSorting] {
-        return useQuery<Cart, CartForCurrentUser>(CartForCurrentUser);
+    static use(sorting?: Sorting): [QueryResultWithState<Cart[]>, PerformQuery, SetSorting] {
+        return useQuery<Cart[], CartForCurrentUser>(CartForCurrentUser, undefined, sorting);
     }
 }

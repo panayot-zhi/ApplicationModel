@@ -4,29 +4,23 @@
 import { IQueryFor, QueryResultWithState, QueryResult, Paging, Sorting } from '@cratis/applications/queries';
 import { Constructor } from '@cratis/fundamentals';
 import { useState, useEffect } from 'react';
+import { SetSorting } from './SetSorting';
+import { SetPage } from './SetPage';
 
 /**
  * Delegate type for performing a {@link IQueryFor} in the context of the {@link useQuery} hook.
  */
 export type PerformQuery<TArguments = {}> = (args?: TArguments) => Promise<void>;
 
-/**
- * Delegate type for setting the sorting in the context of the {@link useQuery} and {@link useQueryWithPaging} hooks.
- */
-export type SetSorting = (sorting: Sorting) => Promise<void>;
-
-/**
- * Delegate type for setting the page in the context of the {@link useQueryWithPaging} hook.
- */
-export type SetPage = (page: number) => Promise<void>;
-
 type QueryPerformer<TQuery extends IQueryFor<TDataType>, TDataType> = (performer: TQuery) => Promise<QueryResult<TDataType>>;
 
 function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, performer: QueryPerformer<TQuery, TDataType>, sorting?: Sorting, paging?: Paging, args?: TArguments):
     [QueryResultWithState<TDataType>, number, PerformQuery<TArguments>, SetSorting, SetPage] {
+    paging ??= Paging.noPaging;
     sorting ??= Sorting.none;
+
     const initialQueryInstance = new query() as TQuery;
-    initialQueryInstance.paging = paging!;
+    initialQueryInstance.paging = paging;
     initialQueryInstance.sorting = sorting;
 
     const [queryInstance, setQueryInstance] = useState(initialQueryInstance);
@@ -56,7 +50,7 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
         },
         async (page: number) => {
             setResult(QueryResultWithState.fromQueryResult(result, true));
-            queryInstance.paging = {page, pageSize: queryInstance.paging?.pageSize ?? 0};
+            queryInstance.paging = { page, pageSize: queryInstance.paging?.pageSize ?? 0 };
             setQueryInstance(queryInstance);
             await queryExecutor(args);
         }];
@@ -68,6 +62,7 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
  * @template TQuery Type of query to use.
  * @template TArguments Optional: Arguments for the query, if any
  * @param query Query type constructor.
+ * @param args Optional: Arguments for the query, if any
  * @returns Tuple of {@link QueryResult} and a {@link PerformQuery} delegate.
  */
 export function useQuery<TDataType, TQuery extends IQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, args?: TArguments, sorting?: Sorting):
@@ -82,6 +77,8 @@ export function useQuery<TDataType, TQuery extends IQueryFor<TDataType>, TArgume
  * @template TQuery Type of query to use.
  * @template TArguments Optional: Arguments for the query, if any
  * @param query Query type constructor.
+ * @param paging Paging information.
+ * @param args Optional: Arguments for the query, if any
  * @returns Tuple of {@link QueryResult} and a {@link PerformQuery} delegate.
  */
 export function useQueryWithPaging<TDataType, TQuery extends IQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, paging: Paging, args?: TArguments, sorting?: Sorting):

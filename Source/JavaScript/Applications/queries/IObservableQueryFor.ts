@@ -4,6 +4,8 @@
 import Handlebars from 'handlebars';
 import { ObservableQuerySubscription } from './ObservableQuerySubscription';
 import { QueryResult } from './QueryResult';
+import { Paging } from './Paging';
+import { Sorting } from './Sorting';
 
 /**
  * The delegate type representing the callback of result from the server.
@@ -20,6 +22,26 @@ export interface IObservableQueryFor<TDataType, TArguments = {}> {
     readonly routeTemplate: Handlebars.TemplateDelegate;
     readonly requestArguments: string[];
     readonly defaultValue: TDataType;
+
+    /**
+     * Gets the sorting for the query.
+     */
+    get sorting(): Sorting;
+
+    /**
+     * Sets the sorting for the query.
+     */
+    set sorting(value: Sorting);
+
+    /**
+     * Gets the paging for the query.
+     */
+    get paging(): Paging | undefined;
+
+    /**
+     * Sets the paging for the query.
+     */ 
+    set paging(value: Paging);
 
     /**
      * Subscribe to the query. This will create a subscription onto the server.

@@ -10,6 +10,7 @@ import Handlebars from 'handlebars';
 
 const routeTemplate = Handlebars.compile('/api/carts/observe');
 
+
 export class ObserveCartForCurrentUser extends ObservableQueryFor<Cart> {
     readonly route: string = '/api/carts/observe';
     readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
@@ -24,7 +25,8 @@ export class ObserveCartForCurrentUser extends ObservableQueryFor<Cart> {
         ];
     }
 
-    static use(): [QueryResultWithState<Cart>] {
-        return useObservableQuery<Cart, ObserveCartForCurrentUser>(ObserveCartForCurrentUser);
+
+    static use(sorting?: Sorting): [QueryResultWithState<Cart[]>, SetSorting] {
+        return useObservableQuery<Cart[], ObserveCartForCurrentUser>(ObserveCartForCurrentUser, undefined, sorting);
     }
 }

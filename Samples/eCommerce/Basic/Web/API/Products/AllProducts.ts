@@ -3,7 +3,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 // eslint-disable-next-line header/header
-import { QueryFor, QueryResultWithState, SortingActions, SortingActionsForQuery, Paging } from '@cratis/applications/queries';
+import { QueryFor, QueryResultWithState, Sorting, SortingActions, SortingActionsForQuery, Paging } from '@cratis/applications/queries';
 import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SetPage } from '@cratis/applications.react/queries';
 import { Product } from './Product';
 import Handlebars from 'handlebars';
@@ -48,7 +48,6 @@ class AllProductsSortByWithoutQuery {
     }
 }
 
-
 export class AllProducts extends QueryFor<Product[]> {
     readonly route: string = '/api/products/catalog';
     readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
@@ -74,11 +73,11 @@ export class AllProducts extends QueryFor<Product[]> {
         return this._sortBy;
     }
 
-    static use(): [QueryResultWithState<Product[]>, PerformQuery, SetSorting] {
-        return useQuery<Product[], AllProducts>(AllProducts);
+    static use(sorting?: Sorting): [QueryResultWithState<Product[]>, PerformQuery, SetSorting] {
+        return useQuery<Product[], AllProducts>(AllProducts, undefined, sorting);
     }
 
-    static useWithPaging(pageSize: number): [QueryResultWithState<Product[]>, number, PerformQuery, SetSorting, SetPage] {
-        return useQueryWithPaging<Product[], AllProducts>(AllProducts, new Paging(0, pageSize));
+    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<Product[]>, number, PerformQuery, SetSorting, SetPage] {
+        return useQueryWithPaging<Product[], AllProducts>(AllProducts, new Paging(0, pageSize), undefined, sorting);
     }
 }
