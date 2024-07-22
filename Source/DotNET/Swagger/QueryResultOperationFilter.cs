@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Net;
 using Cratis.Applications.Queries;
 using Cratis.Concepts;
 using Cratis.Reflection;
@@ -73,7 +74,7 @@ public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOpe
         }
 
         var schema = schemaGenerator.GenerateSchema(queryResultType, context.SchemaRepository);
-        var response = operation.Responses.First().Value;
+        var response = operation.Responses.First((kvp) => kvp.Key == ((int)HttpStatusCode.OK).ToString()).Value;
         if (response.Content.ContainsKey("application/json"))
         {
             operation.Responses.First().Value.Content["application/json"].Schema = schema;
@@ -82,5 +83,23 @@ public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOpe
         {
             response.Content.Add(new("application/json", new() { Schema = schema }));
         }
+
+        operation.Responses.Add(((int)HttpStatusCode.Forbidden).ToString(), new OpenApiResponse()
+        {
+            Description = "Forbidden",
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                { "application/json", new OpenApiMediaType() { Schema = schema } }
+            }
+        });
+
+        operation.Responses.Add(((int)HttpStatusCode.BadRequest).ToString(), new OpenApiResponse()
+        {
+            Description = "Bad Request - typically a validation error",
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                { "application/json", new OpenApiMediaType() { Schema = schema } }
+            }
+        });
     }
 }

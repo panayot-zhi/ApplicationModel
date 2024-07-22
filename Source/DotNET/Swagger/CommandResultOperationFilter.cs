@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Net;
 using Cratis.Applications.Commands;
 using Cratis.Concepts;
 using Cratis.Reflection;
@@ -46,5 +47,23 @@ public class CommandResultOperationFilter(ISchemaGenerator schemaGenerator) : IO
         {
             response.Content.Add(new("application/json", new() { Schema = schema }));
         }
+
+        operation.Responses.Add(((int)HttpStatusCode.Forbidden).ToString(), new OpenApiResponse()
+        {
+            Description = "Forbidden",
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                { "application/json", new OpenApiMediaType() { Schema = schema } }
+            }
+        });
+
+        operation.Responses.Add(((int)HttpStatusCode.BadRequest).ToString(), new OpenApiResponse()
+        {
+            Description = "Bad Request - typically a validation error",
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                { "application/json", new OpenApiMediaType() { Schema = schema } }
+            }
+        });
     }
 }
