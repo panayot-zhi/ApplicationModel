@@ -42,7 +42,7 @@ public class Catalog(IGrainFactory grainFactory, ICatalogQueries catalogQueries,
     /// </summary>
     /// <returns>Collection of products.</returns>
     [HttpGet("observe")]
-    public Task<ISubject<IEnumerable<Product>>> ObserveAllProducts() => catalogQueries.ObserveAll();
+    public ISubject<IEnumerable<Product>> ObserveAllProducts() => catalogQueries.ObserveAll();
 
     /// <summary>
     /// Generate some products.

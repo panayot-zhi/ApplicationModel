@@ -20,5 +20,5 @@ public interface ICatalogQueries
     /// Observe all products.
     /// </summary>
     /// <returns>Subject of a collection of products.</returns>
-    Task<ISubject<IEnumerable<Product>>> ObserveAll();
+    ISubject<IEnumerable<Product>> ObserveAll();
 }

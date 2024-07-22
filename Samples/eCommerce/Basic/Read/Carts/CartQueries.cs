@@ -16,5 +16,5 @@ public class CartQueries(IMongoCollection<Cart> collection) : ICartQueries
     public async Task<Cart> Get(CartId cartId) => await collection.FindByIdAsync(cartId) ?? new() { Id = cartId };
 
     /// <inheritdoc/>
-    public Task<ISubject<Cart>> Observe(CartId cartId) => collection.ObserveById(cartId);
+    public ISubject<Cart> Observe(CartId cartId) => collection.ObserveById(cartId);
 }

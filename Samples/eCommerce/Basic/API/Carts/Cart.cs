@@ -54,9 +54,9 @@ public class Cart(IGrainFactory grainFactory, ICartQueries cartQueries) : Contro
     /// </summary>
     /// <returns><see cref="ClientObservable{T}"/> for <see cref="Read.Carts.Cart"/>. </returns>
     [HttpGet("observe")]
-    public async Task<ISubject<Read.Carts.Cart>> ObserveCartForCurrentUser()
+    public ISubject<Read.Carts.Cart> ObserveCartForCurrentUser()
     {
         var cartId = (CartId)(User.Identity?.GetUserIdAsGuid() ?? Guid.Empty);
-        return await cartQueries.Observe(cartId);
+        return cartQueries.Observe(cartId);
     }
 }

@@ -15,5 +15,5 @@ public class CatalogQueries(IMongoCollection<Product> collection) : ICatalogQuer
     public IQueryable<Product> All() => collection.AsQueryable();
 
     /// <inheritdoc/>
-    public Task<ISubject<IEnumerable<Product>>> ObserveAll() => collection.Observe(_ => _.IsRegistered);
+    public ISubject<IEnumerable<Product>> ObserveAll() => collection.Observe(_ => _.IsRegistered);
 }

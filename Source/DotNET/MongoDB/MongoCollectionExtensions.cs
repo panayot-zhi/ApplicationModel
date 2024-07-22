@@ -52,13 +52,13 @@ public static class MongoCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
+    public static ISubject<IEnumerable<TDocument>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
         FindOptions? options = null)
     {
         filter ??= _ => true;
-        return await collection.Observe(
+        return collection.Observe(
             () => collection.Find(filter, options),
             filter,
             documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
@@ -73,13 +73,13 @@ public static class MongoCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
+    public static ISubject<TDocument> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         Expression<Func<TDocument, bool>>? filter,
         FindOptions? options = null)
     {
         filter ??= _ => true;
-        return await collection.ObserveSingle(() => collection.Find(filter, options), filter);
+        return collection.ObserveSingle(() => collection.Find(filter, options), filter);
     }
 
     /// <summary>
@@ -90,13 +90,13 @@ public static class MongoCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<IEnumerable<TDocument>>> Observe<TDocument>(
+    public static ISubject<IEnumerable<TDocument>> Observe<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
         FindOptions? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.Observe(
+        return collection.Observe(
             () => collection.Find(filter, options),
             filter,
             documents => new BehaviorSubject<IEnumerable<TDocument>>(documents),
@@ -111,13 +111,13 @@ public static class MongoCollectionExtensions
     /// <param name="options">Optional options.</param>
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with a collection of the type for the collection.</returns>
-    public static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
+    public static ISubject<TDocument> ObserveSingle<TDocument>(
         this IMongoCollection<TDocument> collection,
         FilterDefinition<TDocument>? filter = null,
         FindOptions? options = null)
     {
         filter ??= FilterDefinition<TDocument>.Empty;
-        return await collection.ObserveSingle(() => collection.Find(filter, options), filter);
+        return collection.ObserveSingle(() => collection.Find(filter, options), filter);
     }
 
     /// <summary>
@@ -128,18 +128,18 @@ public static class MongoCollectionExtensions
     /// <typeparam name="TDocument">Type of document in the collection.</typeparam>
     /// <typeparam name="TId">Type of id - key.</typeparam>
     /// <returns>Async Task holding <see cref="Subject{T}"/> with an instance of the type.</returns>
-    public static async Task<ISubject<TDocument>> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
+    public static ISubject<TDocument> ObserveById<TDocument, TId>(this IMongoCollection<TDocument> collection, TId id)
     {
         var filter = Builders<TDocument>.Filter.Eq(new StringFieldDefinition<TDocument, TId>("_id"), id);
-        return await collection.ObserveSingle(() => collection.Find(filter), filter);
+        return collection.ObserveSingle(() => collection.Find(filter), filter);
     }
 
-    static async Task<ISubject<TDocument>> ObserveSingle<TDocument>(
+    static ISubject<TDocument> ObserveSingle<TDocument>(
          this IMongoCollection<TDocument> collection,
          Func<IFindFluent<TDocument, TDocument>> findCall,
          FilterDefinition<TDocument> filter)
     {
-        return await collection.Observe<TDocument, TDocument>(
+        return collection.Observe<TDocument, TDocument>(
             findCall,
             filter,
             documents =>
@@ -162,24 +162,19 @@ public static class MongoCollectionExtensions
             });
     }
 
-    static async Task<ISubject<TResult>> Observe<TDocument, TResult>(
+    static ISubject<TResult> Observe<TDocument, TResult>(
         this IMongoCollection<TDocument> collection,
         Func<IFindFluent<TDocument, TDocument>> findCall,
         FilterDefinition<TDocument> filter,
         Func<IEnumerable<TDocument>, ISubject<TResult>> createSubject,
         Action<IEnumerable<TDocument>, ISubject<TResult>> onNext)
     {
+        var documents = new List<TDocument>();
+        var subject = createSubject([]);
+
         var logger = Internals.ServiceProvider.GetService<ILogger<MongoCollection>>()!;
         var queryContext = Internals.ServiceProvider.GetService<IQueryContextManager>()!.Current;
         var invalidateFindOnAdd = queryContext.Paging.IsPaged || queryContext.Sorting != Sorting.None;
-
-        var response = findCall();
-        response = AddSorting(queryContext, response);
-        response = AddPaging(queryContext, response);
-        var documents = await response.ToListAsync();
-        var subject = createSubject(documents);
-
-        onNext(documents, subject);
 
         var options = new ChangeStreamOptions
         {
@@ -211,6 +206,15 @@ public static class MongoCollectionExtensions
         {
             try
             {
+                var response = findCall();
+                response = AddSorting(queryContext, response);
+                response = AddPaging(queryContext, response);
+                documents = response.ToList();
+                onNext(documents, subject);
+
+                cursor = await collection.WatchAsync(pipeline, options);
+                subject.Subscribe(_ => { }, cursor.Dispose);
+
                 await cursor.ForEachAsync(
                     changeDocument =>
                     {
@@ -243,9 +247,7 @@ public static class MongoCollectionExtensions
             }
         }
 
-        cursor = await collection.WatchAsync(pipeline, options);
         _ = Task.Run(Watch, cancellationToken);
-        subject.Subscribe(_ => { }, cursor.Dispose);
         return subject;
     }
 
