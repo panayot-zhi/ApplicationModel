@@ -16,9 +16,13 @@ namespace Cratis.Applications.Queries;
 /// <remarks>
 /// Initializes a new instance of the <see cref="ClientObservable{T}"/> class.
 /// </remarks>
+/// <param name="queryContext">The <see cref="QueryContext"/> the observable is for.</param>
 /// <param name="subject">The <see cref="ISubject{T}"/> the observable wraps.</param>
 /// <param name="jsonOptions">The <see cref="JsonOptions"/>.</param>
-public class ClientObservable<T>(ISubject<T> subject, JsonOptions jsonOptions) : IClientObservable, IAsyncEnumerable<T>
+public class ClientObservable<T>(
+    QueryContext queryContext,
+    ISubject<T> subject,
+    JsonOptions jsonOptions) : IClientObservable, IAsyncEnumerable<T>
 {
     /// <summary>
     /// Notifies all subscribed and future observers about the arrival of the specified element in the sequence.
@@ -37,6 +41,11 @@ public class ClientObservable<T>(ISubject<T> subject, JsonOptions jsonOptions) :
 #pragma warning disable MA0147 // Avoid async void method for delegate
         subscription = subject.Subscribe(async _ =>
         {
+            queryResult.Paging = new(
+                queryContext.Paging.Page,
+                queryContext.Paging.Size,
+                queryContext.TotalItems);
+
             queryResult.Data = _!;
 
             try
