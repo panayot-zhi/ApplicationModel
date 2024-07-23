@@ -112,8 +112,7 @@ public class QueryActionFilter(
                     Paging = queryContext.Paging == Paging.NotPaged ? PagingInfo.NotPaged : new PagingInfo(
                         queryContext.Paging.Page,
                         queryContext.Paging.Size,
-                        response.TotalItems,
-                        response.TotalItems / queryContext.Paging.Size),
+                        response.TotalItems),
                     CorrelationId = context.HttpContext.GetCorrelationId(),
                     ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase()))),
                     ExceptionMessages = callResult.ExceptionMessages,
@@ -188,7 +187,7 @@ public class QueryActionFilter(
         var type = objectResult.Value!.GetType();
         var subjectType = type.GetInterfaces().First(_ => _.IsGenericType && _.GetGenericTypeDefinition() == typeof(ISubject<>));
         var clientObservableType = typeof(ClientObservable<>).MakeGenericType(subjectType.GetGenericArguments()[0]);
-        return (Activator.CreateInstance(clientObservableType, objectResult.Value, _options) as IClientObservable)!;
+        return (Activator.CreateInstance(clientObservableType, queryContextManager.Current, objectResult.Value, _options) as IClientObservable)!;
     }
 
     bool IsStreamingResult(ObjectResult objectResult) => IsAsyncEnumerableResult(objectResult) || IsSubjectResult(objectResult);
