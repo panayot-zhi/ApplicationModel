@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line header/header
 import { ObservableQueryFor, QueryResultWithState, Sorting, SortingActions, SortingActionsForObservableQuery, Paging } from '@cratis/applications/queries';
-import { useObservableQuery, useObservableQueryWithPaging, SetSorting, SetPage } from '@cratis/applications.react/queries';
+import { useObservableQuery, useObservableQueryWithPaging, SetSorting, SetPage, SetPageSize } from '@cratis/applications.react/queries';
 import { Product } from './Product';
 import Handlebars from 'handlebars';
 
@@ -77,7 +77,7 @@ export class ObserveAllProducts extends ObservableQueryFor<Product[]> {
         return useObservableQuery<Product[], ObserveAllProducts>(ObserveAllProducts, undefined, sorting);
     }
 
-    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<Product[]>, SetSorting, SetPage] {
+    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<Product[]>, SetSorting, SetPage, SetPageSize] {
         return useObservableQueryWithPaging<Product[], ObserveAllProducts>(ObserveAllProducts, new Paging(0, pageSize), undefined, sorting);
     }
 }

@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line header/header
 import { QueryFor, QueryResultWithState, Sorting, SortingActions, SortingActionsForQuery, Paging } from '@cratis/applications/queries';
-import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SetPage } from '@cratis/applications.react/queries';
+import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SetPage, SetPageSize } from '@cratis/applications.react/queries';
 import { Product } from './Product';
 import Handlebars from 'handlebars';
 
@@ -77,7 +77,7 @@ export class AllProducts extends QueryFor<Product[]> {
         return useQuery<Product[], AllProducts>(AllProducts, undefined, sorting);
     }
 
-    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<Product[]>, number, PerformQuery, SetSorting, SetPage] {
+    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<Product[]>, number, PerformQuery, SetSorting, SetPage, SetPageSize] {
         return useQueryWithPaging<Product[], AllProducts>(AllProducts, new Paging(0, pageSize), undefined, sorting);
     }
 }
