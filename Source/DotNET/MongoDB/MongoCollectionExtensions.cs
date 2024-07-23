@@ -207,9 +207,9 @@ public static class MongoCollectionExtensions
         {
             try
             {
+                var baseQuery = findCall();
                 var query = findCall();
                 await UpdateTotalItems(queryContext, query);
-                var baseQuery = query;
 
                 query = AddSorting(queryContext, query);
                 query = AddPaging(queryContext, query);
