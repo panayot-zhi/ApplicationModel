@@ -11,4 +11,10 @@ namespace Cratis.Applications.Queries;
 /// <param name="CorrelationId">The <see cref="CorrelationId"/> for the query.</param>
 /// <param name="Paging">The <see cref="Paging"/> information.</param>
 /// <param name="Sorting">The <see cref="Sorting"/> information.</param>
-public record QueryContext(CorrelationId CorrelationId, Paging Paging, Sorting Sorting);
+public record QueryContext(CorrelationId CorrelationId, Paging Paging, Sorting Sorting)
+{
+    /// <summary>
+    /// Gets the total number of items in the query.
+    /// </summary>
+    public long TotalItems { get; set; }
+}
