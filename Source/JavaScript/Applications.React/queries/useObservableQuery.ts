@@ -6,10 +6,10 @@ import { Constructor } from '@cratis/fundamentals';
 import { useState, useEffect } from 'react';
 import { SetSorting } from './SetSorting';
 import { SetPage } from './SetPage';
-
+import { SetPageSize } from './SetPageSize';
 
 function useObservableQueryInternal<TDataType, TQuery extends IObservableQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, sorting?: Sorting, paging?: Paging, args?: TArguments):
-    [QueryResultWithState<TDataType>, SetSorting, SetPage] {
+    [QueryResultWithState<TDataType>, SetSorting, SetPage, SetPageSize] {
     const [currentPaging, setCurrentPaging] = useState<Paging>(paging ?? Paging.noPaging);
     const [currentSorting, setCurrentSorting] = useState<Sorting>(sorting ?? Sorting.none);
     const queryInstance = new query() as TQuery;
@@ -36,6 +36,9 @@ function useObservableQueryInternal<TDataType, TQuery extends IObservableQueryFo
         },
         async (page: number) => {
             setCurrentPaging({ page, pageSize: currentPaging.pageSize });
+        },
+        async (pageSize: number) => {
+            setCurrentPaging({ page: currentPaging.page, pageSize });
         }];
 }
 
@@ -65,6 +68,6 @@ export function useObservableQuery<TDataType, TQuery extends IObservableQueryFor
  * @returns Tuple of {@link QueryResult} and a {@link PerformQuery} delegate.
  */
 export function useObservableQueryWithPaging<TDataType, TQuery extends IObservableQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, paging: Paging, args?: TArguments, sorting?: Sorting):
-    [QueryResultWithState<TDataType>, SetSorting, SetPage] {
+    [QueryResultWithState<TDataType>, SetSorting, SetPage, SetPageSize] {
     return useObservableQueryInternal<TDataType, TQuery, TArguments>(query, sorting, paging, args);
 }

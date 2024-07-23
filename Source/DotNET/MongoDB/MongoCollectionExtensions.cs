@@ -172,9 +172,10 @@ public static class MongoCollectionExtensions
         var documents = new List<TDocument>();
         var subject = createSubject([]);
 
-        var logger = Internals.ServiceProvider.GetService<ILogger<MongoCollection>>()!;
-        var queryContext = Internals.ServiceProvider.GetService<IQueryContextManager>()!.Current;
-        var invalidateFindOnAdd = queryContext.Paging.IsPaged || queryContext.Sorting != Sorting.None;
+        var logger = Internals.ServiceProvider.GetRequiredService<ILogger<MongoCollection>>();
+        var queryContextManager = Internals.ServiceProvider.GetRequiredService<IQueryContextManager>();
+        var queryContext = Internals.ServiceProvider.GetRequiredService<IQueryContextManager>().Current;
+        var invalidateFindOnAddOrDelete = queryContext.Paging.IsPaged || queryContext.Sorting != Sorting.None;
 
         var options = new ChangeStreamOptions
         {
@@ -207,6 +208,8 @@ public static class MongoCollectionExtensions
             try
             {
                 var response = findCall();
+                await UpdateTotalItems(queryContext, response);
+
                 response = AddSorting(queryContext, response);
                 response = AddPaging(queryContext, response);
                 documents = response.ToList();
@@ -216,7 +219,7 @@ public static class MongoCollectionExtensions
                 subject.Subscribe(_ => { }, cursor.Dispose);
 
                 await cursor.ForEachAsync(
-                    changeDocument =>
+                    async changeDocument =>
                     {
                         if (subject is Subject<TResult> disposableSubject && disposableSubject.IsDisposed &&
                             subject is BehaviorSubject<TResult> disposableBehaviorSubject && disposableBehaviorSubject.IsDisposed)
@@ -226,7 +229,15 @@ public static class MongoCollectionExtensions
                             return;
                         }
 
-                        documents = HandleChange(onNext, changeDocument, invalidateFindOnAdd, response, documents, subject, idProperty);
+                        documents = await HandleChange(
+                            queryContext,
+                            onNext,
+                            changeDocument,
+                            invalidateFindOnAddOrDelete,
+                            response,
+                            documents,
+                            subject,
+                            idProperty);
                     },
                     cancellationToken);
             }
@@ -251,10 +262,16 @@ public static class MongoCollectionExtensions
         return subject;
     }
 
-    static List<TDocument> HandleChange<TDocument, TResult>(
+    static async Task UpdateTotalItems<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> response)
+    {
+        queryContext.TotalItems = await response.CountDocumentsAsync();
+    }
+
+    static async Task<List<TDocument>> HandleChange<TDocument, TResult>(
+        QueryContext queryContext,
         Action<IEnumerable<TDocument>, ISubject<TResult>> onNext,
         ChangeStreamDocument<TDocument> changeDocument,
-        bool invalidateFindOnAdd,
+        bool invalidateFindOnAddOrDelete,
         IFindFluent<TDocument, TDocument> response,
         List<TDocument> documents,
         ISubject<TResult> subject,
@@ -267,11 +284,7 @@ public static class MongoCollectionExtensions
             var document = documents.Find(_ => idProperty.GetValue(_)!.Equals(id));
             if (changeDocument.OperationType == ChangeStreamOperationType.Delete && document is not null)
             {
-                if (invalidateFindOnAdd)
-                {
-                    documents = response.ToList();
-                }
-                else
+                if (!invalidateFindOnAddOrDelete)
                 {
                     documents.Remove(document);
                 }
@@ -285,15 +298,17 @@ public static class MongoCollectionExtensions
             }
             else if (changeDocument.OperationType == ChangeStreamOperationType.Insert)
             {
-                if (invalidateFindOnAdd)
-                {
-                    documents = response.ToList();
-                }
-                else
+                if (!invalidateFindOnAddOrDelete)
                 {
                     documents.Add(changeDocument.FullDocument);
                 }
                 hasChanges = true;
+            }
+
+            if (invalidateFindOnAddOrDelete)
+            {
+                await UpdateTotalItems(queryContext, response);
+                documents = await response.ToListAsync();
             }
         }
 

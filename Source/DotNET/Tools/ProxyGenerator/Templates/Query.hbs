@@ -5,7 +5,7 @@
 // eslint-disable-next-line header/header
 {{#if IsEnumerable}}
 import { QueryFor, QueryResultWithState, Sorting, SortingActions, SortingActionsForQuery, Paging } from '@cratis/applications/queries';
-import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SetPage } from '@cratis/applications.react/queries';
+import { useQuery, useQueryWithPaging, PerformQuery, SetSorting, SetPage, SetPageSize } from '@cratis/applications.react/queries';
 {{else}}
 import { QueryFor, QueryResultWithState } from '@cratis/applications/queries';
 import { useQuery, PerformQuery, SetSorting} from '@cratis/applications.react/queries';
@@ -113,7 +113,7 @@ export class {{Name}} extends QueryFor<{{Model}}> {
     }
 {{#if IsEnumerable}}
 
-    static useWithPaging(pageSize: number, args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
+    static useWithPaging(pageSize: number, args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage, SetPageSize] {
         return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), args, sorting);
     }
 {{/if}}
@@ -123,7 +123,7 @@ export class {{Name}} extends QueryFor<{{Model}}> {
     }
 {{#if IsEnumerable}}
 
-    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage] {
+    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, number, PerformQuery, SetSorting, SetPage, SetPageSize] {
         return useQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), undefined, sorting);
     }
 {{/if}}

@@ -23,14 +23,7 @@ public record Paging
     {
         if (isPaged)
         {
-            if (page < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(page), "Page number must be greater or equal to 0");
-            }
-            if (size <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(size), "Page size must be greater than 0");
-            }
+            Validate(page, size);
         }
         Page = page;
         Size = size;
@@ -56,4 +49,16 @@ public record Paging
     /// Gets the number of items to skip.
     /// </summary>
     public int Skip => Page * Size;
+
+    void Validate(int page, int size)
+    {
+        if (page < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(page), "Page number must be greater or equal to 0");
+        }
+        if (size <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(size), "Page size must be greater than 0");
+        }
+    }
 }

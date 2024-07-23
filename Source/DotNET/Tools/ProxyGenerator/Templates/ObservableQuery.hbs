@@ -5,7 +5,7 @@
 // eslint-disable-next-line header/header
 {{#if IsEnumerable}}
 import { ObservableQueryFor, QueryResultWithState, Sorting, SortingActions, SortingActionsForObservableQuery, Paging } from '@cratis/applications/queries';
-import { useObservableQuery, useObservableQueryWithPaging, SetSorting, SetPage } from '@cratis/applications.react/queries';
+import { useObservableQuery, useObservableQueryWithPaging, SetSorting, SetPage, SetPageSize } from '@cratis/applications.react/queries';
 {{else}}
 import { ObservableQueryFor, QueryResultWithState } from '@cratis/applications/queries';
 import { useObservableQuery } from '@cratis/applications.react/queries';
@@ -112,7 +112,7 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
     }
 {{#if IsEnumerable}}
 
-    static useWithPaging(pageSize: number, args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage] {
+    static useWithPaging(pageSize: number, args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage, SetPageSize] {
         return useObservableQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), args, sorting);
     }
 {{/if}}    
@@ -122,7 +122,7 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
     }
 {{#if IsEnumerable}}
 
-    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage] {
+    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage, SetPageSize] {
         return useObservableQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), undefined, sorting);
     }
 {{/if}}
