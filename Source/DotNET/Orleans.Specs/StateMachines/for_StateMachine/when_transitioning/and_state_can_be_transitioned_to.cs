@@ -33,8 +33,8 @@ public class and_state_can_be_transitioned_to : given.a_state_machine_with_well_
     [Fact] void should_write_state_once() => silo.StorageStats<StateMachineForTesting, StateMachineStateForTesting>().Writes.ShouldEqual(1);
     [Fact] void should_write_current_state() => state_storage.State.CurrentState.ShouldEqual(typeof(StateThatDoesNotSupportTransitioningFrom).FullName);
     [Fact] void should_write_state_coming_from_on_enter() => state_storage.State.ShouldEqual(state_that_does_not_support_transitioning.StateToReturnOnEnter);
-    [Fact] void should_call_on_before_entering_state_for_state_entered() => state_machine.OnBeforeEnteringStates.ShouldContainOnly(new[] { state_that_does_not_support_transitioning });
-    [Fact] void should_call_on_after_entering_state_for_state_entered() => state_machine.OnAfterEnteringStates.ShouldContainOnly(new[] { state_that_does_not_support_transitioning });
-    [Fact] void should_call_on_before_leaving_state_for_state_entered() => state_machine.OnBeforeLeavingStates.ShouldContainOnly(new[] { state_that_supports_transitioning });
-    [Fact] void should_call_on_after_leaving_state_for_state_entered() => state_machine.OnAfterLeavingStates.ShouldContainOnly(new[] { state_that_supports_transitioning });
+    [Fact] void should_call_on_before_entering_state_for_state_entered() => state_machine.OnBeforeEnteringStates.ShouldContainOnly([state_that_does_not_support_transitioning]);
+    [Fact] void should_call_on_after_entering_state_for_state_entered() => state_machine.OnAfterEnteringStates.ShouldContainOnly([state_that_does_not_support_transitioning]);
+    [Fact] void should_call_on_before_leaving_state_for_state_entered() => state_machine.OnBeforeLeavingStates.ShouldContainOnly([state_that_supports_transitioning]);
+    [Fact] void should_call_on_after_leaving_state_for_state_entered() => state_machine.OnAfterLeavingStates.ShouldContainOnly([state_that_supports_transitioning]);
 }

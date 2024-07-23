@@ -8,7 +8,7 @@ public class with_valid_initial_state_type : given.a_state_machine
     Exception exception;
 
     protected override Type initial_state => typeof(StateThatSupportsTransitioningFrom);
-    protected override IEnumerable<IState<StateMachineStateForTesting>> CreateStates() => new[] { new StateThatSupportsTransitioningFrom() };
+    protected override IEnumerable<IState<StateMachineStateForTesting>> CreateStates() => [new StateThatSupportsTransitioningFrom()];
 
     async Task Because() => exception = await Catch.Exception(async () => await state_machine.OnActivateAsync(CancellationToken.None));
 

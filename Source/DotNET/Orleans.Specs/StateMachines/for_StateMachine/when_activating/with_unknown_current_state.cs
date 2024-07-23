@@ -7,7 +7,7 @@ public class with_unknown_current_state : given.a_state_machine
 {
     Exception exception;
 
-    protected override IEnumerable<IState<StateMachineStateForTesting>> CreateStates() => new[] { new StateThatSupportsTransitioningFrom() };
+    protected override IEnumerable<IState<StateMachineStateForTesting>> CreateStates() => [new StateThatSupportsTransitioningFrom()];
 
     void Establish()
     {
