@@ -25,7 +25,7 @@ If you want to jump into building this repository and possibly contributing, ple
 
 The following are prerequisites to work with this repository.
 
-* [.NET 6+](https://dotnet.microsoft.com/en-us/).
+* [.NET 8+](https://dotnet.microsoft.com/en-us/).
 * [Node 16+](https://nodejs.org/en)
 * [Yarn](https://yarnpkg.com)
 
