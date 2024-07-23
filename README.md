@@ -14,9 +14,8 @@
 
 The Cratis Application model represents an opinionated approach to building consistent applications based on the concepts behind CQRS.
 It offers extensions for different frameworks and is built on top of ASP.NET Core. One of the traits the application model has is the
-bridging between the backend and the frontend. The application model provides a tool, called **ProxyGenerator** that hooks into the
-C# Roslyn compiler and generates TypeScript code for recognized artifacts matching the criteria of what is considered a **commmand** or
-a **query**.
+bridging between the backend and the frontend. The application model provides a tool, called **ProxyGenerator** that generates TypeScript
+code for recognized artifacts matching the criteria of what is considered a **commmand** or a **query**.
 
 ## Contributing
 
