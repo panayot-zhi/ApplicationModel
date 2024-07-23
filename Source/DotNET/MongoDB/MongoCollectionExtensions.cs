@@ -207,12 +207,13 @@ public static class MongoCollectionExtensions
         {
             try
             {
-                var response = findCall();
-                await UpdateTotalItems(queryContext, response);
+                var query = findCall();
+                await UpdateTotalItems(queryContext, query);
+                var baseQuery = query;
 
-                response = AddSorting(queryContext, response);
-                response = AddPaging(queryContext, response);
-                documents = response.ToList();
+                query = AddSorting(queryContext, query);
+                query = AddPaging(queryContext, query);
+                documents = query.ToList();
                 onNext(documents, subject);
 
                 cursor = await collection.WatchAsync(pipeline, options);
@@ -234,7 +235,8 @@ public static class MongoCollectionExtensions
                             onNext,
                             changeDocument,
                             invalidateFindOnAddOrDelete,
-                            response,
+                            baseQuery,
+                            query,
                             documents,
                             subject,
                             idProperty);
@@ -262,9 +264,9 @@ public static class MongoCollectionExtensions
         return subject;
     }
 
-    static async Task UpdateTotalItems<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> response)
+    static async Task UpdateTotalItems<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> query)
     {
-        queryContext.TotalItems = await response.CountDocumentsAsync();
+        queryContext.TotalItems = await query.CountDocumentsAsync();
     }
 
     static async Task<List<TDocument>> HandleChange<TDocument, TResult>(
@@ -272,7 +274,8 @@ public static class MongoCollectionExtensions
         Action<IEnumerable<TDocument>, ISubject<TResult>> onNext,
         ChangeStreamDocument<TDocument> changeDocument,
         bool invalidateFindOnAddOrDelete,
-        IFindFluent<TDocument, TDocument> response,
+        IFindFluent<TDocument, TDocument> baseQuery,
+        IFindFluent<TDocument, TDocument> query,
         List<TDocument> documents,
         ISubject<TResult> subject,
         PropertyInfo idProperty)
@@ -307,8 +310,8 @@ public static class MongoCollectionExtensions
 
             if (invalidateFindOnAddOrDelete)
             {
-                await UpdateTotalItems(queryContext, response);
-                documents = await response.ToListAsync();
+                await UpdateTotalItems(queryContext, baseQuery);
+                documents = await query.ToListAsync();
             }
         }
 
