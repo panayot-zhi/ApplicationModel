@@ -297,6 +297,7 @@ public static class TypeExtensions
             }
         }
         imports.AddRange(typesInvolved.GetImports(targetPath, type!.ResolveTargetPath(segmentsToSkip), segmentsToSkip));
+        imports = imports.Distinct().ToList();
 
         return new TypeDescriptor(
             type,
