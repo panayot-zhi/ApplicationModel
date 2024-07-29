@@ -306,8 +306,11 @@ public static class TypeExtensions
                 imports.Add(new ImportStatement(property.Type, property.Module));
             }
         }
+
         imports.AddRange(typesInvolved.GetImports(targetPath, type!.ResolveTargetPath(segmentsToSkip), segmentsToSkip));
-        imports = imports.Distinct().ToList();
+        imports = imports
+                    .Distinct()
+                    .Where(_ => propertyDescriptors.Exists(pd => pd.Type == _.Type)).ToList();
 
         return new TypeDescriptor(
             type,
@@ -393,7 +396,7 @@ public static class TypeExtensions
     /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
     /// <returns>A collection of <see cref="ImportStatement"/>.</returns>
     public static IEnumerable<ImportStatement> GetImports(this IEnumerable<Type> types, string targetPath, string relativePath, int segmentsToSkip) =>
-         types.Select(_ =>
+        types.Select(_ =>
         {
             var targetType = _.GetTargetType();
             var importPath = targetType.Module;
