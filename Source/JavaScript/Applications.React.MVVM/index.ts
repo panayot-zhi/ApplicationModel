@@ -13,5 +13,7 @@ export {
     browser,
     messaging,
     withViewModel,
-    MVVM, MVVMContext, MVVMProps
+    MVVM,
+    MVVMContext,
+    MVVMProps
 };
