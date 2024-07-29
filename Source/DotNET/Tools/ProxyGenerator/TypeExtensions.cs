@@ -40,33 +40,38 @@ public static class TypeExtensions
     internal static Type _voidType = typeof(void);
 #pragma warning restore SA1600 // Elements should be documented
 
+    static readonly TargetType _numberTargetType = new("number", "Number");
+    static readonly TargetType _dateTargetType = new("Date", "Date");
+    static readonly TargetType _stringTargetType = new("string", "String");
+    static readonly TargetType _booleanTargetType = new("boolean", "Boolean");
+
     static readonly Dictionary<string, TargetType> _primitiveTypeMap = new()
     {
         { typeof(object).FullName!, AnyTypeFinal },
-        { typeof(char).FullName!, new("string", "String") },
-        { typeof(byte).FullName!, new("number", "Number") },
-        { typeof(sbyte).FullName!, new("number", "Number") },
-        { typeof(bool).FullName!, new("boolean", "Boolean") },
-        { typeof(string).FullName!, new("string", "String") },
-        { typeof(short).FullName!, new("number", "Number") },
-        { typeof(int).FullName!, new("number", "Number") },
-        { typeof(long).FullName!, new("number", "Number") },
-        { typeof(ushort).FullName!, new("number", "Number") },
-        { typeof(uint).FullName!, new("number", "Number") },
-        { typeof(ulong).FullName!, new("number", "Number") },
-        { typeof(float).FullName!, new("number", "Number") },
-        { typeof(double).FullName!, new("number", "Number") },
-        { typeof(decimal).FullName!, new("number", "Number") },
-        { typeof(DateTime).FullName!, new("Date",  "Date") },
-        { typeof(DateTimeOffset).FullName!, new("Date", "Date") },
+        { typeof(char).FullName!, _stringTargetType },
+        { typeof(byte).FullName!, _numberTargetType },
+        { typeof(sbyte).FullName!, _numberTargetType },
+        { typeof(bool).FullName!, _booleanTargetType },
+        { typeof(string).FullName!, _stringTargetType },
+        { typeof(short).FullName!, _numberTargetType },
+        { typeof(int).FullName!, _numberTargetType },
+        { typeof(long).FullName!, _numberTargetType },
+        { typeof(ushort).FullName!, _numberTargetType },
+        { typeof(uint).FullName!, _numberTargetType },
+        { typeof(ulong).FullName!, _numberTargetType },
+        { typeof(float).FullName!, _numberTargetType },
+        { typeof(double).FullName!, _numberTargetType },
+        { typeof(decimal).FullName!, _numberTargetType },
+        { typeof(DateTime).FullName!, _dateTargetType },
+        { typeof(DateTimeOffset).FullName!, _dateTargetType },
         { typeof(Guid).FullName!, new("Guid", "Guid", "@cratis/fundamentals") },
-        { typeof(DateOnly).FullName!, new("Date", "Date") },
-        { typeof(TimeOnly).FullName!, new("Date", "Date") },
+        { typeof(DateOnly).FullName!, _dateTargetType },
+        { typeof(TimeOnly).FullName!, _dateTargetType },
         { typeof(System.Text.Json.Nodes.JsonNode).FullName!, AnyTypeFinal },
         { typeof(System.Text.Json.Nodes.JsonObject).FullName!, AnyTypeFinal },
         { typeof(System.Text.Json.Nodes.JsonArray).FullName!, AnyTypeFinal },
         { typeof(System.Text.Json.JsonDocument).FullName!, AnyTypeFinal },
-        { typeof(Uri).FullName!, new("string", "String") }
+        { typeof(Uri).FullName!, _dateTargetType }
     };
 
     static readonly Dictionary<string, Assembly> _assembliesByName = [];
@@ -252,6 +257,11 @@ public static class TypeExtensions
     /// <returns>The <see cref="TargetType"/>.</returns>
     public static TargetType GetTargetType(this Type type)
     {
+        if (type.IsEnum)
+        {
+            return new(type.Name, "Number");
+        }
+
         if (type.IsDictionary())
         {
             return AnyTypeFinal;
