@@ -3,13 +3,15 @@
 
 namespace Cratis.Applications.ProxyGenerator;
 
+#pragma warning disable RCS1241 // Implement IEqualityComparer when implementing IEqualityComparer<T>
+
 /// <summary>
 /// Represents a comparer for file names.
 /// </summary>
 public class FileNameComparer : IEqualityComparer<string>
 {
     /// <inheritdoc/>
-    public bool Equals(string x, string y)
+    public bool Equals(string? x, string? y)
     {
         if (x == null || y == null)
             return false;
