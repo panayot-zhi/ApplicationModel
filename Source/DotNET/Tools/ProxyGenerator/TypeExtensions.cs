@@ -71,7 +71,7 @@ public static class TypeExtensions
 
     static readonly Dictionary<string, Assembly> _assembliesByName = [];
 
-    static PathAssemblyResolver? _assemblyResolver;
+    static MetadataAssemblyResolver? _assemblyResolver;
     static MetadataLoadContext? _metadataLoadContext;
 
     /// <summary>
@@ -114,7 +114,9 @@ public static class TypeExtensions
         var appAssemblies = Directory.GetFiles(assemblyFolder, "*.dll");
         string[] paths = [.. runtimeAssemblies, .. aspNetCoreAssemblies, .. appAssemblies];
 
-        _assemblyResolver = new PathAssemblyResolver(paths);
+        var filtered = paths.Distinct(new FileNameComparer()).ToArray();
+
+        _assemblyResolver = new PathAssemblyResolver(filtered);
 #pragma warning disable CA2000 // Dispose objects before losing scope
         _metadataLoadContext = new MetadataLoadContext(_assemblyResolver);
 #pragma warning restore CA2000 // Dispose objects before losing scope
