@@ -64,6 +64,8 @@ public static class CommandExtensions
             property.CollectTypesInvolved(additionalTypesInvolved);
         }
 
+        imports = imports.Distinct().ToList();
+
         return new(
             method.DeclaringType!,
             method,

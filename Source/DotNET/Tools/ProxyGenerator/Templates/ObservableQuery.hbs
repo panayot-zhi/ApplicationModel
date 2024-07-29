@@ -107,23 +107,33 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
 {{/if}}
 
 {{#if Arguments.[0]}}
-    static use(args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>] {
+{{#if IsEnumerable}}
+    static use(args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting] {
         return useObservableQuery<{{Model}}[], {{Name}}, {{Name}}Arguments>({{Name}}, args, sorting);
     }
-{{#if IsEnumerable}}
 
     static useWithPaging(pageSize: number, args?: {{Name}}Arguments, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage, SetPageSize] {
         return useObservableQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), args, sorting);
     }
+{{else}}
+    static use(args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}>] {
+        const [result] = useObservableQuery<{{Model}}, {{Name}}, {{Name}}Arguments>({{Name}}, args);
+        return result;
+    }
 {{/if}}    
 {{else}}
+{{#if IsEnumerable}}
     static use(sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting] {
         return useObservableQuery<{{Model}}[], {{Name}}>({{Name}}, undefined, sorting);
     }
-{{#if IsEnumerable}}
 
     static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<{{Model}}[]>, SetSorting, SetPage, SetPageSize] {
         return useObservableQueryWithPaging<{{Model}}[], {{Name}}>({{Name}}, new Paging(0, pageSize), undefined, sorting);
+    }
+{{else}}
+    static use(): [QueryResultWithState<{{Model}}>] {
+        const [result] = useObservableQuery<{{Model}}, {{Name}}>({{Name}});
+        return result;
     }
 {{/if}}
 {{/if}}
