@@ -14,8 +14,7 @@ namespace Cratis.Applications.Swagger;
 /// <summary>
 /// Represents an implementation of <see cref="IOperationFilter"/> that adds the command result to the operation for command methods.
 /// </summary>
-/// <param name="schemaGenerator">The <see cref="ISchemaGenerator"/> to use.</param>
-public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOperationFilter
+public class QueryResultOperationFilter : IOperationFilter
 {
     /// <inheritdoc/>
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
@@ -73,7 +72,7 @@ public class QueryResultOperationFilter(ISchemaGenerator schemaGenerator) : IOpe
             });
         }
 
-        var schema = schemaGenerator.GenerateSchema(queryResultType, context.SchemaRepository);
+        var schema = context.SchemaGenerator.GenerateSchema(queryResultType, context.SchemaRepository);
         var response = operation.Responses.First((kvp) => kvp.Key == ((int)HttpStatusCode.OK).ToString()).Value;
         if (response.Content.ContainsKey("application/json"))
         {
