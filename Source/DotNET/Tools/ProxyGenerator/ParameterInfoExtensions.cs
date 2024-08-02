@@ -23,14 +23,39 @@ public static class ParameterInfoExtensions
     }
 
     /// <summary>
-    /// Check if a method is a query method.
+    /// Get request argument descriptors for a parameter, typically one adorned with [FromRequest].
+    /// </summary>
+    /// <param name="parameterInfo">The parameter to get for.</param>
+    /// <returns>Collection of <see cref="RequestArgumentDescriptor"/>.</returns>
+    public static IEnumerable<RequestArgumentDescriptor> GetRequestArgumentDescriptors(this ParameterInfo parameterInfo)
+    {
+        var parameters = parameterInfo.ParameterType.GetConstructors().SelectMany(_ => _.GetParameters()).ToArray();
+        var properties = parameterInfo.ParameterType.GetProperties();
+        bool HasConstructorParameterWithRequestArgument(PropertyInfo propertyInfo) => parameters.Any(_ => _.Name == propertyInfo.Name && _.IsRequestArgument());
+        var requestProperties = properties.Where(_ => _.IsRequestArgument() || HasConstructorParameterWithRequestArgument(_)).ToArray();
+        return requestProperties.Select(_ => _.ToRequestArgumentDescriptor());
+    }
+
+    /// <summary>
+    /// Check if a parameter is a request argument which will make it part of the query string either as route variable or a query string parameter.
     /// </summary>
     /// <param name="parameter">Method to check.</param>
-    /// <returns>True if it is a query method, false otherwise.</returns>
+    /// <returns>True if it is a request argument, false otherwise.</returns>
     public static bool IsRequestArgument(this ParameterInfo parameter)
     {
         var attributes = parameter.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
-        return attributes.Any(_ => _ == "FromRouteAttribute") ||
-               attributes.Any(_ => _ == "FromQueryAttribute");
+        return attributes.Any(_ => _ == WellKnownTypes.FromRouteAttribute) ||
+               attributes.Any(_ => _ == WellKnownTypes.FromQueryAttribute);
+    }
+
+    /// <summary>
+    /// Check if a a parameter is adorned with the FromRequestAttribute from Application Model, which means we need to investigate the internals for any request arguments.
+    /// </summary>
+    /// <param name="parameter">Method to check.</param>
+    /// <returns>True if it is a from request argument, false otherwise.</returns>
+    public static bool IsFromRequestArgument(this ParameterInfo parameter)
+    {
+        var attributes = parameter.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
+        return attributes.Any(_ => _ == WellKnownTypes.FromRequestAttribute);
     }
 }
