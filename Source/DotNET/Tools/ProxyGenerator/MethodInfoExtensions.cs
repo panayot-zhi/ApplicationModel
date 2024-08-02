@@ -20,9 +20,9 @@ public static class MethodInfoExtensions
     {
         var routeTemplates = new string[]
         {
-            method.DeclaringType?.GetAttributeConstructorArgument("RouteAttribute", 0)?.ToString() ?? string.Empty,
-            method.GetAttributeConstructorArgument("HttpGetAttribute", 0)?.ToString() ?? string.Empty,
-            method.GetAttributeConstructorArgument("HttpPostAttribute", 0)?.ToString() ?? string.Empty
+            method.DeclaringType?.GetAttributeConstructorArgument(WellKnownTypes.RouteAttribute, 0)?.ToString() ?? string.Empty,
+            method.GetAttributeConstructorArgument(WellKnownTypes.HttpGetAttribute, 0)?.ToString() ?? string.Empty,
+            method.GetAttributeConstructorArgument(WellKnownTypes.HttpPostAttribute, 0)?.ToString() ?? string.Empty
         };
 
         var route = string.Empty;
@@ -41,8 +41,16 @@ public static class MethodInfoExtensions
     /// </summary>
     /// <param name="methodInfo">Method to get for.</param>
     /// <returns>Collection of <see cref="RequestArgumentDescriptor"/>. </returns>
-    public static IEnumerable<RequestArgumentDescriptor> GetArgumentDescriptors(this MethodInfo methodInfo) =>
-        methodInfo.GetParameters().Where(_ => _.IsRequestArgument()).Select(_ => _.ToRequestArgumentDescriptor());
+    public static IEnumerable<RequestArgumentDescriptor> GetArgumentDescriptors(this MethodInfo methodInfo)
+    {
+        var parameters = methodInfo.GetParameters();
+
+        return
+        [
+            .. parameters.Where(_ => _.IsRequestArgument()).Select(_ => _.ToRequestArgumentDescriptor()),
+            .. parameters.Where(_ => _.IsFromRequestArgument()).SelectMany(_ => _.GetRequestArgumentDescriptors())
+        ];
+    }
 
     /// <summary>
     /// Check if a method is a query method.
@@ -52,8 +60,8 @@ public static class MethodInfoExtensions
     public static bool IsQueryMethod(this MethodInfo method)
     {
         var attributes = method.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
-        return attributes.Any(_ => _ == "HttpGetAttribute") &&
-            !attributes.Any(_ => _ == "AspNetResultAttribute");
+        return attributes.Any(_ => _ == WellKnownTypes.HttpGetAttribute) &&
+            !attributes.Any(_ => _ == WellKnownTypes.AspNetResultAttribute);
     }
 
     /// <summary>
@@ -64,8 +72,8 @@ public static class MethodInfoExtensions
     public static bool IsCommandMethod(this MethodInfo method)
     {
         var attributes = method.GetCustomAttributesData().Select(_ => _.AttributeType.Name);
-        return attributes.Any(_ => _ == "HttpPostAttribute") &&
-            !attributes.Any(_ => _ == "AspNetResultAttribute");
+        return attributes.Any(_ => _ == WellKnownTypes.HttpPostAttribute) &&
+            !attributes.Any(_ => _ == WellKnownTypes.AspNetResultAttribute);
     }
 
     /// <summary>

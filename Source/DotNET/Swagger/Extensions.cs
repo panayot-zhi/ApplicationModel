@@ -19,6 +19,8 @@ public static class Extensions
     {
         options.SchemaFilter<ConceptSchemaFilter>();
         options.SchemaFilter<EnumSchemaFilter>();
+        options.SchemaFilter<FromRequestSchemaFilter>();
+        options.OperationFilter<FromRequestOperationFilter>();
         options.OperationFilter<CommandResultOperationFilter>();
         options.OperationFilter<QueryResultOperationFilter>();
     }

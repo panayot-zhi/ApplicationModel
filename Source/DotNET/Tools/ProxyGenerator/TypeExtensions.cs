@@ -210,23 +210,14 @@ public static class TypeExtensions
     }
 
     /// <summary>
-    /// Try to get an import statement for a type.
+    /// Check if a type needs an import statement.
     /// </summary>
-    /// <param name="type">Type to get for.</param>
-    /// <param name="importStatement">The resulting import statement if it requires so.</param>
-    /// <returns>True if it needs an import statement, false if not.</returns>
-    public static bool TryGetImportStatement(this Type type, out ImportStatement? importStatement)
+    /// <param name="type">Type to check.</param>
+    /// <returns>True if it has, false if not.</returns>
+    public static bool HasModule(this Type type)
     {
-        var knownType = type.IsKnownType();
-        if (knownType && _primitiveTypeMap.TryGetValue(type.FullName!, out var targetType) &&
-            !string.IsNullOrEmpty(targetType?.Module))
-        {
-            importStatement = new ImportStatement(targetType.Type, targetType.Module);
-            return true;
-        }
-
-        importStatement = null;
-        return false;
+        var targetType = type.GetTargetType();
+        return !string.IsNullOrEmpty(targetType.Module);
     }
 
     /// <summary>
@@ -390,24 +381,34 @@ public static class TypeExtensions
     /// <summary>
     /// Get imports from a collection of types.
     /// </summary>
+    /// <param name="type">Type to get from.</param>
+    /// <param name="targetPath">The target path the proxies are generated to.</param>
+    /// <param name="relativePath">The relative path to work from.</param>
+    /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
+    /// <returns>An <see cref="ImportStatement"/>.</returns>
+    public static ImportStatement GetImportStatement(this Type type, string targetPath, string relativePath, int segmentsToSkip)
+    {
+        var targetType = type.GetTargetType();
+        var importPath = targetType.Module;
+        if (string.IsNullOrEmpty(importPath))
+        {
+            var fullPath = Path.Join(targetPath, relativePath);
+            var fullPathForType = Path.Join(targetPath, type.ResolveTargetPath(segmentsToSkip));
+            importPath = $"{Path.GetRelativePath(fullPath, fullPathForType)}/{type.Name}";
+        }
+        return new ImportStatement(targetType.Type, importPath);
+    }
+
+    /// <summary>
+    /// Get imports from a collection of types.
+    /// </summary>
     /// <param name="types">Types to get from.</param>
     /// <param name="targetPath">The target path the proxies are generated to.</param>
     /// <param name="relativePath">The relative path to work from.</param>
     /// <param name="segmentsToSkip">Number of segments to skip from the namespace when generating the output path.</param>
     /// <returns>A collection of <see cref="ImportStatement"/>.</returns>
     public static IEnumerable<ImportStatement> GetImports(this IEnumerable<Type> types, string targetPath, string relativePath, int segmentsToSkip) =>
-        types.Select(_ =>
-        {
-            var targetType = _.GetTargetType();
-            var importPath = targetType.Module;
-            if (string.IsNullOrEmpty(importPath))
-            {
-                var fullPath = Path.Join(targetPath, relativePath);
-                var fullPathForType = Path.Join(targetPath, _.ResolveTargetPath(segmentsToSkip));
-                importPath = $"{Path.GetRelativePath(fullPath, fullPathForType)}/{_.Name}";
-            }
-            return new ImportStatement(targetType.Type, importPath);
-        }).ToArray();
+        types.Select(_ => _.GetImportStatement(targetPath, relativePath, segmentsToSkip)).ToArray();
 
     /// <summary>
     /// Collect types involved for a property, recursively.

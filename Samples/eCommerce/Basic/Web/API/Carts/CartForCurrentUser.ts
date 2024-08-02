@@ -4,7 +4,7 @@
 
 // eslint-disable-next-line header/header
 import { QueryFor, QueryResultWithState } from '@cratis/applications/queries';
-import { useQuery, PerformQuery, SetSorting} from '@cratis/applications.react/queries';
+import { useQuery, PerformQuery } from '@cratis/applications.react/queries';
 import { Cart } from './Cart';
 import Handlebars from 'handlebars';
 
@@ -26,7 +26,8 @@ export class CartForCurrentUser extends QueryFor<Cart> {
     }
 
 
-    static use(sorting?: Sorting): [QueryResultWithState<Cart[]>, PerformQuery, SetSorting] {
-        return useQuery<Cart[], CartForCurrentUser>(CartForCurrentUser, undefined, sorting);
+    static use(): [QueryResultWithState<Cart>, PerformQuery] {
+        const [result, perform] = useQuery<Cart, CartForCurrentUser>(CartForCurrentUser);
+        return [result, perform];
     }
 }

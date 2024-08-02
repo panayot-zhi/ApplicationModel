@@ -26,7 +26,8 @@ export class ObserveCartForCurrentUser extends ObservableQueryFor<Cart> {
     }
 
 
-    static use(sorting?: Sorting): [QueryResultWithState<Cart[]>, SetSorting] {
-        return useObservableQuery<Cart[], ObserveCartForCurrentUser>(ObserveCartForCurrentUser, undefined, sorting);
+    static use(): [QueryResultWithState<Cart>] {
+        const [result] = useObservableQuery<Cart, ObserveCartForCurrentUser>(ObserveCartForCurrentUser);
+        return result;
     }
 }

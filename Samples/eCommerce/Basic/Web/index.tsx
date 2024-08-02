@@ -9,11 +9,8 @@ import './Styles/tailwind.css';
 import './Styles/theme.css';
 import React from 'react';
 import { App } from './App';
-
-const Blah = () => {
-    console.log('Blah');
-    return (<></>);
-};
+import { Globals } from '@cratis/applications';
+Globals.microservice = 'eCommerce';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
