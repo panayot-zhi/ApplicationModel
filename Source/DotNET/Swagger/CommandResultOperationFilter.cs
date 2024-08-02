@@ -64,5 +64,14 @@ public class CommandResultOperationFilter : IOperationFilter
                 { "application/json", new OpenApiMediaType() { Schema = schema } }
             }
         });
+
+        operation.Responses.Add(((int)HttpStatusCode.InternalServerError).ToString(), new OpenApiResponse()
+        {
+            Description = "Internal server error - something went wrong. See the exception details.",
+            Content = new Dictionary<string, OpenApiMediaType>
+            {
+                { "application/json", new OpenApiMediaType() { Schema = schema } }
+            }
+        });
     }
 }
