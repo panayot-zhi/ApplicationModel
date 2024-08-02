@@ -77,7 +77,7 @@ export class AllProducts extends QueryFor<Product[]> {
         return useQuery<Product[], AllProducts>(AllProducts, undefined, sorting);
     }
 
-    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<Product[]>, number, PerformQuery, SetSorting, SetPage, SetPageSize] {
+    static useWithPaging(pageSize: number, sorting?: Sorting): [QueryResultWithState<Product[]>, PerformQuery, SetSorting, SetPage, SetPageSize] {
         return useQueryWithPaging<Product[], AllProducts>(AllProducts, new Paging(0, pageSize), undefined, sorting);
     }
 }
