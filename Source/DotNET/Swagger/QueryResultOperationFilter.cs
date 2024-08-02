@@ -109,6 +109,5 @@ public class QueryResultOperationFilter : IOperationFilter
                 { "application/json", new OpenApiMediaType() { Schema = schema } }
             }
         });
-
     }
 }
