@@ -82,7 +82,7 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
 {{/if}}
 
     constructor() {
-        super({{Model}}, {{lowercase IsEnumerable}});
+        super({{Constructor}}, {{lowercase IsEnumerable}});
 {{#if IsEnumerable}}        
         this._sortBy = new {{Name}}SortBy(this);
 {{/if}}
