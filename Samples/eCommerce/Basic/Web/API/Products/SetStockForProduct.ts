@@ -8,7 +8,7 @@ import { useCommand, SetCommandValues, ClearCommandValues } from '@cratis/applic
 import { Validator } from '@cratis/applications/validation';
 import Handlebars from 'handlebars';
 
-const routeTemplate = Handlebars.compile('/set-stock/{sku}');
+const routeTemplate = Handlebars.compile('/set-stock/{{sku}}');
 
 export interface ISetStockForProduct {
     sku?: string;
