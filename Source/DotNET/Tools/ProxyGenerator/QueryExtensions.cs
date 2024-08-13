@@ -56,10 +56,13 @@ public static class QueryExtensions
             property.CollectTypesInvolved(additionalTypesInvolved);
         }
 
+        var route = method.GetRoute();
+
         return new(
             method.DeclaringType!,
             method,
-            method.GetRoute(),
+            route,
+            route.MakeRouteTemplate(),
             method.Name,
             responseModel.Name,
             responseModel.Constructor,

@@ -9,7 +9,7 @@ import { Validator } from '@cratis/applications/validation';
 import { Guid } from '@cratis/fundamentals';
 import Handlebars from 'handlebars';
 
-const routeTemplate = Handlebars.compile('/api/users/{id}/change-profile-picture');
+const routeTemplate = Handlebars.compile('/api/users/{{id}}/change-profile-picture');
 
 export interface IChangeProfilePicture {
     id?: Guid;
