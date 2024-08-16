@@ -34,6 +34,8 @@ export class ObservableQueryConnection<TDataType> implements IObservableQueryCon
         if (queryArguments) {
             if (url.indexOf('?') < 0) {
                 url = `${url}?`;
+            } else {
+                url = `${url}&`;
             }
             const query = Object.keys(queryArguments).map(key => `${key}=${queryArguments[key]}`).join('&');
             url = `${url}${query}`;
