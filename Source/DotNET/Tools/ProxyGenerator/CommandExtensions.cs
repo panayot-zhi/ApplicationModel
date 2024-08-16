@@ -61,10 +61,13 @@ public static class CommandExtensions
 
         imports = imports.Distinct().ToList();
 
+        var route = method.GetRoute();
+
         return new(
             method.DeclaringType!,
             method,
-            method.GetRoute(),
+            route,
+            route.MakeRouteTemplate(),
             method.Name,
             properties,
             imports,
