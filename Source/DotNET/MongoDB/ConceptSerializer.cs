@@ -5,6 +5,7 @@ using Cratis.Concepts;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
+using System.Globalization;
 
 namespace Cratis.Applications.MongoDB;
 
@@ -47,7 +48,7 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
             var keyName = bsonReader.ReadName(Utf8NameDecoder.Instance);
             if (keyName == "Value" || keyName == "value")
             {
-                value = GetDeserializedValue(valueType, ref bsonReader);
+                value = GetDeserializedValue(context, args, valueType, ref bsonReader);
                 bsonReader.ReadEndDocument();
             }
             else
@@ -57,7 +58,7 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
         }
         else
         {
-            value = GetDeserializedValue(valueType, ref bsonReader);
+            value = GetDeserializedValue(context, args, valueType, ref bsonReader);
         }
 
         if (value is null)
@@ -125,6 +126,26 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
         {
             bsonWriter.WriteDecimal128((decimal)underlyingValue);
         }
+        else if (underlyingValueType == typeof(DateTime))
+        {
+            var dateTime = (DateTime)underlyingValue;
+            bsonWriter.WriteDateTime(dateTime.ToUniversalTime().Ticks / TimeSpan.TicksPerMillisecond);
+        }
+        else if (underlyingValueType == typeof(DateTimeOffset))
+        {
+            var serializer = new DateTimeOffsetSupportingBsonDateTimeSerializer();
+            serializer.Serialize(context, args, (DateTimeOffset)underlyingValue);
+        }
+        else if (underlyingValueType == typeof(DateOnly))
+        {
+            var dateOnly = (DateOnly)underlyingValue;
+            bsonWriter.WriteString(dateOnly.ToString("yyyy-MM-dd"));
+        }
+        else if (underlyingValueType == typeof(TimeOnly))
+        {
+            var timeOnly = (TimeOnly)underlyingValue;
+            bsonWriter.WriteString(timeOnly.ToString("HH:mm:ss"));
+        }
     }
 
     /// <inheritdoc/>
@@ -136,7 +157,7 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
     /// <inheritdoc/>
     object IBsonSerializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args) => Deserialize(context, args)!;
 
-    object GetDeserializedValue(Type valueType, ref IBsonReader bsonReader)
+    object GetDeserializedValue(BsonDeserializationContext context, BsonDeserializationArgs args, Type valueType, ref IBsonReader bsonReader)
     {
         var bsonType = bsonReader.CurrentBsonType;
         if (bsonType == BsonType.Null)
@@ -198,6 +219,30 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
         if (valueType == typeof(decimal))
         {
             return bsonReader.ReadDecimal128();
+        }
+
+        if (valueType == typeof(DateTime))
+        {
+            var dateTimeValue = bsonReader.ReadDateTime();
+            return DateTimeOffset.FromUnixTimeMilliseconds(dateTimeValue).DateTime;
+        }
+
+        if (valueType == typeof(DateTimeOffset))
+        {
+            var serializer = new DateTimeOffsetSupportingBsonDateTimeSerializer();
+            return serializer.Deserialize(context, args);
+        }
+
+        if (valueType == typeof(DateOnly))
+        {
+            var dateOnlyString = bsonReader.ReadString();
+            return DateOnly.ParseExact(dateOnlyString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+        }
+
+        if (valueType == typeof(TimeOnly))
+        {
+            var timeOnlyString = bsonReader.ReadString();
+            return TimeOnly.ParseExact(timeOnlyString, "HH:mm:ss", CultureInfo.InvariantCulture);
         }
 
         throw new UnableToDeserializeValueForConcept(valueType);
