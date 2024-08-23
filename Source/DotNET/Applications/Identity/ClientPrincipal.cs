@@ -6,27 +6,33 @@ namespace Cratis.Applications.Identity;
 /// <summary>
 /// Represents the structure of a Microsoft Client Principal.
 /// </summary>
+/// <remarks>
+/// This is based on the definition found here: https://learn.microsoft.com/en-us/azure/static-web-apps/user-information?tabs=csharp#client-principal-data.
+/// </remarks>
 public class ClientPrincipal
 {
-#pragma warning disable CA1707 // Identifiers should not contain underscores
     /// <summary>
     /// Gets or sets the auth type - also referred to as the IDP type.
     /// </summary>
-    public string auth_type { get; set; } = string.Empty;
+    public string IdentityProvider { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the user ID.
+    /// </summary>
+    public string UserId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the user details.
+    /// </summary>
+    public string UserDetails { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the user roles.
+    /// </summary>
+    public IEnumerable<string> UserRoles { get; set; } = [];
 
     /// <summary>
     /// Get or sets the claims.
     /// </summary>
-    public IEnumerable<ClientPrincipalClaim> claims { get; set; } = [];
-
-    /// <summary>
-    /// Gets or sets which claim type holds the name information.
-    /// </summary>
-    public string name_typ { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets or sets which claim type holds the role(s) information.
-    /// </summary>
-    public string role_typ { get; set; } = string.Empty;
-#pragma warning restore CA1707
+    public IEnumerable<ClientPrincipalClaim> Claims { get; set; } = [];
 }
