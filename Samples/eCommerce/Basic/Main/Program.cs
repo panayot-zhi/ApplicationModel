@@ -31,6 +31,7 @@ builder.UseCratisMongoDB();
 
 // Todo: This should be part of the "Use application model" extension method, with overrides
 builder.Services
+    .AddMicrosoftIdentityPlatformIdentityAuthentication()
     .AddSwaggerGen(options =>
     {
         var files = Directory.GetFiles(AppContext.BaseDirectory).Where(file => Path.GetExtension(file) == ".xml");
@@ -85,7 +86,8 @@ if (RuntimeEnvironment.IsDevelopment)
 
 app.UseWebSockets();
 app.MapControllers();
-app.UseMicrosoftIdentityPlatformIdentityResolver();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapFallbackToFile("/index.html");
 
 await app.RunAsync();
