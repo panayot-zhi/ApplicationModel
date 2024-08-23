@@ -33,18 +33,24 @@ public class MicrosoftIDentityPlatformAuthHandler(
     /// <inheritdoc/>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader) ||
-            !Request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityNameHeader) ||
-            !Request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.PrincipalHeader))
+        if (!Request.IsValidIdentityRequest())
         {
             return Task.FromResult(AuthenticateResult.Fail("Not authenticated - headers missing"));
         }
 
-        var claims = Request.GetClaims();
-        claims = claims
-            .RemoveAll(claim => claim.Type == ClaimTypes.NameIdentifier || claim.Type == "sub")
-            .Add(new Claim(ClaimTypes.NameIdentifier, Request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString()))
-            .Add(new Claim("sub", Request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString()));
+        var clientPrincipal = Request.GetClientPrincipal();
+        if (clientPrincipal == null)
+        {
+            return Task.FromResult(AuthenticateResult.Fail("Not authenticated - invalid representation of ClientPrincipal"));
+        }
+
+        var claims = clientPrincipal.GetClaims().ToList();
+
+        claims.RemoveAll(claim => claim.Type == ClaimTypes.NameIdentifier || claim.Type == "sub");
+        claims.Add(new Claim(ClaimTypes.Name, clientPrincipal.UserDetails));
+        claims.Add(new Claim(ClaimTypes.NameIdentifier, Request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString()));
+        claims.Add(new Claim("sub", Request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString()));
+        claims.AddRange(clientPrincipal.UserRoles.Select(_ => new Claim(ClaimTypes.Role, _)));
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
         var principal = new ClaimsPrincipal(identity);

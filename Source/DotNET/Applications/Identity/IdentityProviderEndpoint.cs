@@ -39,17 +39,17 @@ public class IdentityProviderEndpoint
     /// <returns>Awaitable task.</returns>
     public async Task Handler(HttpRequest request, HttpResponse response)
     {
-        if (HasValidIdentityHeaders(request))
+        if (request.IsValidIdentityRequest())
         {
             IdentityId identityId = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityIdHeader].ToString();
             IdentityName identityName = request.Headers[MicrosoftIdentityPlatformHeaders.IdentityNameHeader].ToString();
-            var token = Convert.FromBase64String(request.Headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader].ToString());
-            var tokenAsJson = JsonNode.Parse(token) as JsonObject;
 
-            if (TryGetClaims(tokenAsJson, out var claimsAsArray))
+            var clientPrincipal = request.GetClientPrincipal();
+            if (clientPrincipal is not null)
             {
+                var token = Convert.FromBase64String(request.Headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader].ToString());
+                var tokenAsJson = JsonNode.Parse(token) as JsonObject;
                 var claims = request.GetClaims().Select(claim => new KeyValuePair<string, string>(claim.Type, claim.Value));
-
                 var context = new IdentityProviderContext(identityId, identityName, tokenAsJson!, claims);
                 var result = await _identityProvider.Provide(context);
                 IdentityProviderResult identityResult;
@@ -69,24 +69,5 @@ public class IdentityProviderEndpoint
                 await response.WriteAsJsonAsync(identityResult, _serializerOptions);
             }
         }
-    }
-
-    bool HasValidIdentityHeaders(HttpRequest request) =>
-        request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityIdHeader) &&
-        request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.IdentityNameHeader) &&
-        request.Headers.ContainsKey(MicrosoftIdentityPlatformHeaders.PrincipalHeader);
-
-    bool TryGetClaims(JsonObject? tokenAsJson, out JsonArray claims)
-    {
-        if (tokenAsJson is not null &&
-            tokenAsJson.TryGetPropertyValue("claims", out var claimsArray) &&
-            claimsArray is JsonArray claimsAsArray)
-        {
-            claims = claimsAsArray;
-            return true;
-        }
-
-        claims = [];
-        return false;
     }
 }

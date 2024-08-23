@@ -14,6 +14,32 @@ namespace Cratis.Applications.Identity;
 public static class MicrosoftIdentityPlatformRequestExtensions
 {
     /// <summary>
+    /// Convert the claims into standard .NET <see cref="Claim"/> from the client principal.
+    /// </summary>
+    /// <param name="principal">The <see cref="ClientPrincipal"/> to convert from.</param>
+    /// <returns>Converted claims.</returns>
+    public static IImmutableList<Claim> GetClaims(this ClientPrincipal principal)
+    {
+        var claims = new List<Claim>();
+        foreach (var claim in principal.Claims)
+        {
+            claims.Add(new Claim(claim.typ, claim.val));
+        }
+
+        return claims.ToImmutableList();
+    }
+
+    /// <summary>
+    /// Get the claims from the request in a raw key/value form..
+    /// </summary>
+    /// <param name="principal">The <see cref="ClientPrincipal"/> to convert from.</param>
+    /// <returns>Converted claims.</returns>
+    public static IEnumerable<KeyValuePair<string, string>> GetClaimsRaw(this ClientPrincipal principal)
+    {
+        return principal.Claims.Select(claim => new KeyValuePair<string, string>(claim.typ, claim.val));
+    }
+
+    /// <summary>
     /// Get the claims from the request.
     /// </summary>
     /// <param name="request"><see cref="HttpRequest"/> to get from.</param>

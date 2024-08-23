@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Text.Json;
+using Cratis.Json;
 
 namespace Cratis.Applications.Identity.for_IdentityProviderEndpoint.given;
 
@@ -20,7 +21,7 @@ public abstract class a_valid_identity_request : an_identity_provider_endpoint
 
         client_principal = CreateClientPrincipal();
         headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader] =
-            Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(client_principal));
+            Convert.ToBase64String(JsonSerializer.SerializeToUtf8Bytes(client_principal, Globals.JsonSerializerOptions));
 
         identity_provider.Provide(Arg.Any<IdentityProviderContext>()).Returns((CallInfo x) =>
         {
@@ -33,14 +34,14 @@ public abstract class a_valid_identity_request : an_identity_provider_endpoint
     {
         return new()
         {
-            auth_type = "aad",
-            claims =
+            IdentityProvider = "aad",
+            UserId = "123",
+            UserDetails = "Test User",
+            Claims =
             [
                 new ClientPrincipalClaim { typ = "roles", val = "role1" },
                 new ClientPrincipalClaim { typ = "roles", val = "role2" }
-            ],
-            name_typ = "name",
-            role_typ = "roles"
+            ]
         };
     }
 }
