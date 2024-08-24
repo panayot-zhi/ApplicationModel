@@ -118,7 +118,7 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
 {{else}}
     static use(args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}>] {
         const [result] = useObservableQuery<{{Model}}, {{Name}}, {{Name}}Arguments>({{Name}}, args);
-        return result;
+        return [result];
     }
 {{/if}}    
 {{else}}
@@ -133,7 +133,7 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
 {{else}}
     static use(): [QueryResultWithState<{{Model}}>] {
         const [result] = useObservableQuery<{{Model}}, {{Name}}>({{Name}});
-        return result;
+        return [result];
     }
 {{/if}}
 {{/if}}
