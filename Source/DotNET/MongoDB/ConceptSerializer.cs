@@ -5,7 +5,6 @@ using Cratis.Concepts;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
-using System.Globalization;
 
 namespace Cratis.Applications.MongoDB;
 
@@ -138,13 +137,13 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
         }
         else if (underlyingValueType == typeof(DateOnly))
         {
-            var dateOnly = (DateOnly)underlyingValue;
-            bsonWriter.WriteString(dateOnly.ToString("yyyy-MM-dd"));
+            var serializer = new DateOnlySerializer();
+            serializer.Serialize(context, args, (DateOnly)underlyingValue);
         }
         else if (underlyingValueType == typeof(TimeOnly))
         {
-            var timeOnly = (TimeOnly)underlyingValue;
-            bsonWriter.WriteString(timeOnly.ToString("HH:mm:ss"));
+            var serializer = new TimeOnlySerializer();
+            serializer.Serialize(context, args, (TimeOnly)underlyingValue);
         }
     }
 
@@ -235,14 +234,14 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
 
         if (valueType == typeof(DateOnly))
         {
-            var dateOnlyString = bsonReader.ReadString();
-            return DateOnly.ParseExact(dateOnlyString, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var serializer = new DateOnlySerializer();
+            return serializer.Deserialize(context, args);
         }
 
         if (valueType == typeof(TimeOnly))
         {
-            var timeOnlyString = bsonReader.ReadString();
-            return TimeOnly.ParseExact(timeOnlyString, "HH:mm:ss", CultureInfo.InvariantCulture);
+            var serializer = new TimeOnlySerializer();
+            return serializer.Deserialize(context, args);
         }
 
         throw new UnableToDeserializeValueForConcept(valueType);
