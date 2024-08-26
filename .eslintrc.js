@@ -16,7 +16,7 @@ module.exports = {
         'node_modules',
         'wwwroot',
         'templates',
-		'**/Web/Api'
+        '**/Web/Api'
     ],
     plugins: [
         '@typescript-eslint',
