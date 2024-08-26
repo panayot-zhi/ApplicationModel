@@ -16,6 +16,7 @@ import { SortDirection } from './SortDirection';
  * @template TDataType Type of data returned by the query.
  */
 export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<TDataType, TArguments> {
+    private _microservice: string;
     abstract readonly route: string;
     abstract readonly routeTemplate: Handlebars.TemplateDelegate;
     abstract get requestArguments(): string[];
@@ -32,6 +33,12 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
      */
     constructor(readonly modelType: Constructor, readonly enumerable: boolean) {
         this.sorting = Sorting.none;
+        this._microservice = Globals.microservice ?? '';
+    }
+
+    /** @inheritdoc */
+    setMicroservice(microservice: string) {
+        this._microservice = microservice;
     }
 
     /** @inheritdoc */
@@ -59,8 +66,8 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         };
-        if (Globals.microservice?.length > 0) {
-            headers[Globals.microserviceHttpHeader] = Globals.microservice;
+        if (this._microservice?.length > 0) {
+            headers[Globals.microserviceHttpHeader] = this._microservice;
         }
 
         if (this.paging && this.paging.pageSize > 0) {

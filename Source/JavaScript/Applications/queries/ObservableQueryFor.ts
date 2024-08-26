@@ -14,12 +14,14 @@ import { QueryResult } from './QueryResult';
 import { Sorting } from './Sorting';
 import { Paging } from './Paging';
 import { SortDirection } from './SortDirection';
+import { Globals } from '../Globals';
 
 /**
  * Represents an implementation of {@link IQueryFor}.
  * @template TDataType Type of data returned by the query.
  */
 export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements IObservableQueryFor<TDataType, TArguments> {
+    private _microservice: string;
     abstract readonly route: string;
     abstract readonly routeTemplate: Handlebars.TemplateDelegate<any>;
     abstract readonly defaultValue: TDataType;
@@ -34,6 +36,12 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
      */
     constructor(readonly modelType: Constructor, readonly enumerable: boolean) {
         this.sorting = Sorting.none;
+        this._microservice = Globals.microservice ?? '';
+    }
+
+    /** @inheritdoc */
+    setMicroservice(microservice: string) {
+        this._microservice = microservice;
     }
 
     /** @inheritdoc */
@@ -56,7 +64,7 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
             connection = new NullObservableQueryConnection(this.defaultValue);
         } else {
             actualRoute = this.routeTemplate(args);
-            connection = new ObservableQueryConnection<TDataType>(actualRoute);
+            connection = new ObservableQueryConnection<TDataType>(actualRoute, this._microservice);
         }
 
         const subscriber = new ObservableQuerySubscription(connection);

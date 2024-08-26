@@ -20,15 +20,15 @@ export class ObservableQueryConnection<TDataType> implements IObservableQueryCon
      * Initializes a new instance of the {@link ObservableQueryConnection<TDataType>} class.
      * @param {string} _route The relative route to use - relative to the current origin and protocol.
      */
-    constructor(private readonly _route: string) {
+    constructor(private readonly _route: string, private readonly _microservice: string) {
     }
 
     /** @inheritdoc */
     connect(dataReceived: DataReceived<TDataType>, queryArguments?: any) {
         const secure = document.location.protocol.indexOf('https') === 0;
         let url = `${secure ? 'wss' : 'ws'}://${document.location.host}${this._route}`;
-        if (Globals.microservice?.length > 0) {
-            url = `${url}?${Globals.microserviceWSQueryArgument}=${Globals.microservice}`;
+        if (this._microservice?.length > 0) {
+            url = `${url}?${Globals.microserviceWSQueryArgument}=${this._microservice}`;
         }
 
         if (queryArguments) {

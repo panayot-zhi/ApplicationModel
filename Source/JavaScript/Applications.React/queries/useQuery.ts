@@ -3,10 +3,11 @@
 
 import { IQueryFor, QueryResultWithState, QueryResult, Paging, Sorting } from '@cratis/applications/queries';
 import { Constructor } from '@cratis/fundamentals';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { SetSorting } from './SetSorting';
 import { SetPage } from './SetPage';
 import { SetPageSize } from './SetPageSize';
+import { ApplicationModelContext } from 'ApplicationModel';
 
 /**
  * Delegate type for performing a {@link IQueryFor} in the context of the {@link useQuery} hook.
@@ -20,43 +21,48 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
     paging ??= Paging.noPaging;
     sorting ??= Sorting.none;
 
-    const initialQueryInstance = new query() as TQuery;
-    initialQueryInstance.paging = paging;
-    initialQueryInstance.sorting = sorting;
-
-    const [queryInstance, setQueryInstance] = useState(initialQueryInstance);
-    const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.initial(queryInstance.defaultValue));
+    const [queryInstance, setQueryInstance] = useState<TQuery>();
+    const [result, setResult] = useState<QueryResultWithState<TDataType>>();
 
     const queryExecutor = (async (args?: TArguments) => {
-        const queryResult = await performer(queryInstance);
-        setResult(QueryResultWithState.fromQueryResult(queryResult, false));
+        if (!queryInstance) {
+            const queryResult = await performer(queryInstance);
+            setResult(QueryResultWithState.fromQueryResult(queryResult, false));
+        }
     });
 
     useEffect(() => {
+        const applicationModel = useContext(ApplicationModelContext);
+        const initialQueryInstance = new query() as TQuery;
+        initialQueryInstance.paging = paging;
+        initialQueryInstance.sorting = sorting;
+        initialQueryInstance.setMicroservice(applicationModel.microservice);
+        QueryResultWithState.initial(initialQueryInstance.defaultValue);
+
         queryExecutor(args);
     }, []);
 
     return [
-        result,
+        result!,
         async (args?: TArguments) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
             await queryExecutor(args);
         },
         async (sorting: Sorting) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
             queryInstance.sorting = sorting;
             setQueryInstance(queryInstance);
             await queryExecutor(args);
         },
         async (page: number) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
-            queryInstance.paging = { page, pageSize: queryInstance.paging?.pageSize ?? 0 };
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
+            queryInstance.paging = { page, pageSize: queryInstance!.paging?.pageSize ?? 0 };
             setQueryInstance(queryInstance);
             await queryExecutor(args);
         },
         async (pageSize: number) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
-            queryInstance.paging = { page: queryInstance.paging?.page ?? 0, pageSize };
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
+            queryInstance.paging = { page: queryInstance!.paging?.page ?? 0, pageSize };
             setQueryInstance(queryInstance);
             await queryExecutor(args);
         }];

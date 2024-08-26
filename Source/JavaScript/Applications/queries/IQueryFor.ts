@@ -48,6 +48,12 @@ export interface IQueryFor<TDataType, TArguments = {}> {
     set arguments(value: TArguments);
 
     /**
+     * Set the microservice to be used for the query. This is passed along to the server to identify the microservice.
+     * @param microservice Name of microservice
+     */
+    setMicroservice(microservice: string);
+
+    /**
      * Perform the query, optionally giving arguments to use. If not given, it will use the arguments that has been set.
      * By specifying the arguments, it will use these as the current arguments for the instance and subsequent calls does
      * not need to specify arguments.

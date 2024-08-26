@@ -47,6 +47,12 @@ export interface ICommand<TCommandContent = {}, TCommandResponse = {}> {
     readonly hasChanges: boolean;
 
     /**
+     * Set the microservice to be used for the query. This is passed along to the server to identify the microservice.
+     * @param microservice Name of microservice
+     */
+    setMicroservice(microservice: string);
+
+    /**
      * Notify about a property that has had its value changed.
      * @param {string} property Name of property that changes.
      */
