@@ -24,14 +24,14 @@ export default defineConfig({
         open: false,
         proxy: {
             '/api': {
-                target: 'http://localhost:5500',
+                target: 'http://localhost:5600',
                 ws: true
             },
             '/swagger': {
-                target: 'http://localhost:5500'
+                target: 'http://localhost:5600'
             },
             '/.cratis': {
-                target: 'http://localhost:5500'
+                target: 'http://localhost:5600'
             }
         }
     },
