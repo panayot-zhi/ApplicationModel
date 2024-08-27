@@ -16,19 +16,21 @@ namespace Cratis.Applications.Identity;
 /// Initializes a new instance of the <see cref="MicrosoftIDentityPlatformAuthHandler"/> class.
 /// </remarks>
 /// <param name="options">The <see cref="IOptionsMonitor{TOptions}"/>.</param>
-/// <param name="logger">The <see cref="ILoggerFactory"/>.</param>
+/// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
 /// <param name="encoder">The <see cref="UrlEncoder"/>.</param>
 /// <param name="clock">The <see cref="ISystemClock"/>.</param>
 public class MicrosoftIDentityPlatformAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
-    ILoggerFactory logger,
+    ILoggerFactory loggerFactory,
     UrlEncoder encoder,
-    ISystemClock clock) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder, clock)
+    ISystemClock clock) : AuthenticationHandler<AuthenticationSchemeOptions>(options, loggerFactory, encoder, clock)
 {
     /// <summary>
     /// Gets the scheme name.
     /// </summary>
     public const string SchemeName = "MicrosoftIdentityPlatform";
+
+    readonly ILogger<MicrosoftIDentityPlatformAuthHandler> _logger = loggerFactory.CreateLogger<MicrosoftIDentityPlatformAuthHandler>();
 
     /// <inheritdoc/>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -38,7 +40,16 @@ public class MicrosoftIDentityPlatformAuthHandler(
             return Task.FromResult(AuthenticateResult.Fail("Not authenticated - headers missing"));
         }
 
-        var clientPrincipal = Request.GetClientPrincipal();
+        ClientPrincipal? clientPrincipal = null;
+        try
+        {
+            clientPrincipal = Request.GetClientPrincipal();
+        }
+        catch (Exception ex)
+        {
+            _logger.FailedResolvingClientPrincipal(Request.Headers[MicrosoftIdentityPlatformHeaders.PrincipalHeader].ToString(), ex);
+        }
+
         if (clientPrincipal == null)
         {
             return Task.FromResult(AuthenticateResult.Fail("Not authenticated - invalid representation of ClientPrincipal"));
