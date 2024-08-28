@@ -11,7 +11,7 @@ public static class Constants
     /// <summary>
     /// Gets the header name for the correlation id.
     /// </summary>
-    public const string DefaultTenantIdHeader = "X-Tenant-ID";
+    public const string DefaultTenantIdHeader = "x-cratis-tenant-id";
 
     /// <summary>
     /// Gets the item key for the correlation id.
