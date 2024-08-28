@@ -2,6 +2,7 @@
  *  **DO NOT EDIT** - This file is an automatically generated file.
  *--------------------------------------------------------------------------------------------*/
 
+/* eslint-disable sort-imports */
 // eslint-disable-next-line header/header
 {{#if IsEnumerable}}
 import { ObservableQueryFor, QueryResultWithState, Sorting, SortingActions, SortingActionsForObservableQuery, Paging } from '@cratis/applications/queries';
@@ -118,7 +119,7 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
 {{else}}
     static use(args?: {{Name}}Arguments): [QueryResultWithState<{{Model}}>] {
         const [result] = useObservableQuery<{{Model}}, {{Name}}, {{Name}}Arguments>({{Name}}, args);
-        return result;
+        return [result];
     }
 {{/if}}    
 {{else}}
@@ -133,7 +134,7 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
 {{else}}
     static use(): [QueryResultWithState<{{Model}}>] {
         const [result] = useObservableQuery<{{Model}}, {{Name}}>({{Name}});
-        return result;
+        return [result];
     }
 {{/if}}
 {{/if}}

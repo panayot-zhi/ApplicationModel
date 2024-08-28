@@ -2,6 +2,7 @@
  *  **DO NOT EDIT** - This file is an automatically generated file.
  *--------------------------------------------------------------------------------------------*/
 
+/* eslint-disable sort-imports */
 // eslint-disable-next-line header/header
 import { ObservableQueryFor, QueryResultWithState } from '@cratis/applications/queries';
 import { useObservableQuery } from '@cratis/applications.react/queries';
@@ -28,6 +29,6 @@ export class ObserveCartForCurrentUser extends ObservableQueryFor<Cart> {
 
     static use(): [QueryResultWithState<Cart>] {
         const [result] = useObservableQuery<Cart, ObserveCartForCurrentUser>(ObserveCartForCurrentUser);
-        return result;
+        return [result];
     }
 }
