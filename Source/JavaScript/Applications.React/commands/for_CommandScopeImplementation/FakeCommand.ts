@@ -48,4 +48,8 @@ export class FakeCommand implements ICommand {
     onPropertyChanged(callback: PropertyChanged, thisArg: any): void {
         throw new Error('Method not implemented.');
     }
+
+    setMicroservice(microservice: string) {
+        throw new Error('Method not implemented.');
+    }
 }
