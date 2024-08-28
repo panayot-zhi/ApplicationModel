@@ -2,21 +2,26 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import React, { useEffect } from 'react';
+import { ApplicationModel } from '@cratis/applications.react';
 import { IdentityProvider, useIdentity } from '@cratis/applications.react/identity';
 import { MVVM } from '@cratis/applications.react.mvvm';
 import { BrowserRouter } from "react-router-dom";
 import { Feature } from './Feature';
 import { Catalog } from './Catalog';
+import { ObservingCatalog } from './ObservingCatalog';
 
 export const App = () => {
     return (
-        <IdentityProvider>
-            <MVVM>
-                <BrowserRouter>
-                    {/* <Feature /> */}
-                    <Catalog />
-                </BrowserRouter>
-            </MVVM>
-        </IdentityProvider>
+        <ApplicationModel microservice='e-commerce'>
+            <IdentityProvider>
+                <MVVM>
+                    <BrowserRouter>
+                        {/* <Feature /> */}
+                        <Catalog />
+                        {/* <ObservingCatalog /> */}
+                    </BrowserRouter>
+                </MVVM>
+            </IdentityProvider>
+        </ApplicationModel>
     );
 }

@@ -1,15 +1,12 @@
-// Copyright (c) Cratis. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
 import { withViewModel } from '@cratis/applications.react.mvvm';
+import { useState } from 'react';
+import { ObserveAllProducts } from './API/Products';
 import { CatalogViewModel } from './CatalogViewModel';
-import { AllProducts, ObserveAllProducts } from './API/Products';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useState } from 'react';
 
-export const Catalog = withViewModel(CatalogViewModel, ({ viewModel }) => {
-    const [products, perform, setSorting, setPage, setPageSize] = AllProducts.useWithPaging(10);
+export const ObservingCatalog = withViewModel(CatalogViewModel, ({ viewModel }) => {
+    const [products, setSorting, setPage, setPageSize] = ObserveAllProducts.useWithPaging(10);
     const [descending, setDescending] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -49,11 +46,11 @@ export const Catalog = withViewModel(CatalogViewModel, ({ viewModel }) => {
 
             <button onClick={() => {
                 if (descending) {
-                    setSorting(AllProducts.sortBy.id.ascending);
+                    setSorting(ObserveAllProducts.sortBy.id.ascending);
                     setPage(0);
                     setDescending(false);
                 } else {
-                    setSorting(AllProducts.sortBy.id.descending);
+                    setSorting(ObserveAllProducts.sortBy.id.descending);
                     setPage(0);
                     setDescending(true);
                 }
