@@ -35,10 +35,10 @@ function useObservableQueryInternal<TDataType, TQuery extends IObservableQueryFo
             setCurrentSorting(sorting);
         },
         async (page: number) => {
-            setCurrentPaging({ page, pageSize: currentPaging.pageSize });
+            setCurrentPaging(new Paging(page, currentPaging.pageSize));
         },
         async (pageSize: number) => {
-            setCurrentPaging({ page: currentPaging.page, pageSize });
+            setCurrentPaging(new Paging(currentPaging.page, pageSize));
         }];
 }
 
