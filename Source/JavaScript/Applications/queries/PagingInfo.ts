@@ -16,7 +16,7 @@ export class PagingInfo {
      */
     constructor() {
         this.page = 0;
-        this.pageSize = 0;
+        this.size = 0;
         this.totalItems = 0;
         this.totalPages = 0;
     }
@@ -29,7 +29,7 @@ export class PagingInfo {
     /**
      * Page size.
      */
-    pageSize: number;
+    size: number;
 
     /**
      * Total number items.
@@ -40,6 +40,4 @@ export class PagingInfo {
      * Total number of pages.
      */
     totalPages: number;
-
-
 }
