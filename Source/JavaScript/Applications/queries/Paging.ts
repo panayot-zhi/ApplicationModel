@@ -28,4 +28,11 @@ export class Paging {
      * Page size of paging
      */
     pageSize: number;
+
+    /**
+     * Gets whether or not there is paging.
+     */
+    get hasPaging(): boolean {
+        return this.page > 0 || this.pageSize > 0;
+    }
 }

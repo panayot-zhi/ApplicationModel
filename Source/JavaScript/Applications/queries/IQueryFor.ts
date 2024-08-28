@@ -30,7 +30,7 @@ export interface IQueryFor<TDataType, TArguments = {}> {
     /**
      * Gets the paging for the query.
      */
-    get paging(): Paging | undefined;
+    get paging(): Paging;
 
     /**
      * Sets the paging for the query.

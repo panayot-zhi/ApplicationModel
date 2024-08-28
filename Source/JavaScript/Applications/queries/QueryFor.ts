@@ -23,7 +23,7 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
     abstract defaultValue: TDataType;
     abortController?: AbortController;
     sorting: Sorting;
-    paging: Paging | undefined;
+    paging: Paging;
     arguments: TArguments | undefined;
 
     /**
@@ -33,6 +33,7 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
      */
     constructor(readonly modelType: Constructor, readonly enumerable: boolean) {
         this.sorting = Sorting.none;
+        this.paging = Paging.noPaging;
         this._microservice = Globals.microservice ?? '';
     }
 
@@ -70,7 +71,7 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
             headers[Globals.microserviceHttpHeader] = this._microservice;
         }
 
-        if (this.paging && this.paging.pageSize > 0) {
+        if (this.paging.hasPaging) {
             actualRoute = this.addQueryParameter(actualRoute, 'page', this.paging.page);
             actualRoute = this.addQueryParameter(actualRoute, 'pageSize', this.paging.pageSize);
         }
