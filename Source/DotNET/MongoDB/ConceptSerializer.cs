@@ -47,7 +47,7 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
             var keyName = bsonReader.ReadName(Utf8NameDecoder.Instance);
             if (keyName == "Value" || keyName == "value")
             {
-                value = GetDeserializedValue(valueType, ref bsonReader);
+                value = GetDeserializedValue(context, args, valueType, ref bsonReader);
                 bsonReader.ReadEndDocument();
             }
             else
@@ -57,7 +57,7 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
         }
         else
         {
-            value = GetDeserializedValue(valueType, ref bsonReader);
+            value = GetDeserializedValue(context, args, valueType, ref bsonReader);
         }
 
         if (value is null)
@@ -125,6 +125,26 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
         {
             bsonWriter.WriteDecimal128((decimal)underlyingValue);
         }
+        else if (underlyingValueType == typeof(DateTime))
+        {
+            var dateTime = (DateTime)underlyingValue;
+            bsonWriter.WriteDateTime(dateTime.ToUniversalTime().Ticks / TimeSpan.TicksPerMillisecond);
+        }
+        else if (underlyingValueType == typeof(DateTimeOffset))
+        {
+            var serializer = new DateTimeOffsetSupportingBsonDateTimeSerializer();
+            serializer.Serialize(context, args, (DateTimeOffset)underlyingValue);
+        }
+        else if (underlyingValueType == typeof(DateOnly))
+        {
+            var serializer = new DateOnlySerializer();
+            serializer.Serialize(context, args, (DateOnly)underlyingValue);
+        }
+        else if (underlyingValueType == typeof(TimeOnly))
+        {
+            var serializer = new TimeOnlySerializer();
+            serializer.Serialize(context, args, (TimeOnly)underlyingValue);
+        }
     }
 
     /// <inheritdoc/>
@@ -136,7 +156,7 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
     /// <inheritdoc/>
     object IBsonSerializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args) => Deserialize(context, args)!;
 
-    object GetDeserializedValue(Type valueType, ref IBsonReader bsonReader)
+    object GetDeserializedValue(BsonDeserializationContext context, BsonDeserializationArgs args, Type valueType, ref IBsonReader bsonReader)
     {
         var bsonType = bsonReader.CurrentBsonType;
         if (bsonType == BsonType.Null)
@@ -198,6 +218,30 @@ public class ConceptSerializer<T> : IBsonSerializer<T>
         if (valueType == typeof(decimal))
         {
             return bsonReader.ReadDecimal128();
+        }
+
+        if (valueType == typeof(DateTime))
+        {
+            var dateTimeValue = bsonReader.ReadDateTime();
+            return DateTimeOffset.FromUnixTimeMilliseconds(dateTimeValue).DateTime;
+        }
+
+        if (valueType == typeof(DateTimeOffset))
+        {
+            var serializer = new DateTimeOffsetSupportingBsonDateTimeSerializer();
+            return serializer.Deserialize(context, args);
+        }
+
+        if (valueType == typeof(DateOnly))
+        {
+            var serializer = new DateOnlySerializer();
+            return serializer.Deserialize(context, args);
+        }
+
+        if (valueType == typeof(TimeOnly))
+        {
+            var serializer = new TimeOnlySerializer();
+            return serializer.Deserialize(context, args);
         }
 
         throw new UnableToDeserializeValueForConcept(valueType);

@@ -51,7 +51,7 @@
         "up": "yarn g:up"
     },
     "dependencies": {
-        "@cratis/fundamentals": "5.2.4",
-        "handlebars": "4.7.7"
+        "@cratis/fundamentals": "5.3.5",
+        "handlebars": "4.7.8"
     }
 }
