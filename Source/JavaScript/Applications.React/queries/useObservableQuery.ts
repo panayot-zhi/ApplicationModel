@@ -3,18 +3,21 @@
 
 import { QueryResultWithState, IObservableQueryFor, QueryResult, Sorting, Paging, ObservableQuerySubscription } from '@cratis/applications/queries';
 import { Constructor } from '@cratis/fundamentals';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { SetSorting } from './SetSorting';
 import { SetPage } from './SetPage';
 import { SetPageSize } from './SetPageSize';
+import { ApplicationModelContext } from '../ApplicationModel';
 
 function useObservableQueryInternal<TDataType, TQuery extends IObservableQueryFor<TDataType>, TArguments = {}>(query: Constructor<TQuery>, sorting?: Sorting, paging?: Paging, args?: TArguments):
     [QueryResultWithState<TDataType>, SetSorting, SetPage, SetPageSize] {
     const [currentPaging, setCurrentPaging] = useState<Paging>(paging ?? Paging.noPaging);
     const [currentSorting, setCurrentSorting] = useState<Sorting>(sorting ?? Sorting.none);
     const queryInstance = new query() as TQuery;
+    const applicationModel = useContext(ApplicationModelContext);
     queryInstance.paging = currentPaging;
     queryInstance.sorting = currentSorting;
+    queryInstance.setMicroservice(applicationModel.microservice);
 
     const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.empty(queryInstance.defaultValue));
     const argumentsDependency = queryInstance.requestArguments.map(_ => args?.[_]);
