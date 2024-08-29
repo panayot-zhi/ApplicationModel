@@ -2,49 +2,58 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Constructor } from '@cratis/fundamentals';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext, useRef, useMemo } from 'react';
 import { Command } from '@cratis/applications/commands';
 import React from 'react';
 import { CommandScopeContext } from './CommandScope';
+import { ApplicationModelContext } from '../ApplicationModel';
 
 export type SetCommandValues<TCommandContent> = (command: TCommandContent) => void;
 export type ClearCommandValues = () => void;
 
+/**
+ * Use a command in a component.
+ * @param commandType Type of the command to use.
+ * @param initialValues Any initial values to set for the command.
+ * @returns Tuple with the command, a {@link SetCommandValues<TCommandContent>} delegate to set values on command and {@link ClearCommandValues} delegate clear values.
+ */
 export function useCommand<TCommand extends Command, TCommandContent>(commandType: Constructor<TCommand>, initialValues?: TCommandContent): [TCommand, SetCommandValues<TCommandContent>, ClearCommandValues] {
-    const instance = new commandType();
-    const [command, setCommand] = useState<TCommand>(instance);
+    const command = useRef<TCommand | null>();
     const [hasChanges, setHasChanges] = useState(false);
+    const applicationModel = useContext(ApplicationModelContext);
 
     const propertyChangedCallback = useCallback(property => {
-        if (command.hasChanges !== hasChanges) {
-            setHasChanges(command.hasChanges);
+        if (command.current?.hasChanges !== hasChanges) {
+            setHasChanges(command.current?.hasChanges ?? false);
         }
     }, []);
 
-    useEffect(() => {
+    command.current = useMemo(() => {
+        const instance = new commandType();
+        instance.setMicroservice(applicationModel.microservice);
         if (initialValues) {
             instance.setInitialValues(initialValues);
         }
-
         instance.onPropertyChanged(propertyChangedCallback, instance);
+        return instance;
     }, []);
 
     const context = React.useContext(CommandScopeContext);
-    context.addCommand?.(command!);
+    context.addCommand?.(command.current!);
 
     const setCommandValues = (values: TCommandContent) => {
-        command!.properties.forEach(property => {
+        command!.current!.properties.forEach(property => {
             if (values[property] !== undefined && values[property] != null) {
-                command![property] = values[property];
+                command.current![property] = values[property];
             }
         });
     };
 
     const clearCommandValues = () => {
-        command!.properties.forEach(property => {
-            command![property] = undefined;
+        command.current!.properties.forEach(property => {
+            command.current![property] = undefined;
         });
     };
 
-    return [command!, setCommandValues, clearCommandValues];
+    return [command.current!, setCommandValues, clearCommandValues];
 }

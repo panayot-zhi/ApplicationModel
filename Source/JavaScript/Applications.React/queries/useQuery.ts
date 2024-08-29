@@ -3,10 +3,11 @@
 
 import { IQueryFor, QueryResultWithState, QueryResult, Paging, Sorting } from '@cratis/applications/queries';
 import { Constructor } from '@cratis/fundamentals';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { SetSorting } from './SetSorting';
 import { SetPage } from './SetPage';
 import { SetPageSize } from './SetPageSize';
+import { ApplicationModelContext } from '../ApplicationModel';
 
 /**
  * Delegate type for performing a {@link IQueryFor} in the context of the {@link useQuery} hook.
@@ -19,45 +20,62 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
     [QueryResultWithState<TDataType>, PerformQuery<TArguments>, SetSorting, SetPage, SetPageSize] {
     paging ??= Paging.noPaging;
     sorting ??= Sorting.none;
+    const applicationModel = useContext(ApplicationModelContext);
+    const queryInstance = useRef<TQuery | null>(null);
+    const [renderCounter, setRenderCounter] = useState(0);
 
-    const initialQueryInstance = new query() as TQuery;
-    initialQueryInstance.paging = paging;
-    initialQueryInstance.sorting = sorting;
+    queryInstance.current = useMemo(() => {
+        const instance = new query() as TQuery;
+        instance.paging = paging;
+        instance.sorting = sorting;
+        instance.setMicroservice(applicationModel.microservice);
+        return instance;
+    }, []);
 
-    const [queryInstance, setQueryInstance] = useState(initialQueryInstance);
-    const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.initial(queryInstance.defaultValue));
+    const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.initial(queryInstance.current!.defaultValue));
 
     const queryExecutor = (async (args?: TArguments) => {
-        const queryResult = await performer(queryInstance);
-        setResult(QueryResultWithState.fromQueryResult(queryResult, false));
+        if (queryInstance) {
+            try {
+                const queryResult = await performer(queryInstance.current!);
+                setResult(QueryResultWithState.fromQueryResult(queryResult, false));
+                console.log('Query executed');
+            } catch (error) {
+                // Ignore
+            }
+        }
     });
 
     useEffect(() => {
         queryExecutor(args);
     }, []);
 
+    const invalidate = () => {
+        setRenderCounter(renderCounter + 1);
+    };
+
     return [
-        result,
+        result!,
         async (args?: TArguments) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
             await queryExecutor(args);
         },
         async (sorting: Sorting) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
-            queryInstance.sorting = sorting;
-            setQueryInstance(queryInstance);
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
+            queryInstance.current!.sorting = sorting;
+            invalidate();
             await queryExecutor(args);
         },
         async (page: number) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
-            queryInstance.paging = { page, pageSize: queryInstance.paging?.pageSize ?? 0 };
-            setQueryInstance(queryInstance);
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
+            queryInstance.current!.paging = new Paging(page, queryInstance.current!.paging?.pageSize ?? 0);
+            invalidate();
             await queryExecutor(args);
         },
         async (pageSize: number) => {
-            setResult(QueryResultWithState.fromQueryResult(result, true));
-            queryInstance.paging = { page: queryInstance.paging?.page ?? 0, pageSize };
-            setQueryInstance(queryInstance);
+            setResult(QueryResultWithState.fromQueryResult(result!, true));
+            queryInstance.current!.paging = new Paging(queryInstance.current!.paging?.page ?? 0, pageSize);
+            invalidate();
             await queryExecutor(args);
         }];
 }

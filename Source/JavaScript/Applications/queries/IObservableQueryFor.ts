@@ -44,6 +44,12 @@ export interface IObservableQueryFor<TDataType, TArguments = {}> {
     set paging(value: Paging);
 
     /**
+     * Set the microservice to be used for the query. This is passed along to the server to identify the microservice.
+     * @param microservice Name of microservice
+     */
+    setMicroservice(microservice: string);
+
+    /**
      * Subscribe to the query. This will create a subscription onto the server.
      * @param {OnNextResult} callback The callback that will receive result from the server.
      * @param [args] Optional arguments for the query - depends on whether or not the query needs arguments.

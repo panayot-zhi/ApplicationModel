@@ -5,6 +5,7 @@ import * as commands from './commands';
 import * as dialogs from './dialogs';
 import * as identity from './identity';
 import * as queries from './queries';
+export * from './ApplicationModel';
 
 export {
     commands,

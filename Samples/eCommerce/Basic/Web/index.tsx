@@ -10,7 +10,6 @@ import './Styles/theme.css';
 import React from 'react';
 import { App } from './App';
 import { Globals } from '@cratis/applications';
-Globals.microservice = 'eCommerce';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>

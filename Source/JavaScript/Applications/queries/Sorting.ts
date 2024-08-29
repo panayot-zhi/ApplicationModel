@@ -24,7 +24,7 @@ export class Sorting {
     /**
      * Gets whether sorting is enabled.
      */
-    get hasSorting(): Boolean {
+    get hasSorting(): boolean {
         return this.field !== '';
     }
 }

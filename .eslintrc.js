@@ -46,6 +46,7 @@ module.exports = {
         '@typescript-eslint/no-empty-function': 0,
         '@typescript-eslint/ban-types': 0,
         '@typescript-eslint/no-var-requires': 0,
+        "@typescript-eslint/no-empty-object-type": 0,
         // eslint-plugin-header
         'header/header': [
             2,

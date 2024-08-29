@@ -16,6 +16,7 @@ type Callback = {
  * Represents an implementation of {@link ICommand} that works with HTTP fetch.
  */
 export abstract class Command<TCommandContent = {}, TCommandResponse = {}> implements ICommand<TCommandContent, TCommandResponse> {
+    private _microservice: string;
     abstract readonly route: string;
     abstract readonly routeTemplate: Handlebars.TemplateDelegate;
     abstract readonly validation: CommandValidator;
@@ -25,8 +26,19 @@ export abstract class Command<TCommandContent = {}, TCommandResponse = {}> imple
     private _initialValues: any = {};
     private _hasChanges = false;
     private _callbacks: Callback[] = [];
-
+    
+    /**
+     * Initializes a new instance of the {@link Command<,>} class.
+     * @param _responseType Type of response.
+     * @param _isResponseTypeEnumerable Whether or not the response type is enumerable.
+     */
     constructor(readonly _responseType: Constructor = Object, readonly _isResponseTypeEnumerable: boolean) {
+        this._microservice = Globals.microservice ?? '';
+    }
+
+    /** @inheritdoc */
+    setMicroservice(microservice: string) {
+        this._microservice = microservice;
     }
 
     /** @inheritdoc */

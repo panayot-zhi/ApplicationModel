@@ -30,7 +30,7 @@ export interface IQueryFor<TDataType, TArguments = {}> {
     /**
      * Gets the paging for the query.
      */
-    get paging(): Paging | undefined;
+    get paging(): Paging;
 
     /**
      * Sets the paging for the query.
@@ -46,6 +46,12 @@ export interface IQueryFor<TDataType, TArguments = {}> {
      * Sets the current arguments for the query.
      */    
     set arguments(value: TArguments);
+
+    /**
+     * Set the microservice to be used for the query. This is passed along to the server to identify the microservice.
+     * @param microservice Name of microservice
+     */
+    setMicroservice(microservice: string);
 
     /**
      * Perform the query, optionally giving arguments to use. If not given, it will use the arguments that has been set.
