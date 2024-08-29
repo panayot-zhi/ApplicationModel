@@ -2,10 +2,11 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Constructor } from '@cratis/fundamentals';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { Command } from '@cratis/applications/commands';
 import React from 'react';
 import { CommandScopeContext } from './CommandScope';
+import { ApplicationModelContext } from '../ApplicationModel';
 
 export type SetCommandValues<TCommandContent> = (command: TCommandContent) => void;
 export type ClearCommandValues = () => void;
@@ -14,6 +15,8 @@ export function useCommand<TCommand extends Command, TCommandContent>(commandTyp
     const instance = new commandType();
     const [command, setCommand] = useState<TCommand>(instance);
     const [hasChanges, setHasChanges] = useState(false);
+    const applicationModel = useContext(ApplicationModelContext);
+    instance.setMicroservice(applicationModel.microservice);
 
     const propertyChangedCallback = useCallback(property => {
         if (command.hasChanges !== hasChanges) {

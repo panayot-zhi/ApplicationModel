@@ -26,7 +26,7 @@ export abstract class Command<TCommandContent = {}, TCommandResponse = {}> imple
     private _initialValues: any = {};
     private _hasChanges = false;
     private _callbacks: Callback[] = [];
-
+    
     /**
      * Initializes a new instance of the {@link Command<,>} class.
      * @param _responseType Type of response.
