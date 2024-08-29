@@ -3,7 +3,7 @@
 
 import { QueryResultWithState, IObservableQueryFor, QueryResult, Sorting, Paging, ObservableQuerySubscription } from '@cratis/applications/queries';
 import { Constructor } from '@cratis/fundamentals';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { SetSorting } from './SetSorting';
 import { SetPage } from './SetPage';
 import { SetPageSize } from './SetPageSize';
@@ -13,17 +13,22 @@ function useObservableQueryInternal<TDataType, TQuery extends IObservableQueryFo
     [QueryResultWithState<TDataType>, SetSorting, SetPage, SetPageSize] {
     const [currentPaging, setCurrentPaging] = useState<Paging>(paging ?? Paging.noPaging);
     const [currentSorting, setCurrentSorting] = useState<Sorting>(sorting ?? Sorting.none);
-    const queryInstance = new query() as TQuery;
     const applicationModel = useContext(ApplicationModelContext);
-    queryInstance.paging = currentPaging;
-    queryInstance.sorting = currentSorting;
-    queryInstance.setMicroservice(applicationModel.microservice);
+    const queryInstance = useRef<TQuery | null>(null);
 
-    const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.empty(queryInstance.defaultValue));
-    const argumentsDependency = queryInstance.requestArguments.map(_ => args?.[_]);
+    queryInstance.current = useMemo(() => {
+        const instance = new query() as TQuery;
+        instance.paging = currentPaging;
+        instance.sorting = currentSorting;
+        instance.setMicroservice(applicationModel.microservice);
+        return instance;
+    }, [currentPaging, currentSorting]);
+
+    const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.empty(queryInstance.current.defaultValue));
+    const argumentsDependency = queryInstance.current.requestArguments.map(_ => args?.[_]);
 
     useEffect(() => {
-        const subscription = queryInstance.subscribe(response => {
+        const subscription = queryInstance.current!.subscribe(response => {
             setResult(QueryResultWithState.fromQueryResult(response, false));
         }, args as any);
 
