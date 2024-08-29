@@ -4,7 +4,6 @@
 import { Globals } from '@cratis/applications';
 import React from 'react';
 
-
 export interface ApplicationModelProps {
     children?: JSX.Element | JSX.Element[];
     microservice: string;
