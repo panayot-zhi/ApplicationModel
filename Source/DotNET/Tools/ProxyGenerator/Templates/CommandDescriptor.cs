@@ -26,7 +26,7 @@ public record CommandDescriptor(
     string RouteTemplate,
     string Name,
     IEnumerable<PropertyDescriptor> Properties,
-    IEnumerable<ImportStatement> Imports,
+    IOrderedEnumerable<ImportStatement> Imports,
     IEnumerable<RequestArgumentDescriptor> Arguments,
     bool HasResponse,
     ModelDescriptor ResponseType,

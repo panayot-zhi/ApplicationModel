@@ -70,7 +70,7 @@ public static class CommandExtensions
             route.MakeRouteTemplate(),
             method.Name,
             properties,
-            imports,
+            imports.OrderBy(_ => _.Module),
             method.GetArgumentDescriptors(),
             hasResponse,
             responseModel,
