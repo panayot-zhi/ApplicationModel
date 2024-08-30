@@ -9,6 +9,7 @@ import { BrowserRouter } from "react-router-dom";
 import { Feature } from './Feature';
 import { Catalog } from './Catalog';
 import { ObservingCatalog } from './ObservingCatalog';
+import { blah } from './Components/blah';
 
 export const App = () => {
     return (
@@ -16,8 +17,8 @@ export const App = () => {
             <IdentityProvider>
                 <MVVM>
                     <BrowserRouter>
-                        {/* <Feature /> */}
-                        <Catalog />
+                        <Feature blah='Horse' />
+                        {/* <Catalog /> */}
                         {/* <ObservingCatalog /> */}
                     </BrowserRouter>
                 </MVVM>

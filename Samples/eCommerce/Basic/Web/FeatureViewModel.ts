@@ -3,15 +3,26 @@
 
 import { injectable } from 'tsyringe';
 import { Cart, CartForCurrentUser, ObserveCartForCurrentUser } from './API/Carts';
-import { FeatureProps } from './Feature';
+import { DialogButtons, IDialogs } from '@cratis/applications.react.mvvm/dialogs';
+
 
 @injectable()
 export class FeatureViewModel {
-    constructor(readonly query: ObserveCartForCurrentUser, readonly props: FeatureProps) {
-        query.subscribe(result => {
-            this.cart = result.data;
-        });
+    constructor(
+        readonly query: ObserveCartForCurrentUser, 
+        private readonly _dialogs: IDialogs) {
+        // query.subscribe(async result => {
+        //     this.cart = result.data;
+
+        //     await dialogs.showStandard('Hello', 'This is a message', DialogButtons.Ok);
+        // });
     }
 
     cart: Cart = new Cart();
+
+    async doStuff() {
+        const result = await this._dialogs.showStandard('Hello', 'This is a message', DialogButtons.Ok);
+        console.log(`Result: ${result}`);
+    }
+
 }

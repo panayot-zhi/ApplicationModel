@@ -4,6 +4,7 @@
 import 'reflect-metadata';
 import * as browser from './browser';
 import * as messaging from './messaging';
+import * as dialogs from './dialogs';
 import { Bindings } from './Bindings';
 import { withViewModel } from './withViewModel';
 import { MVVM, MVVMContext, MVVMProps } from './MVVMContext';
@@ -12,6 +13,7 @@ export {
     Bindings,
     browser,
     messaging,
+    dialogs,
     withViewModel,
     MVVM,
     MVVMContext,

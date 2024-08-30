@@ -33,6 +33,11 @@
             "import": "./dist/messaging/index.js",
             "require": "./dist/messaging/index.js",
             "types": "./dist/messaging/index.d.ts"
+        },
+        "./dialogs": {
+            "import": "./dist/dialogs/index.js",
+            "require": "./dist/dialogs/index.js",
+            "types": "./dist/dialogs/index.d.ts"
         }
     },
     "scripts": {
