@@ -6,6 +6,28 @@ import { ICommandResult } from './ICommandResult';
 import { ValidationResult } from '../validation/ValidationResult';
 import { Constructor, JsonSerializer } from '@cratis/fundamentals';
 
+
+/**
+ * Delegate type for the onSuccess callback.
+ */
+type OnSuccess = (<TResponse>(response: TResponse) => void) | (() => void);
+
+/**
+ * Delegate type for the onException callback.
+ */
+type OnException = (messages: string[], stackTrace: string) => void;
+
+/**
+ * Delegate type for the onUnauthorized callback.
+ */
+type OnUnauthorized = () => void;
+
+/**
+ * Delegate type for the onValidationFailure callback.
+ */
+type OnValidationFailure = (validationResults: ValidationResult[]) => void;
+
+
 /**
  * Represents the result from executing a {@link ICommand}.
  */
@@ -73,5 +95,53 @@ export class CommandResult<TResponse = {}> implements ICommandResult<TResponse> 
                 this.response = JsonSerializer.deserializeFromInstance(responseInstanceType, result.response) as any;
             }
         }
+    }
+
+    /**
+     * Set up a callback for when the command was successful.
+     * @param {OnSuccess} callback The callback to call when the command was successful.
+     * @returns {CommandResult} The instance of the command result.
+     */
+    onSuccess(callback: OnSuccess): CommandResult<TResponse> {
+        if (this.isSuccess) {
+            callback(this.response as TResponse);
+        }
+        return this;
+    }
+
+    /**
+     * Set up a callback for when the command failed with an exception.
+     * @param {OnException} callback The callback to call when the command had an exception.
+     * @returns {CommandResult} The instance of the command result.
+     */
+    onException(callback: OnException): CommandResult<TResponse> {
+        if (this.hasExceptions) {
+            callback(this.exceptionMessages, this.exceptionStackTrace);
+        }
+        return this;
+    }
+
+    /**
+     * Set up a callback for when the command was unauthorized.
+     * @param {OnUnauthorized} callback The callback to call when the command was unauthorized.
+     * @returns {CommandResult} The instance of the command result.
+     */
+    onUnauthorized(callback: OnUnauthorized): CommandResult<TResponse> {
+        if (!this.isAuthorized) {
+            callback();
+        }
+        return this;
+    }
+
+    /**
+     * Set up a callback for when the command had validation errors.
+     * @param {OnSuccess} callback The callback to call when the command was invalid.
+     * @returns {CommandResult} The instance of the command result.
+     */
+    onValidationFailure(callback: OnValidationFailure): CommandResult<TResponse> {
+        if (!this.isValid) {
+            callback(this.validationResults);
+        }
+        return this;
     }
 }
