@@ -10,12 +10,10 @@ import { CustomDialogRequest } from './Feature';
 @injectable()
 export class FeatureViewModel {
     constructor(
-        readonly query: ObserveCartForCurrentUser, 
+        readonly query: ObserveCartForCurrentUser,
         private readonly _dialogs: IDialogs) {
         // query.subscribe(async result => {
         //     this.cart = result.data;
-
-        //     await dialogs.showStandard('Hello', 'This is a message', DialogButtons.Ok);
         // });
     }
 

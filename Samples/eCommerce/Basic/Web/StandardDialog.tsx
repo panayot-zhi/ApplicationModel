@@ -18,28 +18,28 @@ export const StandardDialog = () => {
 
     const okFooter = (
         <>
-            <Button label="Ok" icon="pi pi-check" onClick={() => resolver(DialogResult.Success)} autoFocus />
+            <Button label="Ok" icon="pi pi-check" onClick={() => resolver(DialogResult.Ok)} autoFocus />
         </>
     );
 
     const okCancelFooter = (
         <>
-            <Button label="Ok" icon="pi pi-check" onClick={() => resolver(DialogResult.Success)} autoFocus />
-            <Button label="Cancel" icon="pi pi-times" onClick={() => resolver(DialogResult.Cancelled)} autoFocus />
+            <Button label="Ok" icon="pi pi-check" onClick={() => resolver(DialogResult.Ok)} autoFocus />
+            <Button label="Cancel" icon="pi pi-times" severity='secondary' onClick={() => resolver(DialogResult.Cancelled)} />
         </>
     );
 
     const yesNoFooter = (
         <>
-            <Button label="Yes" icon="pi pi-check" onClick={() => resolver(DialogResult.Success)} autoFocus />
-            <Button label="No" icon="pi pi-times" onClick={() => resolver(DialogResult.Cancelled)} autoFocus />
+            <Button label="Yes" icon="pi pi-check" onClick={() => resolver(DialogResult.Yes)} autoFocus />
+            <Button label="No" icon="pi pi-times" severity='secondary' onClick={() => resolver(DialogResult.No)} />
         </>
     );
 
     const yesNoCancelFooter = (
         <>
-            <Button label="Yes" icon="pi pi-check" onClick={() => resolver(DialogResult.Success)} autoFocus />
-            <Button label="No" icon="pi pi-times" onClick={() => resolver(DialogResult.Cancelled)} autoFocus />
+            <Button label="Yes" icon="pi pi-check" onClick={() => resolver(DialogResult.Yes)} autoFocus />
+            <Button label="No" icon="pi pi-times" severity='secondary' onClick={() => resolver(DialogResult.No)} />
         </>
     );
 
