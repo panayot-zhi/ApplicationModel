@@ -20,10 +20,10 @@ export class DialogMediatorHandler extends IDialogMediatorHandler {
     }
 
     /** @inheritdoc */
-    subscribe<TRequest extends {}, TResponse>(requestType: Constructor<TRequest>, requester: DialogRequest<TRequest, TResponse>, responder: DialogResolver<TResponse>): void {
+    subscribe<TRequest extends {}, TResponse>(requestType: Constructor<TRequest>, requester: DialogRequest<TRequest, TResponse>, resolver: DialogResolver<TResponse>): void {
         this._registrations.set(
             requestType,
-            new DialogRegistration<TRequest, TResponse>(requester, responder));
+            new DialogRegistration<TRequest, TResponse>(requester, resolver));
     }
 
     /** @inheritdoc */

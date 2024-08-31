@@ -9,8 +9,8 @@ import { DialogMediatorContext, useDialogMediator } from './DialogMediator';
 
 export interface IDialogContext<TRequest extends {}, TResponse> {
     request: TRequest;
-    setRequest: (request: TRequest) => void;
     resolver: DialogResolver<TResponse>;
+    actualResolver?: DialogResolver<TResponse>;
 }
 
 export const DialogContext = React.createContext<IDialogContext<any, any>>(undefined as any);
@@ -46,20 +46,20 @@ const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<
     const dialogContextValue = useRef<IDialogContext<TRequest, TResponse>>(undefined as any);
 
     const requester = (request: TRequest, resolver: DialogResolver<TResponse>) => {
-        dialogContextValue.current.setRequest(request);
+        dialogContextValue.current.request = request;
+        dialogContextValue.current.actualResolver = resolver;
         setIsVisible(true);
     };
 
     const resolver = (response: TResponse) => {
         setIsVisible(false);
+        dialogContextValue.current.actualResolver?.(response);
     };
 
     dialogContextValue.current = useMemo(() => {
         return {
             request: undefined as any,
-            setRequest: (request: TRequest) => {
-                dialogContextValue.current!.request = request;
-            },
+            actualResolver: undefined as any,
             resolver
         }
     }, []);
