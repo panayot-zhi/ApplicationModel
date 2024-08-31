@@ -4,7 +4,7 @@
 import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { Constructor } from '@cratis/fundamentals';
 import { DialogResolver } from './DialogRegistration';
-import { DialogMediatorContext, useDialogMediator } from './DialogMediator';
+import { useDialogMediator } from './DialogMediator';
 
 
 export interface IDialogContext<TRequest extends {}, TResponse> {
