@@ -18,6 +18,13 @@ export abstract class IDialogMediatorHandler {
     abstract subscribe<TRequest extends {}, TResponse>(requestType: Constructor<TRequest>, requester: DialogRequest<TRequest, TResponse>, resolver: DialogResolver<TResponse>): void;
 
     /**
+     * Check if there is a subscriber for a given request type.
+     * @param {Constructor} requestType Type of request.
+     * @returns {boolean} True if there is a subscriber, false otherwise.
+     */
+    abstract hasSubscriber<TRequest extends {}>(requestType: Constructor<TRequest>): boolean;
+
+    /**
      * Show a dialog based on a request.
      * @param {*} request An instance of the dialog request.
      */

@@ -22,6 +22,19 @@ export interface DialogMediatorProps {
      * The dialog mediator context.
      */
     handler: IDialogMediatorHandler;
+
+    /**
+     * Parent handler, if any.
+     */
+    parentHandler?: IDialogMediatorHandler;
+}
+
+/**
+ * Use the dialog mediator.
+ * @returns The dialog mediator.
+ */
+export const useDialogMediator = () => {
+    return React.useContext(DialogMediatorContext);
 }
 
 /**
@@ -35,4 +48,4 @@ export const DialogMediator = (props: DialogMediatorProps) => {
             {props.children}
         </DialogMediatorContext.Provider>
     );
-}
+};

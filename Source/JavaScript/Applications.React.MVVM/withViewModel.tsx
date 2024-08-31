@@ -12,7 +12,8 @@ import {
     DialogMediatorHandler,
     Dialogs,
     IDialogMediatorHandler,
-    IDialogs
+    IDialogs,
+    useDialogMediator
 } from './dialogs';
 
 /**
@@ -34,9 +35,10 @@ export function withViewModel<TViewModel extends {}, TProps extends {} = {}>(vie
         const params = useParams();
         const dialogMediatorContext = useRef<IDialogMediatorHandler | null>(null);
         const vm = useRef<TViewModel | null>(null);
+        const parentDialogMediator = useDialogMediator();
 
         dialogMediatorContext.current = useMemo(() => {
-            return new DialogMediatorHandler();
+            return new DialogMediatorHandler(parentDialogMediator);
         }, []);
 
         vm.current = useMemo(() => {

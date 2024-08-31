@@ -8,7 +8,7 @@ import { DialogMediatorContext } from './DialogMediator';
 
 interface DialogWrapperProps<TRequest extends {}> {
     children?: JSX.Element | JSX.Element[];
-    isVisible: Boolean;
+    isVisible: boolean;
 }
 
 const DialogWrapper = <TRequest extends {}, TResponse>(props: DialogWrapperProps<TRequest>) => {

@@ -11,6 +11,14 @@ import { DialogRegistration, DialogRequest, DialogResolver } from './DialogRegis
 export class DialogMediatorHandler extends IDialogMediatorHandler {
     private _registrations: WeakMap<Constructor, DialogRegistration<any, any>> = new WeakMap();
 
+    /**
+     * Initializes a new instance of {@link DialogMediatorHandler}
+     * @param {IDialogMediatorHandler} _parent Optional parent handler.
+     */
+    constructor(readonly _parent: IDialogMediatorHandler | null = null) {
+        super();
+    }
+
     /** @inheritdoc */
     subscribe<TRequest extends {}, TResponse>(requestType: Constructor<TRequest>, requester: DialogRequest<TRequest, TResponse>, responder: DialogResolver<TResponse>): void {
         this._registrations.set(
@@ -19,8 +27,17 @@ export class DialogMediatorHandler extends IDialogMediatorHandler {
     }
 
     /** @inheritdoc */
+    hasSubscriber<TRequest extends {}>(requestType: Constructor<TRequest>): boolean {
+        return this._registrations.has(requestType);
+    }
+
+    /** @inheritdoc */
     show<TRequest extends {}, TResponse>(request: TRequest): Promise<TResponse> {
         if (!this._registrations.has(request.constructor as Constructor)) {
+            if (this._parent) {
+                return this._parent.show(request);
+            }
+
             return Promise.reject('No registration found for request');
         }
 
