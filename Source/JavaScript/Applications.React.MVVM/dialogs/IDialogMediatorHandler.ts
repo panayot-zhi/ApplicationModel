@@ -1,0 +1,25 @@
+// Copyright (c) Cratis. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+import { Constructor } from '@cratis/fundamentals';
+import { DialogRequest, DialogResolver } from './DialogRegistration';
+
+/**
+ * Defines a system that can handle dialog requests and responses.
+ */
+export abstract class IDialogMediatorHandler {
+
+    /**
+     * Subscribes to a request type.
+     * @param {Constructor} requestType Type of request.
+     * @param {DialogRequest} requester The delegate that will be called when a request is made.
+     * @param {DialogResolver} resolver The delegate that will be called when dialog is typically closed and response is resolved.
+     */
+    abstract subscribe<TRequest extends {}, TResponse>(requestType: Constructor<TRequest>, requester: DialogRequest<TRequest, TResponse>, resolver: DialogResolver<TResponse>): void;
+
+    /**
+     * Show a dialog based on a request.
+     * @param {*} request An instance of the dialog request.
+     */
+    abstract show<TRequest extends {}, TResponse>(request: TRequest): Promise<TResponse>;
+}

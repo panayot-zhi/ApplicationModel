@@ -5,7 +5,7 @@ import { DialogResult } from '@cratis/applications.react/dialogs';
 import { DialogButtons } from './DialogButtons';
 import { IDialogs } from './IDialogs';
 import { StandardDialogRequest } from './StandardDialogRequest';
-import { IDialogMediatorContext } from './useDialogRequest';
+import { IDialogMediatorHandler } from './IDialogMediatorHandler';
 
 /**
  * Represents an implementation of {@link IDialogs}.
@@ -15,7 +15,7 @@ export class Dialogs extends IDialogs {
     /**
      * Initializes a new instance of the {@link Dialogs} class.
      */
-    constructor(private readonly _dialogMediatorContext: IDialogMediatorContext) {
+    constructor(private readonly _dialogMediatorContext: IDialogMediatorHandler) {
         super();
     }
 

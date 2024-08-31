@@ -3,30 +3,15 @@
 
 import React, { useContext, useEffect, useMemo } from 'react';
 import { Constructor } from '@cratis/fundamentals';
+import { DialogResolver } from './DialogRegistration';
+import { DialogMediatorContext } from './DialogMediator';
 
-
-export type DialogResolver<TResponse> = (response: TResponse) => void;
-export type DialogRequest<TRequest extends {}, TResponse> = (request: TRequest, resolve: DialogResolver<TResponse>) => void;
-
-
-export interface DialogRegistration<TRequest extends {}, TResponse> {
-    type: Constructor;
-    requester: DialogRequest<TRequest, TResponse>;
-    responder: DialogResolver<TResponse>;
-}
-
-export interface IDialogContext {
-}
-
-export const DialogContext = React.createContext<IDialogContext>(undefined as any);
-
-
-export interface DialogWrapperProps<TRequest extends {}> {
+interface DialogWrapperProps<TRequest extends {}> {
     children?: JSX.Element | JSX.Element[];
     isVisible: Boolean;
 }
 
-export const DialogWrapper = <TRequest extends {}, TResponse>(props: DialogWrapperProps<TRequest>) => {
+const DialogWrapper = <TRequest extends {}, TResponse>(props: DialogWrapperProps<TRequest>) => {
     return (
         <>
             <div>
@@ -36,54 +21,8 @@ export const DialogWrapper = <TRequest extends {}, TResponse>(props: DialogWrapp
     )
 }
 
-export abstract class IDialogMediatorContext {
-    abstract subscribe<TRequest extends {}, TResponse>(requestType: Constructor<TRequest>, requester: DialogRequest<TRequest, TResponse>, responder: DialogResolver<TResponse>): void;
-    abstract show<TRequest extends {}, TResponse>(request: TRequest): Promise<TResponse>;
-}
-
-export class DialogMediatorContextImplementation extends IDialogMediatorContext {
-    private _registrations: DialogRegistration<any, any>[] = [];
-
-    /** @inheritdoc */
-    subscribe<TRequest extends {}, TResponse>(requestType: Constructor<TRequest>, requester: DialogRequest<TRequest, TResponse>, responder: DialogResolver<TResponse>): void {
-        this._registrations.push({
-            type: requestType,
-            requester,
-            responder
-        });
-    }
-
-    /** @inheritdoc */
-    show<TRequest extends {}, TResponse>(request: TRequest): Promise<TResponse> {
-        const promise = new Promise<TResponse>((resolve, reject) => {
-            const registration = this._registrations.find(_ => _.type === request.constructor);
-            if (registration) {
-                registration.requester(request, resolve);
-            }
-        });
-
-        return promise;
-    }
-}
-
-
-export const DialogMediatorContext = React.createContext<IDialogMediatorContext>(undefined as any);
-
-export interface DialogMediatorProps {
-    children?: JSX.Element | JSX.Element[];
-    context: IDialogMediatorContext;
-}
-
 interface IDialogRequestProps {
     children?: JSX.Element | JSX.Element[];
-}
-
-export const DialogMediator = (props: DialogMediatorProps) => {
-    return (
-        <DialogMediatorContext.Provider value={props.context}>
-            {props.children}
-        </DialogMediatorContext.Provider>
-    );
 }
 
 const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<TRequest>): [React.FC<IDialogRequestProps>, DialogResolver<TResponse>] => {
@@ -114,6 +53,11 @@ const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<
     return [ConfiguredWrapper, responder];
 };
 
+/**
+ * Use a dialog request for showing a dialog.
+ * @param request Type of request to use that represents a request that will be made by your view model.
+ * @returns A tuple with a component to use for wrapping your dialog and a delegate used when the dialog is resolved with the result expected.
+ */
 export const useDialogRequest = <TRequest extends {}, TResponse>(request: Constructor<TRequest>): [React.FC<IDialogRequestProps>, DialogResolver<TResponse>] => {
     const [DialogWrapper, responder] = useConfiguredWrapper<TRequest, TResponse>(request);
     return [DialogWrapper, responder];
