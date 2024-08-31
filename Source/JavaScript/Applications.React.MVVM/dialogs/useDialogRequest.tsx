@@ -1,10 +1,23 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { Constructor } from '@cratis/fundamentals';
 import { DialogResolver } from './DialogRegistration';
-import { DialogMediatorContext } from './DialogMediator';
+import { DialogMediatorContext, useDialogMediator } from './DialogMediator';
+
+
+export interface IDialogContext<TRequest extends {}, TResponse> {
+    request: TRequest;
+    setRequest: (request: TRequest) => void;
+    resolver: DialogResolver<TResponse>;
+}
+
+export const DialogContext = React.createContext<IDialogContext<any, any>>(undefined as any);
+
+export const useDialogContext = <TRequest extends {}, TResponse>(): IDialogContext<TRequest, TResponse> => {
+    return useContext(DialogContext);
+}
 
 interface DialogWrapperProps<TRequest extends {}> {
     children?: JSX.Element | JSX.Element[];
@@ -25,32 +38,48 @@ interface IDialogRequestProps {
     children?: JSX.Element | JSX.Element[];
 }
 
-const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<TRequest>): [React.FC<IDialogRequestProps>, DialogResolver<TResponse>] => {
-    const mediatorContext = useContext(DialogMediatorContext);
+const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<TRequest>):
+    [React.FC<IDialogRequestProps>, IDialogContext<TRequest, TResponse>, DialogResolver<TResponse>] => {
+    const mediator = useDialogMediator();
     const [isVisible, setIsVisible] = React.useState(false);
 
+    const dialogContextValue = useRef<IDialogContext<TRequest, TResponse>>(undefined as any);
+
     const requester = (request: TRequest, resolver: DialogResolver<TResponse>) => {
+        dialogContextValue.current.setRequest(request);
         setIsVisible(true);
     };
 
-    const responder = (response: TResponse) => {
+    const resolver = (response: TResponse) => {
         setIsVisible(false);
     };
 
+    dialogContextValue.current = useMemo(() => {
+        return {
+            request: undefined as any,
+            setRequest: (request: TRequest) => {
+                dialogContextValue.current!.request = request;
+            },
+            resolver
+        }
+    }, []);
+
     useEffect(() => {
-        mediatorContext.subscribe(type, requester, responder);
+        mediator.subscribe(type, requester, resolver);
     }, []);
 
     const ConfiguredWrapper: React.FC<IDialogRequestProps> = useMemo(() => {
         return ({ children }) => {
             return (
                 <DialogWrapper isVisible={isVisible}>
-                    {children}
+                    <DialogContext.Provider value={dialogContextValue.current}>
+                        {children}
+                    </DialogContext.Provider>
                 </DialogWrapper>);
         }
     }, [isVisible]);
 
-    return [ConfiguredWrapper, responder];
+    return [ConfiguredWrapper, dialogContextValue.current, resolver];
 };
 
 /**
@@ -58,7 +87,7 @@ const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<
  * @param request Type of request to use that represents a request that will be made by your view model.
  * @returns A tuple with a component to use for wrapping your dialog and a delegate used when the dialog is resolved with the result expected.
  */
-export const useDialogRequest = <TRequest extends {}, TResponse>(request: Constructor<TRequest>): [React.FC<IDialogRequestProps>, DialogResolver<TResponse>] => {
-    const [DialogWrapper, responder] = useConfiguredWrapper<TRequest, TResponse>(request);
-    return [DialogWrapper, responder];
+export const useDialogRequest = <TRequest extends {}, TResponse>(request: Constructor<TRequest>): [React.FC<IDialogRequestProps>, IDialogContext<TRequest, TResponse>, DialogResolver<TResponse>] => {
+    const [DialogWrapper, dialogContext, responder] = useConfiguredWrapper<TRequest, TResponse>(request);
+    return [DialogWrapper, dialogContext, responder];
 };

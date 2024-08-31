@@ -33,7 +33,7 @@ export class DialogMediatorHandler extends IDialogMediatorHandler {
 
     /** @inheritdoc */
     show<TRequest extends {}, TResponse>(request: TRequest): Promise<TResponse> {
-        if (!this._registrations.has(request.constructor as Constructor)) {
+        if (!this.hasSubscriber(request.constructor as Constructor)) {
             if (this._parent) {
                 return this._parent.show(request);
             }

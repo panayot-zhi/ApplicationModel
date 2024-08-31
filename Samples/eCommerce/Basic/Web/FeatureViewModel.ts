@@ -4,6 +4,7 @@
 import { injectable } from 'tsyringe';
 import { Cart, CartForCurrentUser, ObserveCartForCurrentUser } from './API/Carts';
 import { DialogButtons, IDialogs } from '@cratis/applications.react.mvvm/dialogs';
+import { CustomDialogRequest } from './Feature';
 
 
 @injectable()
@@ -21,7 +22,7 @@ export class FeatureViewModel {
     cart: Cart = new Cart();
 
     async doStuff() {
-        const result = await this._dialogs.showStandard('Hello', 'This is a message', DialogButtons.Ok);
+        const result = await this._dialogs.show(new CustomDialogRequest());
         console.log(`Result: ${result}`);
     }
 

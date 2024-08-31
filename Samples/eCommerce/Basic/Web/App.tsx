@@ -11,11 +11,12 @@ import { Catalog } from './Catalog';
 import { ObservingCatalog } from './ObservingCatalog';
 import { blah } from './Components/blah';
 import { StandardDialogs } from '@cratis/applications.react.mvvm/dialogs';
+import { StandardDialog } from './StandardDialog';
 
 export const App = () => {
     return (
         <ApplicationModel microservice='e-commerce'>
-            <StandardDialogs component={blah}>
+            <StandardDialogs component={StandardDialog}>
                 <MVVM>
                     <BrowserRouter>
                         <Feature blah='Horse' />

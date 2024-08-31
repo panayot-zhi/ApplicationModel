@@ -12,17 +12,29 @@ import { IDialogMediatorHandler } from './IDialogMediatorHandler';
 export interface IStandardDialogContext {
 }
 
-export const StandardDialogContext = React.createContext<IStandardDialogContext>({
-    component: () => <></>
-});
+export const StandardDialogContext = React.createContext<IStandardDialogContext>({});
 
 export interface StandardDialogsProps {
     children?: JSX.Element | JSX.Element[];
-    component: React.FunctionComponent;
+    component: React.FC | React.FC<any>;
 }
 
+const StandardDialogWrapper = (props: StandardDialogsProps) => {
+    const [StandardDialog] = useDialogRequest<StandardDialogRequest, DialogResult>(StandardDialogRequest);
+
+    return (
+        <StandardDialogContext.Provider value={{}}>
+            <>
+                {props.children}
+                <StandardDialog>
+                    <props.component />
+                </StandardDialog>
+            </>
+        </StandardDialogContext.Provider>
+    )
+};
+
 export const StandardDialogs = (props: StandardDialogsProps) => {
-    const [StandardDialog, resolver] = useDialogRequest<StandardDialogRequest, DialogResult>(StandardDialogRequest);
 
     const mediatorHandler = useRef<IDialogMediatorHandler | null>(null);
     mediatorHandler.current = useMemo(() => {
@@ -30,15 +42,10 @@ export const StandardDialogs = (props: StandardDialogsProps) => {
     }, []);
 
     return (
-        <StandardDialogContext.Provider value={{}}>
-            <DialogMediator handler={mediatorHandler.current!}>
-                <>
-                    {props.children}
-                    <StandardDialog>
-                        <props.component />
-                    </StandardDialog>
-                </>
-            </DialogMediator>
-        </StandardDialogContext.Provider>
+        <DialogMediator handler={mediatorHandler.current!}>
+            <StandardDialogWrapper component={props.component}>
+                {props.children}
+            </StandardDialogWrapper>
+        </DialogMediator>
     );
 };

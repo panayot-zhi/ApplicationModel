@@ -14,12 +14,11 @@ export interface FeatureProps {
     blah: string;
 }
 
-
-export class MyRequest { }
+export class CustomDialogRequest {}
 
 
 export const Feature = withViewModel<FeatureViewModel, FeatureProps>(FeatureViewModel, ({ viewModel, props }) => {
-    // const [MyDialog, responder] = useDialogRequest<StandardDialogRequest, string>(StandardDialogRequest);
+    const [MyDialog, context, resolver] = useDialogRequest<CustomDialogRequest, string>(CustomDialogRequest);
     const identity = useIdentity();
     return (
         <div>
@@ -34,14 +33,13 @@ export const Feature = withViewModel<FeatureViewModel, FeatureProps>(FeatureView
 
             <button onClick={() => viewModel.doStuff()}>Open dialog</button>
 
-            {/* <MyDialog>
-                <Dialog header="Header" visible={true} onHide={() => responder('blah')}>
+            <MyDialog>
+                <Dialog header="Awesome" visible={true} onHide={() => resolver('blah')}>
                     <h2>Dialog</h2>
                     Hello world
-                    <button onClick={() => responder('asaddas')}>We're done</button>
+                    <button onClick={() => resolver('asaddas')}>We're done</button>
                 </Dialog>
-
-            </MyDialog> */}
+            </MyDialog>
         </div>
     );
 });
