@@ -17,7 +17,7 @@ export const DialogContext = React.createContext<IDialogContext<any, any>>(undef
 
 export const useDialogContext = <TRequest extends {}, TResponse>(): IDialogContext<TRequest, TResponse> => {
     return useContext(DialogContext);
-}
+};
 
 interface DialogWrapperProps<TRequest extends {}> {
     children?: JSX.Element | JSX.Element[];
@@ -31,8 +31,8 @@ const DialogWrapper = <TRequest extends {}, TResponse>(props: DialogWrapperProps
                 {props.isVisible && props.children}
             </div>
         </>
-    )
-}
+    );
+};
 
 interface IDialogRequestProps {
     children?: JSX.Element | JSX.Element[];
@@ -61,7 +61,7 @@ const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<
             request: undefined as any,
             actualResolver: undefined as any,
             resolver
-        }
+        };
     }, []);
 
     useEffect(() => {
@@ -69,14 +69,14 @@ const useConfiguredWrapper = <TRequest extends {}, TResponse>(type: Constructor<
     }, []);
 
     const ConfiguredWrapper: React.FC<IDialogRequestProps> = useMemo(() => {
-        return ({ children }) => {
+        return (props: IDialogRequestProps) => {
             return (
                 <DialogWrapper isVisible={isVisible}>
                     <DialogContext.Provider value={dialogContextValue.current}>
-                        {children}
+                        {props.children}
                     </DialogContext.Provider>
                 </DialogWrapper>);
-        }
+        };
     }, [isVisible]);
 
     return [ConfiguredWrapper, dialogContextValue.current, resolver];

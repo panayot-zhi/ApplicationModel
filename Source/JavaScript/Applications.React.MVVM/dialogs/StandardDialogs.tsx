@@ -31,7 +31,7 @@ const StandardDialogWrapper = (props: StandardDialogsProps) => {
                 </StandardDialog>
             </>
         </StandardDialogContext.Provider>
-    )
+    );
 };
 
 export const StandardDialogs = (props: StandardDialogsProps) => {

@@ -35,7 +35,7 @@ export interface DialogMediatorProps {
  */
 export const useDialogMediator = () => {
     return React.useContext(DialogMediatorContext);
-}
+};
 
 /**
  * Provide the dialog mediator to the children.
