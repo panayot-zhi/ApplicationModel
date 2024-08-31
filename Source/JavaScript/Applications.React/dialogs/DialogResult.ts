@@ -2,7 +2,8 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 export enum DialogResult {
-    Success,
-    Failed,
-    Cancelled
+    Yes = 1,
+    No = 2,
+    Ok = 3,
+    Cancelled = 4
 }
