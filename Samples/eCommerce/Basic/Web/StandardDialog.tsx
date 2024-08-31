@@ -5,7 +5,6 @@ import { Dialog } from 'primereact/dialog'
 import { DialogButtons, StandardDialogRequest, useDialogContext } from '@cratis/applications.react.mvvm/dialogs'
 import { DialogResult } from '@cratis/applications.react/dialogs'
 import { Button } from 'primereact/button';
-import { s } from 'vite/dist/node/types.d-aGj9QkWt';
 
 export const StandardDialog = () => {
     const { request, resolver } = useDialogContext<StandardDialogRequest, DialogResult>();
