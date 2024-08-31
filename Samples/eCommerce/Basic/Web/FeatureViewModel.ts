@@ -5,16 +5,27 @@ import { injectable } from 'tsyringe';
 import { Cart, CartForCurrentUser, ObserveCartForCurrentUser } from './API/Carts';
 import { DialogButtons, IDialogs } from '@cratis/applications.react.mvvm/dialogs';
 import { CustomDialogRequest } from './Feature';
+import { IMessenger } from '@cratis/applications.react.mvvm/messaging';
+
+export class Something {
+    constructor(readonly value: string) {
+    }
+}
 
 
 @injectable()
 export class FeatureViewModel {
     constructor(
         readonly query: ObserveCartForCurrentUser,
+        private readonly _messenger: IMessenger,
         private readonly _dialogs: IDialogs) {
         // query.subscribe(async result => {
         //     this.cart = result.data;
         // });
+
+        _messenger.subscribe(Something, something => {
+            console.log(`Got something: ${something.value}`);
+        });
     }
 
     cart: Cart = new Cart();
@@ -22,6 +33,8 @@ export class FeatureViewModel {
     async doStuff() {
         const result = await this._dialogs.show(new CustomDialogRequest());
         console.log(`Result: ${result}`);
+
+        this._messenger.publish(new Something(`Hello: ${result}`));
     }
 
     async doOtherStuff() {
