@@ -26,4 +26,8 @@ export class FeatureViewModel {
         console.log(`Result: ${result}`);
     }
 
+    async doOtherStuff() {
+        const result = await this._dialogs.showStandard('Hello', 'This is a message', DialogButtons.Ok);
+        console.log(`Result: ${result}`);
+    }
 }

@@ -32,6 +32,8 @@ export const Feature = withViewModel<FeatureViewModel, FeatureProps>(FeatureView
             </DataTable>
 
             <button onClick={() => viewModel.doStuff()}>Open dialog</button>
+            <br/>
+            <button onClick={() => viewModel.doOtherStuff()}>Open standard dialog</button>
 
             <MyDialog>
                 <Dialog header="Awesome" visible={true} onHide={() => resolver('blah')}>
