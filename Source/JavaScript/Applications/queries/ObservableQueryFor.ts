@@ -22,6 +22,8 @@ import { Globals } from '../Globals';
  */
 export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements IObservableQueryFor<TDataType, TArguments> {
     private _microservice: string;
+    private _connection?: IObservableQueryConnection<TDataType>;
+
     abstract readonly route: string;
     abstract readonly routeTemplate: Handlebars.TemplateDelegate<any>;
     abstract readonly defaultValue: TDataType;
@@ -47,8 +49,11 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
     /** @inheritdoc */
     subscribe(callback: OnNextResult<QueryResult<TDataType>>, args?: TArguments): ObservableQuerySubscription<TDataType> {
         let actualRoute = this.route;
-        let connection: IObservableQueryConnection<TDataType>;
         const connectionQueryArguments: any = {};
+
+        if (this._connection) {
+            this._connection.disconnect();
+        }
 
         if (this.paging && this.paging.pageSize > 0) {
             connectionQueryArguments.pageSize = this.paging.pageSize;
@@ -61,14 +66,14 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
         }
 
         if (!ValidateRequestArguments(this.constructor.name, this.requestArguments, args)) {
-            connection = new NullObservableQueryConnection(this.defaultValue);
+            this._connection = new NullObservableQueryConnection(this.defaultValue);
         } else {
             actualRoute = this.routeTemplate(args);
-            connection = new ObservableQueryConnection<TDataType>(actualRoute, this._microservice);
+            this._connection = new ObservableQueryConnection<TDataType>(actualRoute, this._microservice);
         }
 
-        const subscriber = new ObservableQuerySubscription(connection);
-        connection.connect(data => {
+        const subscriber = new ObservableQuerySubscription(this._connection);
+        this._connection.connect(data => {
             const result: any = data;
             try {
                 if (this.enumerable) {
