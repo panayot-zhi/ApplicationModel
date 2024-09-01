@@ -39,7 +39,6 @@ function useQueryInternal<TDataType, TQuery extends IQueryFor<TDataType>, TArgum
             try {
                 const queryResult = await performer(queryInstance.current!);
                 setResult(QueryResultWithState.fromQueryResult(queryResult, false));
-                console.log('Query executed');
             } catch (error) {
                 // Ignore
             }
