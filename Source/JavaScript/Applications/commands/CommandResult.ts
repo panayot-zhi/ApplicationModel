@@ -45,6 +45,20 @@ export class CommandResult<TResponse = {}> implements ICommandResult<TResponse> 
         response: null
     }, Object, false);
 
+    static failed = (exceptionMessages: string[]): CommandResult => {
+        return new CommandResult({
+            correlationId: Guid.empty.toString(),
+            isSuccess: false,
+            isAuthorized: true,
+            isValid: true,
+            hasExceptions: true,
+            validationResults: [],
+            exceptionMessages: exceptionMessages,
+            exceptionStackTrace: '',
+            response: null
+        }, Object, false);
+    };
+
     /** @inheritdoc */
     readonly correlationId: Guid;
 
