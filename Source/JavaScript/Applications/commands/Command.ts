@@ -26,7 +26,7 @@ export abstract class Command<TCommandContent = {}, TCommandResponse = {}> imple
     private _initialValues: any = {};
     private _hasChanges = false;
     private _callbacks: Callback[] = [];
-    
+
     /**
      * Initializes a new instance of the {@link Command<,>} class.
      * @param _responseType Type of response.
@@ -62,18 +62,22 @@ export abstract class Command<TCommandContent = {}, TCommandResponse = {}> imple
             headers[Globals.microserviceHttpHeader] = Globals.microservice;
         }
 
-        const response = await fetch(actualRoute, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload)
-        });
-        this.setInitialValuesFromCurrentValues();
-
         try {
+            const response = await fetch(actualRoute, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(payload)
+            });
+            this.setInitialValuesFromCurrentValues();
+
+            if( response.status === 404) {
+                return CommandResult.failed([`Command not found at route '${actualRoute}'`]) as CommandResult<TCommandResponse>;
+            }
+
             const result = await response.json();
             return new CommandResult(result, this._responseType, this._isResponseTypeEnumerable);
         } catch (ex) {
-            return CommandResult.empty as CommandResult<TCommandResponse>;
+            return CommandResult.failed([`Error during server call: ${ex}`]) as CommandResult<TCommandResponse>;
         }
     }
 
