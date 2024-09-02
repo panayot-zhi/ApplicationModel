@@ -87,7 +87,10 @@ public static class Generator
         var directoriesWithContent = directories.Distinct().Select(_ => new DirectoryInfo(_));
         foreach (var directory in directoriesWithContent)
         {
-            var exports = directory.GetFiles("*.ts").Select(_ => $"./{Path.GetFileNameWithoutExtension(_.Name)}");
+            var exports = directory
+                .GetFiles("*.ts")
+                .Select(_ => $"./{Path.GetFileNameWithoutExtension(_.Name)}")
+                .OrderBy(_ => _.Split('/')[^1]);
             var descriptor = new IndexDescriptor(exports);
             var content = TemplateTypes.Index(descriptor);
             await File.WriteAllTextAsync(Path.Join(directory.FullName, "index.ts"), content);

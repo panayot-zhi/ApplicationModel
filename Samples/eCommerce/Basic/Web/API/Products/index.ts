@@ -4,9 +4,9 @@
 
 /* eslint-disable sort-imports */
 // eslint-disable-next-line header/header
-export * from './Product';
-export * from './SetStockForProduct';
-export * from './SetPrice';
 export * from './AddProduct';
-export * from './ObserveAllProducts';
 export * from './AllProducts';
+export * from './ObserveAllProducts';
+export * from './Product';
+export * from './SetPrice';
+export * from './SetStockForProduct';

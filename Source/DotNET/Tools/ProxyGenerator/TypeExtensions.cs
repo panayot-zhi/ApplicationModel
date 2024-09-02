@@ -307,7 +307,7 @@ public static class TypeExtensions
             type,
             type.GetTargetType().Type,
             propertyDescriptors,
-            imports,
+            imports.ToOrderedImports(),
             typesInvolved);
     }
 
@@ -343,7 +343,7 @@ public static class TypeExtensions
             targetType.Constructor,
             isEnumerable,
             isSubject || isAsyncEnumerable,
-            []);
+            Enumerable.Empty<ImportStatement>().ToOrderedImports());
     }
 
     /// <summary>

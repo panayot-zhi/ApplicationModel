@@ -68,7 +68,7 @@ public static class QueryExtensions
             responseModel.Constructor,
             responseModel.IsEnumerable,
             responseModel.IsObservable,
-            imports,
+            imports.ToOrderedImports(),
             method.GetArgumentDescriptors(),
             propertyDescriptors,
             [.. typesInvolved, .. additionalTypesInvolved]);

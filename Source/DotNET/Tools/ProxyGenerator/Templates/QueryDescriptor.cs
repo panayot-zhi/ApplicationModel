@@ -31,7 +31,7 @@ public record QueryDescriptor(
     string Constructor,
     bool IsEnumerable,
     bool IsObservable,
-    IEnumerable<ImportStatement> Imports,
+    IOrderedEnumerable<ImportStatement> Imports,
     IEnumerable<RequestArgumentDescriptor> Arguments,
     IEnumerable<PropertyDescriptor> Properties,
     IEnumerable<Type> TypesInvolved) : IDescriptor;
