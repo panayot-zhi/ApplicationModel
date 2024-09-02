@@ -1,9 +1,9 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-export const AddQueryStringToImports = (queryString: string) => {
+export const AddQueryStringToReferences = (queryString: string) => {
     return {
-        name: 'add-query-string-to-imports',
+        name: 'add-query-string-to-references',
         enforce: 'post', // Ensure it runs after the default processes
         generateBundle(options, bundle) {
             for (const file in bundle) {
