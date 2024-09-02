@@ -15,5 +15,5 @@ public record TypeDescriptor(
     Type Type,
     string Name,
     IEnumerable<PropertyDescriptor> Properties,
-    IEnumerable<ImportStatement> Imports,
+    IOrderedEnumerable<ImportStatement> Imports,
     IEnumerable<Type> TypesInvolved) : IDescriptor;

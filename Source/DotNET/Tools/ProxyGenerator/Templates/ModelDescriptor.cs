@@ -18,10 +18,10 @@ public record ModelDescriptor(
     string Constructor,
     bool IsEnumerable,
     bool IsObservable,
-    IEnumerable<ImportStatement> Imports)
+    IOrderedEnumerable<ImportStatement> Imports)
 {
     /// <summary>
     /// Represents an empty <see cref="ModelDescriptor"/>.
     /// </summary>
-    public static readonly ModelDescriptor Empty = new(null!, string.Empty, string.Empty, false, false, []);
+    public static readonly ModelDescriptor Empty = new(null!, string.Empty, string.Empty, false, false, Enumerable.Empty<ImportStatement>().OrderBy(_ => _.Module));
 }

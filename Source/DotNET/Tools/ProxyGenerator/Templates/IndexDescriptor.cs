@@ -7,4 +7,4 @@ namespace Cratis.Applications.ProxyGenerator.Templates;
 /// Describes what should be available in the index file for a module.
 /// </summary>
 /// <param name="Exports">Files to export.</param>
-public record IndexDescriptor(IEnumerable<string> Exports);
+public record IndexDescriptor(IOrderedEnumerable<string> Exports);
