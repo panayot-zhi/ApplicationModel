@@ -9,17 +9,13 @@ export const AddQueryStringToReferences = (queryString: string) => {
             for (const file in bundle) {
                 const chunk = bundle[file];
                 if (chunk.type === 'chunk') {
-                    chunk.code = chunk.code.replace(
-                        `/(import\s+.*?from\s+['"])(.*?)(['"])/g, '$1$2?${queryString}$3'`
-                    );
-                    chunk.code = chunk.code.replace(
-                        `/(export\s+.*?from\s+['"])(.*?)(['"])/g, '$1$2?${queryString}$3'`
-                    );
+                    chunk.code = chunk.code.replace(/(import\s+.*?from\s+['"])(.*?)(['"])/g, `$1$2?${queryString}$3`);
+                    chunk.code = chunk.code.replace(/(export\s+.*?from\s+['"])(.*?)(['"])/g, `$1$2?${queryString}$3`);
                 }
 
                 if (chunk.type === 'asset' && chunk.fileName.endsWith('.css')) {
                     // Modify CSS url() references
-                    chunk.source = chunk.source.replace(/(url\(['"]?)(.*?)(['"]?\))/g, '$1$2?x-cratis-microservice=accounts$3');
+                    chunk.source = chunk.source.replace(/(url\(\/['"]?)(.*?)(['"]?\))/g, `$1$2?${queryString}$3`);
                 }
             }
         },
