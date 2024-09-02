@@ -16,7 +16,7 @@ public static class ImportStatementExtensions
     public static IOrderedEnumerable<ImportStatement> ToOrderedImports(this IEnumerable<ImportStatement> imports) =>
         imports.Order(new ImportStatementComparer());
 
-    class ImportStatementComparer : IComparer<ImportStatement>
+    sealed class ImportStatementComparer : IComparer<ImportStatement>
     {
         public int Compare(ImportStatement? x, ImportStatement? y)
         {
