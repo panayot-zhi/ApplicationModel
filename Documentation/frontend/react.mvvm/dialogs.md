@@ -194,7 +194,7 @@ export class CustomDialogRequest {
     }
 }
 
-export const CustomDialog = (props: CustomDialogRequest) => {
+export const CustomDialog = () => {
     const { request, resolver } = useDialogContext<CustomDialogRequest, string>();
 
     return (
@@ -230,7 +230,7 @@ import { CustomDialog, CustomDialogRequest } from './CustomDialog';
 export const Feature = withViewModel<FeatureViewModel>(FeatureViewModel, ({ viewModel }) => {
 
     // Use the dialog request to get a wrapper for rendering our dialog
-    const [CustomDialogWrapper, context, resolver] = useDialogRequest<CustomDialogRequest, string>(CustomDialogRequest);
+    const [CustomDialogWrapper] = useDialogRequest<CustomDialogRequest, string>(CustomDialogRequest);
 
     return (
         <div>
@@ -245,9 +245,10 @@ export const Feature = withViewModel<FeatureViewModel>(FeatureViewModel, ({ view
 
 The code leverages the `useDialogRequest()` with the generic parameters corresponding to the request and response types,
 as you saw when defining the `CustomDialog` component. It returns a **tuple** that holds a wrapper as a React functional component,
-then the context which holds the request when a request is made and then a resolver. This allows for inlining dialogs, if one wishes to.
-But for this scenario, we would be better off just getting the wrapper as the context and resolver is not being used directly in
-this component.
+then the context which holds the request when a request is made and then a resolver. This allows for inlining dialogs or passing the information
+on to things that needs it. But for this scenario, we don't need them and we therefor only capture the wrapper.
+
+> Note: See the sample later on how to create dialogs with a view model for an example of context and resolver use.
 
 With the wrapper, the code wraps the actual `CustomDialog` component as part of the rendering of the component. This ensures that
 is will only be displayed when it is supposed to.
@@ -283,3 +284,99 @@ If you don't provide any of the generic arguments, the return type will become `
 
 The `.show()` method is an async, `Promise` based method that will return when the dialog is resolved.
 The return from the `.show()` method will then be the response type, in this case; **a string**.
+
+### Dialog with a view model
+
+You might want to use a view model for the dialog itself. That is fully possible and recommended for scenarios where there will be logic
+and / or you want to be able to test the dialog logic code.
+
+Your dialog view would then look like below:
+
+```tsx
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { useDialogContext } from '@cratis/applications.react.mvvm/dialogs';
+import { DialogResolver } from '@cratis/applications.react.mvvm/dialogs';
+import { withViewModel } from '@cratis/applications.react.mvvm';
+import { CustomDialogViewModel } from './CustomDialogViewModel';
+
+// The dialog now needs props with the request and resolver.
+export interface CustomDialogProps {
+    request: CustomDialogRequest;
+    resolver: Dialog
+}
+
+export class CustomDialogRequest { 
+    constructor(readonly content: string) {
+    }
+}
+
+// Use the withViewModel() to pull in and specify props
+export const CustomDialog = withViewModel<CustomDialogViewModel, CustomDialogProps>({ viewModel, props }) => {
+    return (
+        <Dialog header="My custom dialog" visible={true} onHide={() => viewModel.cancel() }>
+            <h2>Dialog</h2>
+            {request.content}
+            <br />
+            <Button onClick={() => viewModel.done() }>We're done</Button>
+        </Dialog>
+    );
+};
+```
+
+The above code introduces a `CustomDialogProps` type that holds the request and resolver. This is now something you need to pass down to
+the component, mostly for the view model to be able to get these as that is not available directly to the view model.
+
+Your view model would then need to be something like below:
+
+```ts
+import { inject, injectable } from 'tsyringe';
+import { type CustomDialogProps } from './CustomDialog';
+
+@injectable()
+export class CustomDialogViewModel {
+
+    constructor(@inject('props') private readonly _props: CustomDialogProps) {
+    }
+
+    name: string = '';
+
+    done() {
+        this._props.resolver('Done done done...);
+    }
+
+    cancel() {
+        this._props.resolver('Did not do it..');
+    }
+}
+```
+
+The view model now has a *named* dependency called `props`, this is automatically hooked up for the component. It contains
+the resolver and our view model can now handle the logic.
+
+Using the dialog is almost exactly the same, but now we need to provide the context and resolver:
+
+```tsx
+import { withViewModel } from '@cratis/applications.react.mvvm';
+import { FeatureViewModel } from './FeatureViewModel';
+import { useDialogRequest } from '@cratis/applications.react.mvvm/dialogs';
+import { CustomDialog, CustomDialogRequest } from './CustomDialog';
+
+export const Feature = withViewModel<FeatureViewModel>(FeatureViewModel, ({ viewModel }) => {
+
+    // Use the dialog request to get a wrapper for rendering our dialog and the context and resolver
+    const [CustomDialogWrapper, context, resolver] = useDialogRequest<CustomDialogRequest, string>(CustomDialogRequest);
+
+    return (
+        <div>
+            {/* Use the dialog wrapper here. It will automatically show or hide its children - your dialog */}
+            <CustomDialogWrapper>
+                <CustomDialog request={context.request} resolver={resolver}/>
+            </CustomDialogWrapper>
+        </div>
+    );
+});
+```
+
+The code takes all the values of the tuple returned by `useDialogRequest()` and passes the request from the context and resolver
+into the `CustomDialog` component, as it will use this in its view model.
