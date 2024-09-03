@@ -1,4 +1,4 @@
-- name: CQRS
-  href: cqrs/toc.yml
-- name: Identity
-  href: identity.md
+- name: React
+  href: react/toc.yml
+- name: MVVM with React
+  href: react.mvvm/toc.yml

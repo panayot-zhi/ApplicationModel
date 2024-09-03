@@ -1,3 +1,7 @@
+- name: MVVM
+  href: mvvm/toc.yml
+- name: Identity
+  href: identity.md
 - name: Commands
   href: commands.md
 - name: Command Scope
