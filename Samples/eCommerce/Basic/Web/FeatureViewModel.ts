@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { injectable } from 'tsyringe';
-import { Cart, CartForCurrentUser, ObserveCartForCurrentUser } from './API/Carts';
+import { Cart, ObserveCartForCurrentUser } from './API/Carts';
 import { DialogButtons, IDialogs } from '@cratis/applications.react.mvvm/dialogs';
 import { CustomDialogRequest } from './CustomDialog';
 import { IMessenger } from '@cratis/applications.react.mvvm/messaging';

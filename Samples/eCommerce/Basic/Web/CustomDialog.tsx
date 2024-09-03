@@ -10,7 +10,7 @@ export class CustomDialogRequest {
     }
 }
 
-export const CustomDialog = (props: CustomDialogRequest) => {
+export const CustomDialog = () => {
     const { request, resolver } = useDialogContext<CustomDialogRequest, string>();
 
     return (
