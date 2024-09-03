@@ -2,6 +2,7 @@
 
 | Topic | Description |
 | ------- | ----------- |
+| [Application Model](./application-model.md) | How to configure use of Application Model. |
 | [Identity](./identity.md) | How to work with identity in React. |
 | [Commands](./commands.md) | What commands are and how they work with them in React. |
 | [Command Scopes](./command-scope.md) | The concept of a scope that captures command changes, validation and errors. |
