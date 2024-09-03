@@ -2,7 +2,7 @@
   href: identity.md
 - name: Queries
   href: queries.md
-- name: Rules
-  href: Rules.md
+- name: Validation
+  href: validation.md
 - name: Without wrappers
   href: without-wrappers.md
