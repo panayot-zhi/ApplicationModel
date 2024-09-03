@@ -4,7 +4,7 @@
 import { DialogResult } from '@cratis/applications.react/dialogs';
 import { DialogButtons } from './DialogButtons';
 import { IDialogs } from './IDialogs';
-import { StandardDialogRequest } from './StandardDialogRequest';
+import { ConfirmationDialogRequest } from './ConfirmationDialogRequest';
 import { IDialogMediatorHandler } from './IDialogMediatorHandler';
 
 /**
@@ -25,7 +25,7 @@ export class Dialogs extends IDialogs {
     }
 
     /** @inheritdoc */
-    showStandard(title: string, message: string, buttons: DialogButtons): Promise<DialogResult> {
-        return this.show<StandardDialogRequest, DialogResult>(new StandardDialogRequest(title, message, buttons));
+    showConfirmation(title: string, message: string, buttons: DialogButtons): Promise<DialogResult> {
+        return this.show<ConfirmationDialogRequest, DialogResult>(new ConfirmationDialogRequest(title, message, buttons));
     }
 }

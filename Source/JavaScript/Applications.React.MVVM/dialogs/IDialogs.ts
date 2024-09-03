@@ -15,10 +15,10 @@ export abstract class IDialogs {
     abstract show<TInput extends {}, TOutput>(input: TInput): Promise<TOutput>;
 
     /**
-     * Show a standard dialog.
+     * Show a standard confirmation dialog.
      * @param {String} title Title of the dialog.
      * @param {String} message Message to show inside the dialog.
      * @param {DialogButtons} buttons Buttons to have on the dialog
      */
-    abstract showStandard(title: string, message: string, buttons: DialogButtons): Promise<DialogResult>;
+    abstract showConfirmation(title: string, message: string, buttons: DialogButtons): Promise<DialogResult>;
 }

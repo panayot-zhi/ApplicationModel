@@ -38,7 +38,7 @@ export class FeatureViewModel {
     }
 
     async doOtherStuff() {
-        const result = await this._dialogs.showStandard('Delete?', 'Are you sure you want to delete?', DialogButtons.YesNo);
+        const result = await this._dialogs.showConfirmation('Delete?', 'Are you sure you want to delete?', DialogButtons.YesNo);
         console.log(`Result: ${result}`);
     }
 }
