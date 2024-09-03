@@ -6,7 +6,7 @@ import { FeatureViewModel } from './FeatureViewModel';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useIdentity } from '@cratis/applications.react/identity';
-import { useDialogRequest, StandardDialogRequest } from '@cratis/applications.react.mvvm/dialogs';
+import { useDialogRequest, ConfirmationDialogRequest } from '@cratis/applications.react.mvvm/dialogs';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 

@@ -6,10 +6,10 @@ import { DialogButtons } from './DialogButtons';
 /**
  * Represents the request for a standard dialog.
  */
-export class StandardDialogRequest {
+export class ConfirmationDialogRequest {
 
     /**
-     * Initializes a new instance of {@link StandardDialogRequest}.
+     * Initializes a new instance of {@link ConfirmationDialogRequest}.
      * @param {String} title The title of the dialog.
      * @param {String} message The message to show in the dialog.
      * @param {DialogButtons} buttons Buttons to use in the dialog.

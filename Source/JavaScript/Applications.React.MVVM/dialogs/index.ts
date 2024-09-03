@@ -9,6 +9,6 @@ export * from './Dialogs';
 export * from './IDialogMediatorHandler';
 export * from './IDialogs';
 export * from './Dialogs';
-export * from './StandardDialogRequest';
-export * from './StandardDialogs';
+export * from './ConfirmationDialogRequest';
+export * from './ConfirmationDialogs';
 export * from './useDialogRequest';

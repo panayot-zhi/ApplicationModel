@@ -1,13 +1,13 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-import { Dialog } from 'primereact/dialog'
-import { DialogButtons, StandardDialogRequest, useDialogContext } from '@cratis/applications.react.mvvm/dialogs'
-import { DialogResult } from '@cratis/applications.react/dialogs'
+import { Dialog } from 'primereact/dialog';
+import { DialogButtons, ConfirmationDialogRequest, useDialogContext } from '@cratis/applications.react.mvvm/dialogs';
+import { DialogResult } from '@cratis/applications.react/dialogs';
 import { Button } from 'primereact/button';
 
-export const StandardDialog = () => {
-    const { request, resolver } = useDialogContext<StandardDialogRequest, DialogResult>();
+export const ConfirmationDialog = () => {
+    const { request, resolver } = useDialogContext<ConfirmationDialogRequest, DialogResult>();
 
     const headerElement = (
         <div className="inline-flex align-items-center justify-content-center gap-2">
@@ -71,5 +71,5 @@ export const StandardDialog = () => {
                 </p>
             </Dialog>
         </>
-    )
-}
+    );
+};
