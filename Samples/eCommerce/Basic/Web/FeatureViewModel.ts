@@ -4,7 +4,7 @@
 import { injectable } from 'tsyringe';
 import { Cart, CartForCurrentUser, ObserveCartForCurrentUser } from './API/Carts';
 import { DialogButtons, IDialogs } from '@cratis/applications.react.mvvm/dialogs';
-import { CustomDialogRequest } from './Feature';
+import { CustomDialogRequest } from './CustomDialog';
 import { IMessenger } from '@cratis/applications.react.mvvm/messaging';
 
 export class Something {
@@ -31,7 +31,7 @@ export class FeatureViewModel {
     cart: Cart = new Cart();
 
     async doStuff() {
-        const result = await this._dialogs.show(new CustomDialogRequest());
+        const result = await this._dialogs.show<CustomDialogRequest, string>(new CustomDialogRequest('This is the content to show'));
         console.log(`Result: ${result}`);
 
         this._messenger.publish(new Something(`Hello: ${result}`));

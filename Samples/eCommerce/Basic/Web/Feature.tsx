@@ -6,20 +6,17 @@ import { FeatureViewModel } from './FeatureViewModel';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useIdentity } from '@cratis/applications.react/identity';
-import { useDialogRequest, ConfirmationDialogRequest } from '@cratis/applications.react.mvvm/dialogs';
-import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
+import { useDialogRequest } from '@cratis/applications.react.mvvm/dialogs';
+import { CustomDialog, CustomDialogRequest } from './CustomDialog';
 
 
 export interface FeatureProps {
     blah: string;
 }
 
-export class CustomDialogRequest { }
-
 
 export const Feature = withViewModel<FeatureViewModel, FeatureProps>(FeatureViewModel, ({ viewModel, props }) => {
-    const [MyDialog, context, resolver] = useDialogRequest<CustomDialogRequest, string>(CustomDialogRequest);
+    const [CustomDialogWrapper, context, resolver] = useDialogRequest<CustomDialogRequest, string>(CustomDialogRequest);
     const identity = useIdentity();
     return (
         <div>
@@ -36,14 +33,9 @@ export const Feature = withViewModel<FeatureViewModel, FeatureProps>(FeatureView
             <br />
             <button onClick={() => viewModel.doOtherStuff()}>Open standard dialog</button>
 
-            <MyDialog>
-                <Dialog header="Awesome" visible={true} onHide={() => resolver('blah')}>
-                    <h2>Dialog</h2>
-                    Hello world
-                    <br />
-                    <Button onClick={() => resolver('asaddas')}>We're done</Button>
-                </Dialog>
-            </MyDialog>
+            <CustomDialogWrapper>
+                <CustomDialog />
+            </CustomDialogWrapper>
         </div>
     );
 });
