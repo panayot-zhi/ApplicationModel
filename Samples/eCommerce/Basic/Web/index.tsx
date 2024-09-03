@@ -9,7 +9,6 @@ import './Styles/tailwind.css';
 import './Styles/theme.css';
 import React from 'react';
 import { App } from './App';
-import { Globals } from '@cratis/applications';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
