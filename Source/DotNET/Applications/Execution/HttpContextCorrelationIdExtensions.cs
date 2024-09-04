@@ -23,8 +23,17 @@ public static class HttpContextCorrelationIdExtensions
     {
         if (httpContext.Items.TryGetValue(Constants.CorrelationIdItemKey, out var correlationId))
         {
-            return new CorrelationId((string)correlationId!);
+            if (correlationId is Guid guid)
+            {
+                return new CorrelationId(guid);
+            }
+
+            if (Guid.TryParse(correlationId?.ToString(), out var parsedGuid))
+            {
+                return new CorrelationId(parsedGuid);
+            }
         }
-        return new CorrelationId(string.Empty);
+
+        return new CorrelationId(Guid.Empty);
     }
 }

@@ -16,7 +16,7 @@ public class CommandResult
     /// <summary>
     /// Gets the <see cref="CorrelationId"/> associated with the command.
     /// </summary>
-    public CorrelationId CorrelationId { get; init; } = new(Guid.Empty.ToString());
+    public CorrelationId CorrelationId { get; init; } = new(Guid.Empty);
 
     /// <summary>
     /// Gets whether or not the command executed successfully.

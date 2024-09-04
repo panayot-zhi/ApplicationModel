@@ -15,13 +15,14 @@ public class CorrelationIdActionFilter(IOptions<ApplicationModelOptions> options
     /// <inheritdoc/>
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var correlationId = context.HttpContext.Request.Headers[options.Value.CorrelationId.HttpHeader].ToString() ?? string.Empty;
-        if (string.IsNullOrEmpty(correlationId))
+        var correlationIdAsString = context.HttpContext.Request.Headers[options.Value.CorrelationId.HttpHeader].ToString() ?? Guid.Empty.ToString();
+        if (string.IsNullOrEmpty(correlationIdAsString))
         {
-            correlationId = Guid.NewGuid().ToString();
-            context.HttpContext.Request.Headers[Constants.DefaultCorrelationIdHeader] = correlationId;
+            correlationIdAsString = Guid.NewGuid().ToString();
+            context.HttpContext.Request.Headers[Constants.DefaultCorrelationIdHeader] = correlationIdAsString;
         }
 
+        var correlationId = Guid.Parse(correlationIdAsString);
         context.HttpContext.Items[Constants.CorrelationIdItemKey] = correlationId;
         CorrelationIdAccessor.SetCurrent(correlationId);
 

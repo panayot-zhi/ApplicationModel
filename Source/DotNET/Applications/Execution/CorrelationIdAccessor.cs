@@ -15,7 +15,7 @@ public class CorrelationIdAccessor : ICorrelationIdAccessor
     static readonly AsyncLocal<CorrelationId> _current = new();
 
     /// <inheritdoc/>
-    public CorrelationId Current => _current.Value ?? string.Empty;
+    public CorrelationId Current => _current.Value ?? Guid.Empty;
 
     /// <summary>
     /// Internal: Set the current correlation ID.
