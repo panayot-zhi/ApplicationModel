@@ -144,7 +144,7 @@ export class AllAccounts extends QueryFor<DebitAccount> {
 }
 ```
 
-> Note: For observable queries, this is a little bit different, read more about how you do this from [backend](../../cqrs/queries.md) and
+> Note: For observable queries, this is a little bit different, read more about how you do this from [backend](../../backend/queries.md) and
 > [frontend](./queries.md).
 
 The return type for the static method called `.use()` representing a React hook is of type `QueryResultWithState<>`.
@@ -153,20 +153,8 @@ knowing what to render and one could for instance enable a spinner when the prop
 
 ## Getting started
 
-All you need is to reference the following **Cratis.ProxyGenerator** package and configure the property for the output
+All you need is to reference the following **Cratis.ProxyGenerator.Build** package and configure the property for the output
 folder within your **.csproj** file. Lets say you have a structure as below:
-
-```shell
-<Your Root Folder>
-|
-+-- Domain
-+-- Read
-+-- Web
-```
-
-The **Domain** and **Read** projects could typically then have ASP.NET Controllers within them representing commands and queries.
-The **Web** project being where you have your web code and the place you want the files to be generated. In the **.csproj**
-files for the **Domain** and **Read** you would then add a dependency to the NuGet package and add the following property:
 
 ```xml
 <PropertyGroup>
@@ -176,13 +164,34 @@ files for the **Domain** and **Read** you would then add a dependency to the NuG
 
 The generator will maintain the folder structure from the source files while generating based on the namespaces of the files.
 
-If you want to not let the type and namespace be the convention for the target folder, you can use the route of the controller
-as the folder instead by adding the following property:
+By default this means you will get every part of the namespace as sub folders in a hierarchy.
+If you are working with multiple projects and have vertical slices that are consistently named a structure like below:
+
+```shell
+<Your Root Folder>
+|
+├-- Api
+|   └-- MyFeature
+├-- Domain
+|   └-- MyFeature
+├-- Events
+|   └-- MyFeature
+└-- Read
+    └-- MyFeature
+```
+
+Assuming you have consistent namespacing for artifacts on every level, you'd get namespaces that are prefixed `Api.MyFeature`,
+`Domain.MyFeature`, `Read.MyFeature` and so on. Since you might have artifacts that get generated from these different tiers,
+for your frontend you might not care about what tier it belongs to but want a more unified model.
+
+As an example, the **Domain** and **Read** projects could typically have ASP.NET Controllers within them representing commands and queries, respectively.
+To get the **Domain** and **Read** part of removed in the final structure, the proxy generator supports a way of skipping segments
+of the namespace while generating.
+
+You achieve this by adding the following to your `.csproj` file that specifies the number of segments to skip:
 
 ```xml
 <PropertyGroup>
-    <CratisUseRouteAsPath>true</CratisUseRouteAsPath>
+    <CratisProxiesSegmentsToSkip>1</CratisProxiesSegmentsToSkip>
 </PropertyGroup>
 ```
-
-The path from the route will be appended to the value of `<CratisProxyOutput/>`. It will strip away any prefix of `/api` in the route.
