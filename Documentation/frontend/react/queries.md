@@ -11,7 +11,7 @@ Queries in the frontend is divided into the following:
 Starting with the latter; the [proxy generator](./proxy-generation.md) you'll get the queries generated directly to use
 in the frontend. The proxies generated can be imported directly into your code.
 
-## Usage
+## Query
 
 From a React component you can now use the static `use()` method:
 
@@ -50,6 +50,13 @@ From the base `QueryResult` one gets the following properties:
 | -------- | ----------- |
 | data     | The actual data returned in the type expected. |
 | isSuccess | Boolean telling whether or not the query was successful or not. |
+| isAuthorized | Boolean telling whether or not the query was authorized or not. |
+| isValid | Boolean telling whether or not the query was valid or not. |
+| ValidationResult | Collection with any validation errors. |
+| hasExceptions | Boolean telling whether or not the query had exceptions or not. |
+| exceptionMessages | Collection with any exception messages. |
+| exceptionStackTrace | The stack trace for the exception if there was one. |
+| paging | Contains paging information, with current page number, page size, total number of items and total number pages |
 
 On top of this `QueryResultWithState` adds the following properties:
 

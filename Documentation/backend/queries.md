@@ -88,7 +88,7 @@ public class Accounts : Controller
     public Accounts(IMongoCollection<DebitAccount> collection) => _collection = collection;
 
     [HttpGet]
-    public ClientObservable<IEnumerable<DebitAccount>> AllAccounts()
+    public ISubject<IEnumerable<DebitAccount>> AllAccounts()
     {
         var observable = new ClientObservable<IEnumerable<DebitAccount>>();
         var accounts = _accountsCollection.Find(_ => true).ToList();
@@ -128,7 +128,7 @@ public class Accounts : Controller
     public Accounts(IMongoCollection<DebitAccount> collection) => _collection = collection;
 
     [HttpGet]
-    public Task<ClientObservable<IEnumerable<DebitAccount>>> AllAccounts()
+    public ISubject<IEnumerable<DebitAccount>> AllAccounts()
     {
         return _accountsCollection.Observe();   // <-
     }

@@ -16,12 +16,19 @@ package and it will at compile time do the magic.
 The benefit of this is that you don't have to look at the Swagger API even to know what you have available, the code sits
 there directly in the form of a generated proxy object
 
+## Pre-requisites for the frontend
+
+The proxy generator will generate artifacts that typically inherits and/or leverages things found in the base [`@cratis/applications`](https://www.npmjs.com/package/@cratis/applications)
+NPM package. You will have to install this in your frontend project.
+
 ## Commands
 
 Commands are the things you want to perform. These are represented as **HttpPost** operations on controllers. Any method arguments
 are considered properties on the command. Complex types will have its properties added to the command directly as well.
 Any of the parameters can be sourced using `[FromRoute]` or `[FromQuery]` and the generated proxy will generate the correct
 route template based on whats in `[Route]` in combination with what is defined in `[HttpPost]`.
+
+The command name is given my the method name of the action on the controller.
 
 Take following controller with action in C#:
 
@@ -34,31 +41,19 @@ public class DebitAccounts : Controller
     public DebitAccounts(IEventLog eventLog) => _eventLog = eventLog;
 
     [HttpPost]
-    public Task OpenDebitAccount([FromBody] OpenDebitAccount create) => _eventLog.Append(create.AccountId, new DebitAccountOpened(create.Name, create.Owner));
+    public Task OpenDebitAccount([FromBody] OpenDebitAccount create)
+    {
+        // Do things...
+    }
 }
 ```
 
-The action takes a complex type called `OpenDebitAccount` that looks like this:
+From the controller you will get a generated command called `OpenDebitAccount`, it will take any route parameters, query string arguments and body
+content and flatten it down as properties on the generated object. The generated type will inherit from the `Command` type found in`'@cratis/applications/commands`
+You can read more on how to use commands [here](./commands.md).
 
-```csharp
-public record OpenDebitAccount(AccountId AccountId, AccountName Name, CustomerId Owner);
-```
-
-This will generate:
-
-```typescript
-import { Command } from '@cratis/applications/commands';
-
-export class OpenDebitAccount extends Command {
-    readonly route: string = '/api/accounts/debit';
-
-    accountId!: string;
-    name!: string;
-    owner!: string;
-}
-```
-
-While a controller leveraging route parameters:
+As mentioned, you can also use things from the route, rather than from the body or you can combine them. All of it will be flattened down to
+properties on the generated TypeScript command.
 
 ```csharp
 [Route("/api/accounts/debit/{accountId}")]
@@ -69,31 +64,10 @@ public class DebitAccount : Controller
     public DebitAccount(IEventLog eventLog) => _eventLog = eventLog;
 
     [HttpPost("deposit/{amount}")]
-    public Task DepositToAccount([FromRoute] AccountId accountId, [FromRoute] double amount) => _eventLog.Append(accountId, new DepositToDebitAccountPerformed(amount));
-}
-```
-
-It will generate into:
-
-```typescript
-import { Command } from '@cratis/applications/commands';
-import Handlebars from 'handlebars';
-
-const routeTemplate = Handlebars.compile('/api/accounts/debit/{{accountId}}/deposit/{{amount}}');
-
-export class DepositToAccount extends Command {
-    readonly route: string = '/api/accounts/debit/{{accountId}}/deposit/{{amount}}';
-    readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
-
-    get requestArguments(): string[] {
-        return [
-            'accountId',
-            'amount',
-        ];
+    public Task DepositToAccount([FromRoute] AccountId accountId, [FromRoute] double amount)
+    {
+        // Do things
     }
-
-    accountId!: string;
-    amount!: number;
 }
 ```
 
@@ -111,45 +85,29 @@ Take the following controller action in C#:
 
 ```csharp
 [HttpGet]
-public IEnumerable<DebitAccount> AllAccounts() => _collection.Find(_ => true).ToList();
+public IEnumerable<DebitAccount> AllAccounts()
+{
+    // Get data and return
+}
 ```
 
 > Note: Return types does not have to be an enumerable, it can also be a single item. However, when returning a collection
 > of items - the return type should have a generic parameter of what the actual item type is. This is leveraged during
 > the proxy generation.
 
-And the read model in this case looking like:
-
-```csharp
-public record DebitAccount(AccountId Id, AccountName Name, CustomerId Owner, double Balance);
-```
-
-This all gets generated into the following TypeScript code:
-
-```typescript
-import { QueryFor, QueryResultWithState, useQuery, PerformQuery } from '@cratis/applications/queries';
-import { DebitAccount } from './DebitAccount';
-import Handlebars from 'handlebars';
-
-
-const routeTemplate = Handlebars.compile('/api/accounts/debit');
-
-export class AllAccounts extends QueryFor<DebitAccount> {
-    readonly route: string = '/api/accounts/debit';
-    readonly routeTemplate: Handlebars.TemplateDelegate = routeTemplate;
-
-    static use(): [QueryResultWithState<DebitAccount>, PerformQuery] {
-        return useQuery<DebitAccount, AllAccounts>(AllAccounts);
-    }
-}
-```
-
-> Note: For observable queries, this is a little bit different, read more about how you do this from [backend](../../backend/queries.md) and
-> [frontend](./queries.md).
-
 The return type for the static method called `.use()` representing a React hook is of type `QueryResultWithState<>`.
 This type contains additional information on whether or not the query is being performed or it is finished. This can be helpful for
 knowing what to render and one could for instance enable a spinner when the property `isPerforming` is true.
+
+### Observable Queries
+
+The Cratis Application model comes with a fairly transparent way of doing queries that can be observed on the frontend for changes,
+typically using WebSockets.
+
+> Note: Head over to the [section for backend](../../backend/queries.md#observable-queries) to learn how to leverage this capability.
+
+An observable query is generated in the same way, with the exception of it not having a method returned in the tuple to perform the
+query explicitly. It is designed to be completely transparent and take advantage of the React rendering pipeline.
 
 ## Getting started
 
