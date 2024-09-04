@@ -36,6 +36,8 @@ export class UserSelected {
 Then for the list component we would typically have something like the following:
 
 ```ts
+import { IMessenger } from '@cratis/applications.react.mvvm/messaging';
+
 @injectable()
 export class UsersListViewModel {
 
@@ -56,6 +58,8 @@ would then publish the message.
 For the details component, the view model would then need to subscribe to this:
 
 ```ts
+import { IMessenger } from '@cratis/applications.react.mvvm/messaging';
+
 @injectable()
 export class UserDetailsViewModel {
 
