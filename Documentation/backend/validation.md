@@ -147,6 +147,24 @@ The code sets up a rule that is general without a condition, then it applies a r
 With the `WhenCommand()` extension you can also specify whether or not you want it to apply for the entire validation chain or
 just the current. All validators are default, you can then use `ApplyConditionTo.CurrentValidator` for only the current validator.
 
+With the `ApplyConditionTo.CurrentValidator` you can merge into one rule-set:
+
+```csharp
+using Cratis.Applications.Validation;
+
+public class UserIdValidator : ConceptValidator<UserId>
+{
+    public UserIdValidator()
+    {
+        RuleFor(userId => userId)
+            .NotNull()
+            .UserMustExist().WithMessage("User does not exist.");
+            .UserMustNotBeSystem().WithMessage("Operation is not allowed on a system user.")
+            .WhenCommand(ApplyCondition.CurrentValidator);
+    }
+}
+```
+
 If you have multiple rules that should only apply when it is a **command** or **query** you can use the action method:
 
 ```csharp
