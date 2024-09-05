@@ -15,6 +15,20 @@ namespace Cratis.Applications.Validation;
 public class BaseValidator<T> : AbstractValidator<T>
 {
     /// <summary>
+    /// Define a condition for when the context is a command.
+    /// </summary>
+    /// <param name="callback">Callback for defining the rules when it is a command.</param>
+    /// <returns><see cref="IConditionBuilder"/> for building on the condition.</returns>
+    public IConditionBuilder WhenCommand(Action callback) => When((model, context) => context.IsCommand(), callback);
+
+    /// <summary>
+    /// Define a condition for when the context is a command.
+    /// </summary>
+    /// <param name="callback">Callback for defining the rules when it is a command.</param>
+    /// <returns><see cref="IConditionBuilder"/> for building on the condition.</returns>
+    public IConditionBuilder WhenQuery(Action callback) => When((model, context) => context.IsQuery(), callback);
+
+    /// <summary>
     /// Defines a validation rules for a property based on <see cref="ConceptAs{T}"/> for the actual concept type.
     /// </summary>
     /// <param name="expression">The expression representing the property to validate.</param>
