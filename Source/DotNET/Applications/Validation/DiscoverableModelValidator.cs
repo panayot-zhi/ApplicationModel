@@ -22,10 +22,25 @@ public class DiscoverableModelValidator(IValidator validator) : IModelValidator
         if (context.Model is not null)
         {
             var validationContextType = typeof(ValidationContext<>).MakeGenericType(context.ModelMetadata.ModelType);
-            var validationContext = Activator.CreateInstance(validationContextType, [context.Model!]) as IValidationContext;
+            var validationContext = (Activator.CreateInstance(validationContextType, [context.Model!]) as IValidationContext)!;
+
+            SetValidationType(context, validationContext);
+
             var result = validator.ValidateAsync(validationContext).GetAwaiter().GetResult();
             failures.AddRange(result.Errors.Select(x => new ModelValidationResult(x.PropertyName, x.ErrorMessage)));
         }
         return failures;
+    }
+
+    void SetValidationType(ModelValidationContext context, IValidationContext validationContext)
+    {
+        if (context.ActionContext.HttpContext.Request.Method == HttpMethod.Post.Method)
+        {
+            validationContext.SetCommand();
+        }
+        else
+        {
+            validationContext.SetQuery();
+        }
     }
 }
