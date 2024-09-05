@@ -131,19 +131,41 @@ public class UserIdValidator : ConceptValidator<UserId>
     {
         RuleFor(userId => userId)
             .NotNull()
-            .UserMustExist(aggregateRootFactory).WithMessage("User does not exist.");
+            .UserMustExist().WithMessage("User does not exist.");
             
-
-        WhenCommand(() => 
-        {
-            RuleFor(userId => userId)
-                .UserMustNotBeSystem(aggregateRootFactory).WithMessage("Operation is not allowed on a system user.");
-        });
+        RuleFor(userId => userId)
+            .UserMustNotBeSystem().WithMessage("Operation is not allowed on a system user.")
+            .WhenCommand();
     }
 }
 ```
 
-The code sets up a rule that is general without a condition, then it applies a rule for when it is a **command**.
-
 > Note: The rules `UserMustExist()`and `UserMustNotBeSystem()` are an example of extension methods that you could implement. The
 > implementation is irrelevant for the example.
+
+The code sets up a rule that is general without a condition, then it applies a rule for when it is a **command**.
+With the `WhenCommand()` extension you can also specify whether or not you want it to apply for the entire validation chain or
+just the current. All validators are default, you can then use `ApplyConditionTo.CurrentValidator` for only the current validator.
+
+If you have multiple rules that should only apply when it is a **command** or **query** you can use the action method:
+
+```csharp
+using Cratis.Applications.Validation;
+
+public class UserIdValidator : ConceptValidator<UserId>
+{
+    public UserIdValidator()
+    {
+        RuleFor(userId => userId)
+            .NotNull()
+            .UserMustExist().WithMessage("User does not exist.");
+
+        WhenCommand(() => 
+        {
+            RuleFor(userId => userId)
+                .UserMustNotBeSystem().WithMessage("Operation is not allowed on a system user.")
+                .UserMustNotBeAdministrator().WithMessage("Operation is not allowed on an administrator user.")
+        });
+    }
+}
+```

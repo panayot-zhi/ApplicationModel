@@ -3,6 +3,7 @@
 
 using Concepts;
 using Concepts.Carts;
+using Cratis.Applications.Validation;
 using Domain.Products;
 
 namespace API.Carts;
