@@ -107,3 +107,43 @@ public class AccountNameValidator : ConceptValidator<AccountName>
     }
 }
 ```
+
+### Conditional validation
+
+FluentValidation supports the concept of [conditions](https://docs.fluentvalidation.net/en/latest/conditions.html) for validation,
+in the API you can see `When()` for different levels. In the Cratis Application Model you'll find that every validator
+that is a discoverable validator (Concept, Command...) have methods on the base type that offers convenience conditions for
+whether or not the request is a **command** or a **query** called `WhenCommand()` or `WhenQuery()`. With this you can
+build rule-sets that are specific the scenario of a command or a query given a specific object you're validating.
+
+The use case for this is most relevant for **concepts** where the concept type is used by both commands and queries.
+
+Following is an example for an RBAC system where you have system users that can't be modified and you want to cross cuttingly
+apply the validation for all command operations that work on the `UserId` concept but not for any queries that has the
+same type as an argument.
+
+```csharp
+using Cratis.Applications.Validation;
+
+public class UserIdValidator : ConceptValidator<UserId>
+{
+    public UserIdValidator()
+    {
+        RuleFor(userId => userId)
+            .NotNull()
+            .UserMustExist(aggregateRootFactory).WithMessage("User does not exist.");
+            
+
+        WhenCommand(() => 
+        {
+            RuleFor(userId => userId)
+                .UserMustNotBeSystem(aggregateRootFactory).WithMessage("Operation is not allowed on a system user.");
+        });
+    }
+}
+```
+
+The code sets up a rule that is general without a condition, then it applies a rule for when it is a **command**.
+
+> Note: The rules `UserMustExist()`and `UserMustNotBeSystem()` are an example of extension methods that you could implement. The
+> implementation is irrelevant for the example.
