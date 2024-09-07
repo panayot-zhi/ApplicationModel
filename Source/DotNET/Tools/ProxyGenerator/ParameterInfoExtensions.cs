@@ -19,7 +19,8 @@ public static class ParameterInfoExtensions
     public static RequestArgumentDescriptor ToRequestArgumentDescriptor(this ParameterInfo parameterInfo)
     {
         var type = parameterInfo.ParameterType.GetTargetType();
-        return new RequestArgumentDescriptor(parameterInfo.ParameterType, parameterInfo.Name!, type.Type, parameterInfo.HasDefaultValue);
+        var optional = parameterInfo.IsOptional() || parameterInfo.HasDefaultValue;
+        return new RequestArgumentDescriptor(parameterInfo.ParameterType, parameterInfo.Name!, type.Type, optional);
     }
 
     /// <summary>
@@ -34,6 +35,17 @@ public static class ParameterInfoExtensions
         bool HasConstructorParameterWithRequestArgument(PropertyInfo propertyInfo) => parameters.Any(_ => _.Name == propertyInfo.Name && _.IsRequestArgument());
         var requestProperties = properties.Where(_ => _.IsRequestArgument() || HasConstructorParameterWithRequestArgument(_)).ToArray();
         return requestProperties.Select(_ => _.ToRequestArgumentDescriptor());
+    }
+
+    /// <summary>
+    /// Check if a parameter is optional - typically for arguments or properties.
+    /// </summary>
+    /// <param name="parameter">Parameter to check.</param>
+    /// <returns>True if it is, false if not.</returns>
+    public static bool IsOptional(this ParameterInfo parameter)
+    {
+        return parameter.CustomAttributes.Any(_ =>
+            _.AttributeType.FullName?.StartsWith("System.Runtime.CompilerServices.NullableAttribute") ?? false);
     }
 
     /// <summary>

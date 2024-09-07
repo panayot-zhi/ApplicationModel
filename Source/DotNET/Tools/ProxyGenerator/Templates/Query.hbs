@@ -90,11 +90,11 @@ export class {{Name}} extends QueryFor<{{Model}}> {
 {{/if}}
     }
 
-    get requestArguments(): string[] {
+    get requiredRequestArguments(): string[] {
         return [
-            {{#Arguments}}
+            {{#RequiredArguments}}
             '{{camelcase Name}}',
-            {{/Arguments}}
+            {{/RequiredArguments}}
         ];
     }
 

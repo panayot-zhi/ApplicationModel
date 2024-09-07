@@ -61,7 +61,7 @@ export class ObserveAllProducts extends ObservableQueryFor<Product[]> {
         this._sortBy = new ObserveAllProductsSortBy(this);
     }
 
-    get requestArguments(): string[] {
+    get requiredRequestArguments(): string[] {
         return [
         ];
     }

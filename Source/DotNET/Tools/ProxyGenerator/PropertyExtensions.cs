@@ -31,7 +31,7 @@ public static class PropertyExtensions
                attributes.Any(_ => _ == WellKnownTypes.FromQueryAttribute);
     }
 
-   /// <summary>
+    /// <summary>
     /// Convert a <see cref="PropertyInfo"/> to a <see cref="RequestArgumentDescriptor"/>.
     /// </summary>
     /// <param name="propertyInfo">Parameter to convert.</param>
@@ -39,7 +39,19 @@ public static class PropertyExtensions
     public static RequestArgumentDescriptor ToRequestArgumentDescriptor(this PropertyInfo propertyInfo)
     {
         var type = propertyInfo.PropertyType.GetTargetType();
-        return new RequestArgumentDescriptor(propertyInfo.PropertyType, propertyInfo.Name!, type.Type, false);
+        var optional = propertyInfo.IsOptional();
+        return new RequestArgumentDescriptor(propertyInfo.PropertyType, propertyInfo.Name!, type.Type, optional);
+    }
+
+    /// <summary>
+    /// Check if a property is optional - typically for arguments or properties.
+    /// </summary>
+    /// <param name="property">Property to check.</param>
+    /// <returns>True if it is, false if not.</returns>
+    public static bool IsOptional(this PropertyInfo property)
+    {
+        return property.CustomAttributes.Any(_ =>
+            _.AttributeType.FullName?.StartsWith("System.Runtime.CompilerServices.NullableAttribute") ?? false);
     }
 
     /// <summary>

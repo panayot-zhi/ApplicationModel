@@ -21,7 +21,7 @@ export class ObserveCartForCurrentUser extends ObservableQueryFor<Cart> {
         super(Cart, false);
     }
 
-    get requestArguments(): string[] {
+    get requiredRequestArguments(): string[] {
         return [
         ];
     }

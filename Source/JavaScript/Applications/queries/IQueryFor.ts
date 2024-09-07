@@ -14,7 +14,7 @@ import { Sorting } from './Sorting';
 export interface IQueryFor<TDataType, TArguments = {}> {
     readonly route: string;
     readonly routeTemplate: Handlebars.TemplateDelegate;
-    readonly requestArguments: string[];
+    readonly requiredRequestArguments: string[];
     readonly defaultValue: TDataType;
 
     /**
