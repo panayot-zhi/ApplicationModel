@@ -19,7 +19,7 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
     private _microservice: string;
     abstract readonly route: string;
     abstract readonly routeTemplate: Handlebars.TemplateDelegate;
-    abstract get requestArguments(): string[];
+    abstract get requiredRequestArguments(): string[];
     abstract defaultValue: TDataType;
     abortController?: AbortController;
     sorting: Sorting;
@@ -49,7 +49,7 @@ export abstract class QueryFor<TDataType, TArguments = {}> implements IQueryFor<
         args = args || this.arguments;
 
         let actualRoute = this.route;
-        if (!ValidateRequestArguments(this.constructor.name, this.requestArguments, args)) {
+        if (!ValidateRequestArguments(this.constructor.name, this.requiredRequestArguments, args)) {
             return new Promise<QueryResult<TDataType>>((resolve) => {
                 resolve(noSuccess);
             });

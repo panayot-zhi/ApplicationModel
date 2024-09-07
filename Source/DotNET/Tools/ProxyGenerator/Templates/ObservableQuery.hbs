@@ -89,11 +89,11 @@ export class {{Name}} extends ObservableQueryFor<{{Model}}> {
 {{/if}}
     }
 
-    get requestArguments(): string[] {
+    get requiredRequestArguments(): string[] {
         return [
-            {{#Arguments}}
+            {{#RequiredArguments}}
             '{{camelcase Name}}',
-            {{/Arguments}}
+            {{/RequiredArguments}}
         ];
     }
 

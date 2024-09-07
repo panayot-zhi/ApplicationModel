@@ -27,7 +27,7 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
     abstract readonly route: string;
     abstract readonly routeTemplate: Handlebars.TemplateDelegate<any>;
     abstract readonly defaultValue: TDataType;
-    abstract get requestArguments(): string[];
+    abstract get requiredRequestArguments(): string[];
     sorting: Sorting;
     paging: Paging | undefined;
 
@@ -65,7 +65,7 @@ export abstract class ObservableQueryFor<TDataType, TArguments = {}> implements 
             connectionQueryArguments.sortDirection = (this.sorting.direction === SortDirection.descending) ? 'desc' : 'asc';
         }
 
-        if (!ValidateRequestArguments(this.constructor.name, this.requestArguments, args)) {
+        if (!ValidateRequestArguments(this.constructor.name, this.requiredRequestArguments, args)) {
             this._connection = new NullObservableQueryConnection(this.defaultValue);
         } else {
             actualRoute = this.routeTemplate(args);

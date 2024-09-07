@@ -25,7 +25,7 @@ function useObservableQueryInternal<TDataType, TQuery extends IObservableQueryFo
     }, [currentPaging, currentSorting]);
 
     const [result, setResult] = useState<QueryResultWithState<TDataType>>(QueryResultWithState.empty(queryInstance.current.defaultValue));
-    const argumentsDependency = queryInstance.current.requestArguments.map(_ => args?.[_]);
+    const argumentsDependency = queryInstance.current.requiredRequestArguments.map(_ => args?.[_]);
 
     useEffect(() => {
         const subscription = queryInstance.current!.subscribe(response => {

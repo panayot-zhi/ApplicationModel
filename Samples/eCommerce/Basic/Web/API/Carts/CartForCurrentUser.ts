@@ -21,7 +21,7 @@ export class CartForCurrentUser extends QueryFor<Cart> {
         super(Cart, false);
     }
 
-    get requestArguments(): string[] {
+    get requiredRequestArguments(): string[] {
         return [
         ];
     }

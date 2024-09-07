@@ -61,7 +61,7 @@ export class AllProducts extends QueryFor<Product[]> {
         this._sortBy = new AllProductsSortBy(this);
     }
 
-    get requestArguments(): string[] {
+    get requiredRequestArguments(): string[] {
         return [
         ];
     }
