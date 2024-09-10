@@ -8,7 +8,7 @@ namespace Cratis.Applications.Authorization;
 /// <summary>
 /// Represents an <see cref="AuthorizeAttribute"/> for specifying roles.
 /// </summary>
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public sealed class RolesAttribute : AuthorizeAttribute
 {
     /// <summary>
