@@ -30,6 +30,8 @@ public static class IdentityProviderServiceCollectionExtensions
             typeof(IProvideIdentityDetails),
             providerTypes.Length == 1 ? providerTypes[0] : typeof(DefaultIdentityDetailsProvider));
 
+        services.AddSingleton<IdentityProviderEndpoint>();
+
         return services;
     }
 }
