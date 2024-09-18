@@ -1,6 +1,7 @@
 // Copyright (c) Cratis. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Text.Json.Serialization;
 using Cratis.Applications.ModelBinding;
 using Cratis.Json;
 using Cratis.Reflection;
@@ -40,12 +41,23 @@ public static class ServiceCollectionExtensions
                     .AddTenancy()
                     .AddCQRS();
             })
-            .AddJsonOptions(_ =>
+            .AddJsonOptions(options =>
             {
-                _.JsonSerializerOptions.PropertyNamingPolicy = AcronymFriendlyJsonCamelCaseNamingPolicy.Instance;
+                options.JsonSerializerOptions.PropertyNamingPolicy = AcronymFriendlyJsonCamelCaseNamingPolicy.Instance;
+
+                // Find and remove the JsonStringEnumConverter if it exists, we want to have integers for enums. The Json converter in Fundamentals gives us integer in transport.
+                var converterToRemove = options.JsonSerializerOptions.Converters
+                    .OfType<JsonStringEnumConverter>()
+                    .FirstOrDefault();
+
+                if (converterToRemove != null)
+                {
+                    options.JsonSerializerOptions.Converters.Remove(converterToRemove);
+                }
+
                 foreach (var converter in Globals.JsonSerializerOptions!.Converters)
                 {
-                    _.JsonSerializerOptions.Converters.Add(converter);
+                    options.JsonSerializerOptions.Converters.Add(converter);
                 }
             });
 
