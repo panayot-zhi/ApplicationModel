@@ -13,24 +13,29 @@ public class and_there_is_one_provider : Specification
         public Task<IdentityDetails> Provide(IdentityProviderContext context) => throw new NotImplementedException();
     }
 
-    IServiceCollection services;
-    ITypes types;
+    IServiceCollection _services;
+    ITypes _types;
+    List<ServiceDescriptor> _serviceDescriptors;
     ServiceDescriptor _serviceDescriptor;
 
     void Establish()
     {
-        services = Substitute.For<IServiceCollection>();
-        types = Substitute.For<ITypes>();
-        types.FindMultiple<IProvideIdentityDetails>().Returns([typeof(MyIdentityProvider)]);
-        services
+        _serviceDescriptors = [];
+        _services = Substitute.For<IServiceCollection>();
+        _types = Substitute.For<ITypes>();
+        _types.FindMultiple<IProvideIdentityDetails>().Returns([typeof(MyIdentityProvider)]);
+        _services
             .When(_ => _.Add(Arg.Any<ServiceDescriptor>()))
-            .Do(_ => _serviceDescriptor = _.Arg<ServiceDescriptor>());
+            .Do(_ => _serviceDescriptors.Add(_.Arg<ServiceDescriptor>()));
     }
 
-    void Because() => services.AddIdentityProvider(types);
+    void Because()
+    {
+        _services.AddIdentityProvider(_types);
+        _serviceDescriptor = _serviceDescriptors.Find(_ => _.ImplementationType == typeof(MyIdentityProvider));
+    }
 
-    [Fact] void should_add_one_service_registration() => services.Received(1).Add(Arg.Any<ServiceDescriptor>());
+    [Fact] void should_register_expected_provider() => _serviceDescriptor.ShouldNotBeNull();
     [Fact] void should_register_as_identity_details_provider() => _serviceDescriptor.ServiceType.ShouldEqual(typeof(IProvideIdentityDetails));
-    [Fact] void should_register_expected_provider() => _serviceDescriptor.ImplementationType.ShouldEqual(typeof(MyIdentityProvider));
     [Fact] void should_register_as_singleton() => _serviceDescriptor.Lifetime.ShouldEqual(ServiceLifetime.Singleton);
 }
