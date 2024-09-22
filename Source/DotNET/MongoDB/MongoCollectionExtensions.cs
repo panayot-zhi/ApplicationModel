@@ -266,7 +266,7 @@ public static class MongoCollectionExtensions
 
     static async Task UpdateTotalItems<TDocument>(QueryContext queryContext, IFindFluent<TDocument, TDocument> query)
     {
-        queryContext.TotalItems = await query.CountDocumentsAsync();
+        queryContext.TotalItems = (int)await query.CountDocumentsAsync();
     }
 
     static async Task<List<TDocument>> HandleChange<TDocument, TResult>(

@@ -14,7 +14,7 @@ namespace Cratis.Applications.Queries;
 public record QueryContext(CorrelationId CorrelationId, Paging Paging, Sorting Sorting)
 {
     /// <summary>
-    /// Gets the total number of items in the query.
+    /// Gets or sets the total number of items in the query.
     /// </summary>
-    public long TotalItems { get; set; }
+    public int TotalItems { get; set; }
 }
