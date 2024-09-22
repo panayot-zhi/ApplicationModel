@@ -19,12 +19,12 @@ public static class TypeExtensions
     /// <summary>
     /// Gets the definition of any type.
     /// </summary>
-    public static readonly TargetType AnyType = new("any", "Object");
+    public static readonly TargetType AnyType = new(typeof(object), "any", "Object");
 
     /// <summary>
     /// Gets the definition of any type that is a final one.
     /// </summary>
-    public static readonly TargetType AnyTypeFinal = new("any", "Object", Final: true);
+    public static readonly TargetType AnyTypeFinal = new(typeof(object), "any", "Object", Final: true);
 
 #pragma warning disable SA1600 // Elements should be documented
     internal static Type _conceptType = typeof(object);
@@ -40,10 +40,10 @@ public static class TypeExtensions
     internal static Type _voidType = typeof(void);
 #pragma warning restore SA1600 // Elements should be documented
 
-    static readonly TargetType _numberTargetType = new("number", "Number");
-    static readonly TargetType _dateTargetType = new("Date", "Date");
-    static readonly TargetType _stringTargetType = new("string", "String");
-    static readonly TargetType _booleanTargetType = new("boolean", "Boolean");
+    static readonly TargetType _numberTargetType = new(typeof(int), "number", "Number");
+    static readonly TargetType _dateTargetType = new(typeof(DateTimeOffset), "Date", "Date");
+    static readonly TargetType _stringTargetType = new(typeof(string), "string", "String");
+    static readonly TargetType _booleanTargetType = new(typeof(bool), "boolean", "Boolean");
 
     static readonly Dictionary<string, TargetType> _primitiveTypeMap = new()
     {
@@ -64,7 +64,7 @@ public static class TypeExtensions
         { typeof(decimal).FullName!, _numberTargetType },
         { typeof(DateTime).FullName!, _dateTargetType },
         { typeof(DateTimeOffset).FullName!, _dateTargetType },
-        { typeof(Guid).FullName!, new("Guid", "Guid", "@cratis/fundamentals") },
+        { typeof(Guid).FullName!, new(typeof(Guid), "Guid", "Guid", "@cratis/fundamentals") },
         { typeof(DateOnly).FullName!, _dateTargetType },
         { typeof(TimeOnly).FullName!, _dateTargetType },
         { typeof(System.Text.Json.Nodes.JsonNode).FullName!, AnyTypeFinal },
@@ -250,7 +250,7 @@ public static class TypeExtensions
     {
         if (type.IsEnum)
         {
-            return new(type.Name, "Number");
+            return new(type, type.Name, "Number");
         }
 
         if (type.IsDictionary())
@@ -268,7 +268,7 @@ public static class TypeExtensions
             return value;
         }
 
-        return new TargetType(type.Name, type.Name);
+        return new TargetType(type, type.Name, type.Name);
     }
 
     /// <summary>
@@ -294,14 +294,14 @@ public static class TypeExtensions
             }
             if (!string.IsNullOrEmpty(property.Module))
             {
-                imports.Add(new ImportStatement(property.Type, property.Module));
+                imports.Add(new ImportStatement(property.OriginalType, property.Type, property.Module));
             }
         }
 
         imports.AddRange(typesInvolved.GetImports(targetPath, type!.ResolveTargetPath(segmentsToSkip), segmentsToSkip));
         imports = imports
                     .Distinct()
-                    .Where(_ => propertyDescriptors.Exists(pd => pd.Type == _.Type)).ToList();
+                    .Where(_ => propertyDescriptors.Exists(pd => pd.Type == _.Type) && _.OriginalType != type).ToList();
 
         return new TypeDescriptor(
             type,
@@ -396,7 +396,7 @@ public static class TypeExtensions
             var fullPathForType = Path.Join(targetPath, type.ResolveTargetPath(segmentsToSkip));
             importPath = $"{Path.GetRelativePath(fullPath, fullPathForType)}/{type.Name}";
         }
-        return new ImportStatement(targetType.Type, importPath);
+        return new ImportStatement(targetType.OriginalType, targetType.Type, importPath);
     }
 
     /// <summary>
