@@ -23,7 +23,7 @@ public static class TargetTypeExtensions
         var requiresImport = !string.IsNullOrEmpty(targetType.Module);
         if (requiresImport)
         {
-            importStatement = new ImportStatement(targetType.Type, targetType.Module);
+            importStatement = new ImportStatement(targetType.OriginalType, targetType.Type, targetType.Module);
         }
         return requiresImport;
     }
