@@ -9,7 +9,7 @@ namespace Cratis.Applications.Tenancy;
 public class TenancyOptions
 {
     /// <summary>
-    /// Gets or sets the HTTP header to use for the correlation ID.
+    /// Gets or sets the HTTP header to use for the tenant ID.
     /// </summary>
     public string HttpHeader { get; set; } = Constants.DefaultTenantIdHeader;
 }
