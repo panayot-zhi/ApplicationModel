@@ -8,7 +8,9 @@
         <InternalsVisibleTo Include="Cratis.Applications.MongoDB.Specs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Cratis.Fundamentals" />
+<!-- <PackageReference Include="Cratis.Fundamentals" /> -->
+  <ProjectReference Include="..\..\..\..\Fundamentals\Source\DotNET\Fundamentals\Fundamentals.csproj" />
+
         <PackageReference Include="Cratis.Metrics.Roslyn" />
         <PackageReference Include="polly.core" />
         <PackageReference Include="castle.core" />

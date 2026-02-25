@@ -5,7 +5,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Cratis.Fundamentals" />
+<!-- <PackageReference Include="Cratis.Fundamentals" /> -->
+  <ProjectReference Include="..\..\..\..\Fundamentals\Source\DotNET\Fundamentals\Fundamentals.csproj" />
+
         <PackageReference Include="Microsoft.Orleans.Core.Abstractions" />
         <PackageReference Include="Microsoft.Orleans.Serialization" />
         <PackageReference Include="Microsoft.Extensions.Logging" />

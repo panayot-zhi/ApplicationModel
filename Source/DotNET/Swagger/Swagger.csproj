@@ -4,7 +4,9 @@
         <RootNamespace>Cratis.Applications.Swagger</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Cratis.Fundamentals"/>
+<!-- <PackageReference Include="Cratis.Fundamentals"/> -->
+  <ProjectReference Include="..\..\..\..\Fundamentals\Source\DotNET\Fundamentals\Fundamentals.csproj" />
+
         <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 
