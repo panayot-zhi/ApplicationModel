@@ -115,7 +115,7 @@ public class QueryActionFilter(
                         queryContext.Paging.Size,
                         response.TotalItems),
                     CorrelationId = context.HttpContext.GetCorrelationId(),
-                    ValidationResults = context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase()))),
+                    ValidationResults = GetValidationResults(context),
                     ExceptionMessages = callResult.ExceptionMessages,
                     ExceptionStackTrace = callResult.ExceptionStackTrace ?? string.Empty,
                     Data = response.Data
@@ -155,6 +155,26 @@ public class QueryActionFilter(
         {
             await next();
         }
+    }
+
+    static IEnumerable<ValidationResult> GetValidationResults(ActionExecutingContext context)
+    {
+        if (context.HttpContext.Items[DiscoverableModelValidator.ValidationFailuresKey] is List<FluentValidation.Results.ValidationFailure> failures && failures.Count > 0)
+        {
+            return failures.Select(f =>
+            {
+                var member = string.Join('.', f.PropertyName.Split('.').Select(p => p.ToCamelCase()));
+                return new ValidationResult(
+                    ValidationResultSeverity.Error,
+                    f.ErrorMessage,
+                    [member],
+                    f.CustomState ?? new object(),
+                    f.ErrorCode ?? string.Empty);
+            });
+        }
+
+        // Fallback: collect any ModelState errors not originating from FluentValidation validators.
+        return context.ModelState.SelectMany(_ => _.Value!.Errors.Select(p => p.ToValidationResult(_.Key.ToCamelCase())));
     }
 
     void EstablishQueryContext(ActionExecutingContext context)
@@ -258,7 +278,7 @@ public class QueryActionFilter(
         object? response = null;
         ActionExecutedContext? result = null;
 
-        if (context.ModelState.IsValid || context.ShouldIgnoreValidation())
+        if (!GetValidationResults(context).Any() || context.ShouldIgnoreValidation())
         {
             result = await next();
 

@@ -3,6 +3,7 @@
 
 using System.Net;
 using Cratis.Applications.Validation;
+using Cratis.Strings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -29,9 +30,9 @@ public class CommandActionFilter : IAsyncActionFilter
 
             var validationResult = ignoreValidation ?
                                         [] :
-                                        context.ModelState.SelectMany(_ => _.Value!.Errors.Select(e => e.ToValidationResult(_.Key))).ToList();
+                                        GetValidationResults(context);
 
-            if (context.ModelState.IsValid || ignoreValidation)
+            if (validationResult.Count == 0 || ignoreValidation)
             {
                 var errorsBefore = context.ModelState.SelectMany(_ => _.Value!.Errors).ToArray();
 
@@ -99,6 +100,26 @@ public class CommandActionFilter : IAsyncActionFilter
         {
             await next();
         }
+    }
+
+    static List<ValidationResult> GetValidationResults(ActionExecutingContext context)
+    {
+        if (context.HttpContext.Items[DiscoverableModelValidator.ValidationFailuresKey] is List<FluentValidation.Results.ValidationFailure> failures && failures.Count > 0)
+        {
+            return failures.ConvertAll(f =>
+            {
+                var member = string.Join('.', f.PropertyName.Split('.').Select(p => p.ToCamelCase()));
+                return new ValidationResult(
+                    ValidationResultSeverity.Error,
+                    f.ErrorMessage,
+                    [member],
+                    f.CustomState ?? new object(),
+                    f.ErrorCode ?? string.Empty);
+            });
+        }
+
+        // Fallback: collect any ModelState errors not originating from FluentValidation validators.
+        return [.. context.ModelState.SelectMany(_ => _.Value!.Errors.Select(e => e.ToValidationResult(_.Key)))];
     }
 
     void AddAdditionalValidationResultsAfterActionExecute(ActionExecutingContext context, List<ValidationResult> validationResult, IEnumerable<ModelError> errorsBefore)

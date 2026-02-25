@@ -2,6 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Cratis.Applications.Validation;
@@ -15,10 +16,14 @@ namespace Cratis.Applications.Validation;
 /// <param name="validator">The <see cref="IValidator"/> to use.</param>
 public class DiscoverableModelValidator(IValidator validator) : IModelValidator
 {
+    /// <summary>
+    /// The key used to store <see cref="ValidationFailure"/> instances in <see cref="Microsoft.AspNetCore.Http.HttpContext.Items"/>.
+    /// </summary>
+    public const string ValidationFailuresKey = "Cratis.ValidationFailures";
+
     /// <inheritdoc/>
     public IEnumerable<ModelValidationResult> Validate(ModelValidationContext context)
     {
-        var failures = new List<ModelValidationResult>();
         if (context.Model is not null)
         {
             var validationContextType = typeof(ValidationContext<>).MakeGenericType(context.ModelMetadata.ModelType);
@@ -27,9 +32,17 @@ public class DiscoverableModelValidator(IValidator validator) : IModelValidator
             SetValidationType(context, validationContext);
 
             var result = validator.ValidateAsync(validationContext).GetAwaiter().GetResult();
-            failures.AddRange(result.Errors.Select(x => new ModelValidationResult(x.PropertyName, x.ErrorMessage)));
+            if (result.Errors.Count > 0)
+            {
+                var httpContext = context.ActionContext.HttpContext;
+                var existing = httpContext.Items[ValidationFailuresKey] as List<ValidationFailure> ?? [];
+                existing.AddRange(result.Errors);
+                httpContext.Items[ValidationFailuresKey] = existing;
+            }
         }
-        return failures;
+
+        // Validation failures are stored in HttpContext.Items; do not pollute ModelState.
+        return [];
     }
 
     void SetValidationType(ModelValidationContext context, IValidationContext validationContext)

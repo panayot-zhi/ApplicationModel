@@ -9,8 +9,11 @@ import { ValidationResultSeverity } from './ValidationResultSeverity';
  * Represents a validation error with a message for one or more members.
  */
 export class ValidationResult {
-    constructor(readonly severity: ValidationResultSeverity, readonly message: string, readonly members: string[], readonly state: any) {
-    }
+    constructor(
+        readonly severity: ValidationResultSeverity,
+        readonly message: string,
+        readonly members: string[],
+        readonly state: any,
+        readonly code: string = '',
+    ) {}
 }
-
-

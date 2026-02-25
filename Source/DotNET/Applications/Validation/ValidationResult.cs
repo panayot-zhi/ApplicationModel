@@ -10,4 +10,5 @@ namespace Cratis.Applications.Validation;
 /// <param name="Message">Message of the error.</param>
 /// <param name="Members">Collection of member names that caused the failure.</param>
 /// <param name="State">State associated with the validation result.</param>
-public record ValidationResult(ValidationResultSeverity Severity, string Message, IEnumerable<string> Members, object State);
+/// <param name="Code">Optional i18n error code (mapped from FluentValidation's <c>ErrorCode</c>).</param>
+public record ValidationResult(ValidationResultSeverity Severity, string Message, IEnumerable<string> Members, object State, string Code = "");
