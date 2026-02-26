@@ -18,32 +18,55 @@ type ServerQueryResult = {
     exceptionMessages: string[];
     exceptionStackTrace: string;
     paging: ServerPagingInfo;
-}
+};
 
 type ServerValidationResult = {
     severity: number;
     message: string;
     members: string[];
     state: object;
-}
+    code?: string;
+};
 
 type ServerPagingInfo = {
     page: number;
-    size: number; 
+    size: number;
     totalItems: number;
     totalPages: number;
-}
+};
 
 /**
  * Represents the result from executing a {@link IQueryFor}.
  * @template TDataType The data type.
  */
 export class QueryResult<TDataType = object> implements IQueryResult<TDataType> {
-
     static empty<TDataType>(defaultValue: TDataType): QueryResult<TDataType> {
-        return new QueryResult({
-            data: defaultValue as object,
-            isSuccess: true,
+        return new QueryResult(
+            {
+                data: defaultValue as object,
+                isSuccess: true,
+                isAuthorized: true,
+                isValid: true,
+                hasExceptions: false,
+                validationResults: [],
+                exceptionMessages: [],
+                exceptionStackTrace: '',
+                paging: {
+                    totalItems: 0,
+                    totalPages: 0,
+                    page: 0,
+                    size: 0,
+                },
+            },
+            Object,
+            false,
+        );
+    }
+
+    static noSuccess: QueryResult = new QueryResult(
+        {
+            data: {},
+            isSuccess: false,
             isAuthorized: true,
             isValid: true,
             hasExceptions: false,
@@ -54,28 +77,12 @@ export class QueryResult<TDataType = object> implements IQueryResult<TDataType> 
                 totalItems: 0,
                 totalPages: 0,
                 page: 0,
-                size: 0
-            }
-
-        }, Object, false);
-    }
-
-    static noSuccess: QueryResult = new QueryResult({
-        data: {},
-        isSuccess: false,
-        isAuthorized: true,
-        isValid: true,
-        hasExceptions: false,
-        validationResults: [],
-        exceptionMessages: [],
-        exceptionStackTrace: '',
-        paging: {
-            totalItems: 0,
-            totalPages: 0,
-            page: 0,
-            size: 0
-        }
-    }, Object, false);
+                size: 0,
+            },
+        },
+        Object,
+        false,
+    );
 
     /**
      * Creates an instance of query result.
@@ -83,12 +90,19 @@ export class QueryResult<TDataType = object> implements IQueryResult<TDataType> 
      * @param {Constructor} instanceType The type of instance to deserialize.
      * @param {boolean} enumerable Whether or not the result is supposed be an enumerable or not.
      */
-    constructor(result: ServerQueryResult, instanceType: Constructor, enumerable: boolean) {
+    constructor(
+        result: ServerQueryResult,
+        instanceType: Constructor,
+        enumerable: boolean,
+    ) {
         this.isSuccess = result.isSuccess;
         this.isAuthorized = result.isAuthorized;
         this.isValid = result.isValid;
         this.hasExceptions = result.hasExceptions;
-        this.validationResults = result.validationResults.map(_ => new ValidationResult(_.severity, _.message, _.members, _.state));
+        this.validationResults = result.validationResults.map(
+            (_) =>
+                new ValidationResult(_.severity, _.message, _.members, _.state, _.code),
+        );
         this.exceptionMessages = result.exceptionMessages;
         this.exceptionStackTrace = result.exceptionStackTrace;
         this.paging = new PagingInfo();
@@ -101,7 +115,10 @@ export class QueryResult<TDataType = object> implements IQueryResult<TDataType> 
             let data: object = result.data;
             if (enumerable) {
                 if (Array.isArray(result.data)) {
-                    data = JsonSerializer.deserializeArrayFromInstance(instanceType, data);
+                    data = JsonSerializer.deserializeArrayFromInstance(
+                        instanceType,
+                        data,
+                    );
                 } else {
                     data = [];
                 }

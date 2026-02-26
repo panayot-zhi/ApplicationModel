@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import { Guid } from '@cratis/fundamentals';
-import { ICommandResult } from './ICommandResult';
-import { ValidationResult } from '../validation/ValidationResult';
 import { Constructor, JsonSerializer } from '@cratis/fundamentals';
+import { ValidationResult } from '../validation/ValidationResult';
+import { ICommandResult } from './ICommandResult';
 
 /**
  * Delegate type for the onSuccess callback.
@@ -14,7 +14,9 @@ type OnSuccess = (<TResponse>(response: TResponse) => void) | (() => void);
 /**
  * Delegate type for the onFailed callback.
  */
-type OnFailed<TResponse> = ((commandResult: CommandResult<TResponse>) => void) | (() => void);
+type OnFailed<TResponse> =
+    | ((commandResult: CommandResult<TResponse>) => void)
+    | (() => void);
 
 /**
  * Delegate type for the onException callback.
@@ -42,6 +44,7 @@ type ServerCommandResult = {
         message: string;
         members: string[];
         state: object;
+        code?: string;
     }[];
     exceptionMessages: string[];
     exceptionStackTrace: string;
@@ -49,37 +52,44 @@ type ServerCommandResult = {
     /* eslint-disable @typescript-eslint/no-explicit-any */
     response: any;
     /* eslint-enable @typescript-eslint/no-explicit-any */
-}
+};
 
 /**
  * Represents the result from executing a {@link ICommand}.
  */
 export class CommandResult<TResponse = object> implements ICommandResult<TResponse> {
-
-    static empty: CommandResult = new CommandResult({
-        correlationId: Guid.empty.toString(),
-        isSuccess: true,
-        isAuthorized: true,
-        isValid: true,
-        hasExceptions: false,
-        validationResults: [],
-        exceptionMessages: [],
-        exceptionStackTrace: '',
-        response: null
-    }, Object, false);
-
-    static failed = (exceptionMessages: string[]): CommandResult => {
-        return new CommandResult({
+    static empty: CommandResult = new CommandResult(
+        {
             correlationId: Guid.empty.toString(),
-            isSuccess: false,
+            isSuccess: true,
             isAuthorized: true,
             isValid: true,
-            hasExceptions: true,
+            hasExceptions: false,
             validationResults: [],
-            exceptionMessages: exceptionMessages,
+            exceptionMessages: [],
             exceptionStackTrace: '',
-            response: null
-        }, Object, false);
+            response: null,
+        },
+        Object,
+        false,
+    );
+
+    static failed = (exceptionMessages: string[]): CommandResult => {
+        return new CommandResult(
+            {
+                correlationId: Guid.empty.toString(),
+                isSuccess: false,
+                isAuthorized: true,
+                isValid: true,
+                hasExceptions: true,
+                validationResults: [],
+                exceptionMessages: exceptionMessages,
+                exceptionStackTrace: '',
+                response: null,
+            },
+            Object,
+            false,
+        );
     };
 
     /** @inheritdoc */
@@ -115,21 +125,34 @@ export class CommandResult<TResponse = object> implements ICommandResult<TRespon
      * @param {Constructor} responseInstanceType The {@see Constructor} that represents the type of response, if any. Defaults to {@see Object}.
      * @param {boolean} isResponseTypeEnumerable Whether or not the response type is an enumerable or not.
      */
-    constructor(result: ServerCommandResult, responseInstanceType: Constructor = Object, isResponseTypeEnumerable: boolean) {
+    constructor(
+        result: ServerCommandResult,
+        responseInstanceType: Constructor = Object,
+        isResponseTypeEnumerable: boolean,
+    ) {
         this.correlationId = Guid.parse(result.correlationId);
         this.isSuccess = result.isSuccess;
         this.isAuthorized = result.isAuthorized;
         this.isValid = result.isValid;
         this.hasExceptions = result.hasExceptions;
-        this.validationResults = result.validationResults.map(_ => new ValidationResult(_.severity, _.message, _.members, _.state));
+        this.validationResults = result.validationResults.map(
+            (_) =>
+                new ValidationResult(_.severity, _.message, _.members, _.state, _.code),
+        );
         this.exceptionMessages = result.exceptionMessages;
         this.exceptionStackTrace = result.exceptionStackTrace;
 
         if (result.response) {
             if (isResponseTypeEnumerable) {
-                this.response = JsonSerializer.deserializeArrayFromInstance(responseInstanceType, result.response) as TResponse;
+                this.response = JsonSerializer.deserializeArrayFromInstance(
+                    responseInstanceType,
+                    result.response,
+                ) as TResponse;
             } else {
-                this.response = JsonSerializer.deserializeFromInstance(responseInstanceType, result.response) as TResponse;
+                this.response = JsonSerializer.deserializeFromInstance(
+                    responseInstanceType,
+                    result.response,
+                ) as TResponse;
             }
         }
     }
