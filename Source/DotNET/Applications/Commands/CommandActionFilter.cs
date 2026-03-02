@@ -47,12 +47,10 @@ public class CommandActionFilter : IAsyncActionFilter
                     var exception = result.Exception;
                     exceptionStackTrace = exception.StackTrace;
 
-                    do
-                    {
-                        exceptionMessages.Add(exception.Message);
-                        exception = exception.InnerException;
-                    }
-                    while (exception is not null);
+                    if (exception is MessageException messageException)
+                        exceptionMessages.Add(messageException.Code);
+                    else
+                        exceptionMessages.Add("oops.something.wrong.code");
 
                     result.Exception = null!;
                 }
